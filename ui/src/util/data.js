@@ -1,4 +1,23 @@
 
+export const prizesArr = [
+    'jackpot', 'firstPrizes', 'secondPrizes', 
+    'thirdPrizes', 'fourthPrizes', 'fifthPrizes', 
+    // 'sixthPrizes', 'sevenPrizes', 'eightPrizes'
+]
+
+// const test = [
+//     'jackpot', 'firstPrizes', 'secondPrizes', 
+//     'thirdPrizes', 'fourthPrizes', 'fifthPrizes', 
+//     'sixthPrizes', 'sevenPrizes', 'eightPrizes'
+// ]
+
+
+export const titles = [
+    'jackpot', '1st prizes', '2nd prizes', 
+    '3rd prizes', '4th prizes', '5th prizes', 
+    // '6th prizes', '7th prizes', '8th prizes'
+]
+
 export const games = [
     {
         gameId: 0,
@@ -57,39 +76,33 @@ export const games = [
 
 export const results = [
     {
-        resultId: 0,
+        _id: 0,
         date: "2021-12-21T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 20000,
             winningValues: ['012677'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 2000,
             winningValues: ['641694', '465758', '364584'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 1000,
             winningValues: ['63858', '47258', '54815'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 500,
             winningValues: ['5493', '3519', '3649'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 100,
             winningValues: ['548', '184', '368'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 50,
             winningValues: ['45', '24', '67'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -104,39 +117,33 @@ export const results = [
         updatedAt: "2021-12-21T00:00:00.000Z"
     },
     {
-        resultId: 1,
+        _id: 1,
         date: "2022-06-23T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 15000,
             winningValues: ['563957'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 1500,
             winningValues: ['549636', '136245', '972562'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 500,
             winningValues: ['12414', '14354', '41343'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 100,
             winningValues: ['3513', '4522', '1243'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 50,
             winningValues: ['345', '643', '357'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 10,
             winningValues: ['23', '65', '60'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -151,39 +158,33 @@ export const results = [
         updatedAt: "2022-06-23T00:00:00.000Z"
     },
     {
-        resultId: 2,
+        _id: 2,
         date: "2022-06-24T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 15000,
             winningValues: ['254915'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 1500,
             winningValues: ['582665', '251095', '529359'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 500,
             winningValues: ['14565', '46443', '70684'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 100,
             winningValues: ['1998', '7604', '8769'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 50,
             winningValues: ['458', '586', '656'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 20,
             winningValues: ['65', '24', '78'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -198,39 +199,33 @@ export const results = [
         updatedAt: "2022-06-24T00:00:00.000Z"
     },
     {
-        resultId: 3,
+        _id: 3,
         date: "2022-06-25T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 15000,
             winningValues: ['451956'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 1000,
             winningValues: ['561695', '124197', '345700'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 500,
             winningValues: ['25252', '63434', '69684'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 100,
             winningValues: ['4946', '8639', '1252'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 50,
             winningValues: ['936', '864', '665'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 10,
             winningValues: ['63', '54', '90'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -245,39 +240,33 @@ export const results = [
         updatedAt: "2022-06-25T00:00:00.000Z"
     },
     {
-        resultId: 4,
+        _id: 4,
         date: "2022-06-26T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 15000,
             winningValues: ['569165'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 1000,
             winningValues: ['652696', '189419', '135871'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 500,
             winningValues: ['25545', '45452', '24535'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 100,
             winningValues: ['4545', '2323', '5452'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 50,
             winningValues: ['352', '245', '542'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 20,
             winningValues: ['15', '36', '66'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -292,39 +281,33 @@ export const results = [
         updatedAt: "2022-06-26T00:00:00.000Z"
     },
     {
-        resultId: 5,
+        _id: 5,
         date: "2022-06-27T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 15000,
             winningValues: ['914341'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 1000,
             winningValues: ['268637', '934578', '928758'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 500,
             winningValues: ['12434', '09074', '01374'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 100,
             winningValues: ['2334', '1243', '3423'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 50,
             winningValues: ['423', '233', '323'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 20,
             winningValues: ['23', '84', '93'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -339,39 +322,33 @@ export const results = [
         updatedAt: "2022-06-27T00:00:00.000Z"
     },
     {
-        resultId: 6,
+        _id: 6,
         date: "2022-06-30T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 15000,
             winningValues: ['643792'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 1000,
             winningValues: ['268632', '677504', '465750'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 500,
             winningValues: ['41234', '13433', '65421'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 100,
             winningValues: ['1345', '3513', '4344'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 50,
             winningValues: ['565', '245', '243'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 20,
             winningValues: ['12', '45', '65'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -386,39 +363,33 @@ export const results = [
         updatedAt: "2022-06-30T00:00:00.000Z"
     },
     {
-        resultId: 7,
+        _id: 7,
         date: "2022-07-02T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 15000,
             winningValues: ['124354'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 1000,
             winningValues: ['123545', '090808', '918751'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 500,
             winningValues: ['23523', '23524', '13251'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 100,
             winningValues: ['2352', '2535', '2535'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 50,
             winningValues: ['354', '241', '346'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 20,
             winningValues: ['34', '78', '46'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -433,39 +404,33 @@ export const results = [
         updatedAt: "2022-07-02T00:00:00.000Z"
     },
     {
-        resultId: 8,
+        _id: 8,
         date: "2022-07-08T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 15000,
             winningValues: ['057817'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 1000,
             winningValues: ['268637', '187501', '918750'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 500,
             winningValues: ['51845', '23521', '65424'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 100,
             winningValues: ['4646', '1354', '6342'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 50,
             winningValues: ['565', '356', '346'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 20,
             winningValues: ['23', '45', '56'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -480,39 +445,33 @@ export const results = [
         updatedAt: "2022-07-08T00:00:00.000Z"
     },
     {
-        resultId: 9,
+        _id: 9,
         date: "2022-07-21T00:00:00.000Z",
         game: games[0].name,
         prizesAmount : 6,
         jackpot: {
             reward: 15000,
             winningValues: ['548457'],
-            valuesAmount: 1
         },
         firstPrizes: {
             reward: 1000,
             winningValues: ['268637', '187501', '918750'],
-            valuesAmount: 3
         },
         secondPrizes: {
             reward: 500,
             winningValues: ['51845', '23521', '65424'],
-            valuesAmount: 3
         },
         thirdPrizes: {
             reward: 100,
             winningValues: ['4646', '1354', '6342'],
-            valuesAmount: 3
         },
         fourthPrizes: {
             reward: 50,
             winningValues: ['565', '356', '346'],
-            valuesAmount: 3
         },
         fifthPrizes: {
             reward: 20,
             winningValues: ['23', '45', '56'],
-            valuesAmount: 3
         },
         sixthPrizes: {},
         seventhPrizes: {},
@@ -527,6 +486,19 @@ export const results = [
         updatedAt: "2022-07-21T00:00:00.000Z"
     },
 ]
+
+// export const testF = () => {
+//     return results.map((result, index) => {
+//         if (+result[index] <= +result.prizesAmount) {
+//             console.log(result[index], 123)
+//             console.log(result.prizesAmount, 456)
+//             console.log(test[index], test[index].toString(), 789)
+//             return prizesArr.push(test[index].toString())
+//         } else {
+//             return null
+//         }
+//     })
+// }
 
 export const users =
     [
