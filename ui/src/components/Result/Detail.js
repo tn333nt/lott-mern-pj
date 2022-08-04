@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Table, Button, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap';
 import _ from "lodash";
 
-import { setResult, toggleModalAdd, toggleModalUpdate } from '../../flux/resultsSlice';
-import { useEffect } from 'react';
+import { deleteResult, setValues, toggleModalMessage, toggleModalUpdate } from '../../flux/resultsSlice';
+import Messenger from '../Messenger';
+import dateFormat from 'dateformat'
 
 export const ResultDetail = props => {
 
@@ -13,27 +14,52 @@ export const ResultDetail = props => {
     const result = props.result
     const results = useSelector(state => state.results.results)
 
-    // sao set o onClick ma no van run all vay ???
+    const currentPage = useSelector(state => state.results.currentPage)
 
-
-    const handleUpdate = resultId => {
-        const r = results.find(result => result._id === resultId)
-        console.log(r, 444)
+    const handleUpdateModal = resultId => {
+        const updatingResult = results.find(result => {
+            console.log(typeof result._id)
+            return result._id === resultId
+        })
+        console.log(updatingResult, 444)
         // () => dispatch(toggleModalUpdate(result))
 
         dispatch(toggleModalUpdate())
-        dispatch(setResult(r))
-        console.log(pickedResult, 333); // sao no ko truyen vao ?
+        dispatch(setValues(updatingResult))
+        // dispatch(setResult(r))
+        
+    }
+    
+    // const pickedResult = useSelector(state => state.results.pickedResult)
+    // console.log(pickedResult, 333); // sao no ko truyen vao ?
 
+
+    const handleDeleteModal = resultId => {
+        const deletingResult = results.find(result => result._id === resultId)
+        const date = dateFormat(result.date, "yyyy-mm-dd")
+
+        const confirm = `delete result of ${date} ?`
+
+        dispatch(toggleModalMessage(confirm))
+        dispatch(setValues(deletingResult))
+        // dispatch(deleteResult({
+        //     currentPage: currentPage,
+        //     deletingResult: deletingResult
+        // }))
+
+        // const values = {
+        //     currentPage: currentPage,
+        //     deletingResult: deletingResult
+        // }
+
+        // return <Messenger
+        //     values={values}
+        //     for="deleteResult"
+        //     confirm={confirm}
+        // />
     }
 
-    const pickedResult = useSelector(state => state.results.pickedResult)
-
-
-    const handleDelete = () => {
-        dispatch(toggleModalUpdate(result))
-    }
-
+    console.log(result.secondPrizes, 'check')
 
     return (
         <>
@@ -42,13 +68,14 @@ export const ResultDetail = props => {
                 <thead>
                     <tr className="text-secondary">
                         <th> prize </th>
-                        <th> winning numbers </th>
+                        <th> winning tickets </th>
                         <th> reward ($) </th>
                     </tr>
                 </thead>
                 <tbody>
+                    {/* chuyen compare obj sang compare arr.length vi req auto tao wV : [] */}
 
-                    {!_.isEqual(result.jackpot, {}) && (
+                    {result.jackpot.winningValues.length > 0 && (
                         <tr>
                             <th scope="row"> jackpot</th>
                             <td >
@@ -58,7 +85,7 @@ export const ResultDetail = props => {
                         </tr>
                     )}
 
-                    {!_.isEqual(result.firstPrizes, {}) && (
+                    {result.firstPrizes.winningValues.length > 0 && (
                         <tr>
                             <th scope="row"> firstPrizes</th>
                             <td className="d-flex flex-wrap justify-content-evenly">
@@ -71,7 +98,7 @@ export const ResultDetail = props => {
                         </tr>
                     )}
 
-                    {!_.isEqual(result.secondPrizes, {}) && (
+                    {result.secondPrizes.winningValues.length > 0 && (
                         <tr>
                             <th scope="row"> secondPrizes</th>
                             <td className="d-flex flex-wrap justify-content-evenly">
@@ -81,7 +108,7 @@ export const ResultDetail = props => {
                         </tr>
                     )}
 
-                    {!_.isEqual(result.thirdPrizes, {}) && (
+                    {result.thirdPrizes.winningValues.length > 0 && (
                         <tr>
                             <th scope="row"> thirdPrizes</th>
                             <td className="d-flex flex-wrap justify-content-evenly">
@@ -90,10 +117,12 @@ export const ResultDetail = props => {
                             <td>{result.thirdPrizes.reward}</td>
                         </tr>
                     )}
+                    {/* {console.log(result.thirdPrizes.winningValues.length > 0, 123)} */}
 
-                    {!_.isEqual(result.fourthPrizes, {}) && (
+
+                    {result.fourthPrizes.winningValues.length > 0 && (
                         <tr>
-                            <th scope="row"> thirdPrizes</th>
+                            <th scope="row"> fourthPrizes</th>
                             <td className="d-flex flex-wrap justify-content-evenly">
                                 {result.fourthPrizes.winningValues.map(value => <span>{value}</span>)}
                             </td>
@@ -101,7 +130,7 @@ export const ResultDetail = props => {
                         </tr>
                     )}
 
-                    {!_.isEqual(result.fifthPrizes, {}) && (
+                    {result.fifthPrizes.winningValues.length > 0 && (
                         <tr>
                             <th scope="row"> fifthPrizes</th>
                             <td className="d-flex flex-wrap justify-content-evenly">
@@ -112,7 +141,7 @@ export const ResultDetail = props => {
                     )}
 
                     {
-                        // !_.isEqual(result.sixthPrizes, {}) && (
+                        // result.sixthPrizes.winningValues.length > 0 && (
                         //     <tr>
                         //         {/* {console.log(345)} */}
                         //         <th scope="row"> sixthPrizes</th>
@@ -125,7 +154,7 @@ export const ResultDetail = props => {
                     }
 
                     {
-                        // !_.isEqual(result.seventhPrizes, {}) && (
+                        // result.seventhPrizes.winningValues.length > 0 && (
                         //     <tr>
                         //         <th scope="row"> seventhPrizes</th>
                         //         <td className="d-flex flex-wrap justify-content-evenly">
@@ -137,7 +166,7 @@ export const ResultDetail = props => {
                     }
 
                     {
-                        // !_.isEqual(result.eighthPrizes, {}) && (
+                        // result.eighthPrizes.winningValues.length > 0 && (
                         //     <tr>
                         //         <th scope="row"> eighthPrizes</th>
                         //         <td className="d-flex flex-wrap justify-content-evenly">
@@ -154,14 +183,14 @@ export const ResultDetail = props => {
             <div className="d-flex justify-content-end">
                 <Button
                     className="me-5 px-3 "
-                    onClick={() => handleUpdate(props.result._id)}
-                    isUpdate={true}
+                    onClick={() => handleUpdateModal(props.result._id)}
+                // isUpdate={true}
                 >
                     update
                 </Button>
                 <Button
                     className="me-5 px-3 "
-                    onClick={() => props.handleDelete}
+                    onClick={() => handleDeleteModal(props.result._id)}
                 >
                     delete
                 </Button>

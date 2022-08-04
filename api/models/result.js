@@ -6,48 +6,39 @@ const resultSchema = new Schema(
         date: {type: String, required: true},
         game: {type: String, required: true}, // then neu can thi find game in Game wth the same name
         jackpot: {
-            inIncluded: {type: Boolean, default: false, required: true},
-            reward: {type: Number, default: 0},
+            reward: Number, // hardcoded here
             winningValues: [String]
         },
         firstPrizes: {
-            inIncluded: {type: Boolean, default: false, required: true},
-            reward: {type: Number, default: 0},
+            reward: Number,
             winningValues: [String]
         },
         secondPrizes: {
-            inIncluded: {type: Boolean, default: false, required: true},
-            reward: {type: Number, default: 0},
+            reward: Number,
             winningValues: [String]
         },
         thirdPrizes: {
-            inIncluded: {type: Boolean, default: false, required: true},
-            reward: {type: Number, default: 0},
+            reward: Number,
             winningValues: [String]
         },
         fourthPrizes: {
-            inIncluded: {type: Boolean, default: false, required: true},
-            reward: {type: Number, default: 0},
+            reward: Number,
             winningValues: [String]
         },
         fifthPrizes: {
-            inIncluded: {type: Boolean, default: false, required: true},
-            reward: {type: Number, default: 0},
+            reward: Number,
             winningValues: [String]
         },
         sixthPrizes: {
-            inIncluded: {type: Boolean, default: false, required: true},
-            reward: {type: Number, default: 0},
+            reward: Number,
             winningValues: [String]
         },
         seventhPrizes: {
-            inIncluded: {type: Boolean, default: false, required: true},
-            reward: {type: Number, default: 0},
+            reward: Number,
             winningValues: [String]
         },
         eighthPrizes: {
-            inIncluded: {type: Boolean, default: false, required: true},
-            reward: {type: Number, default: 0},
+            reward: Number,
             winningValues: [String]
         },
         countdown: {

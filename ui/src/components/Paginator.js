@@ -7,10 +7,11 @@ const Paginator = props => {
 
   const dispatch = useDispatch()
 
-  const totalResults = useSelector(state => state.results.totalResults)
-  const currentPage = useSelector(state => state.results.currentPage)
+  const totalResults = useSelector(state => state.results.results.length)
+  // const perPage = useSelector(state => state.results.paginatedResults.length) // forget case length = 0
 
-  const lastPage = Math.ceil(totalResults / 6) // hardcoded here
+  const currentPage = useSelector(state => state.results.currentPage)
+  const lastPage = Math.ceil(totalResults / 6) 
 
   return (
     <div className="d-flex justify-content-center p-1 m-3">

@@ -13,7 +13,9 @@ router.get('/results', [
     body('thirdPrizes'),
     body('fourthPrizes'),
     body('fifthPrizes'),
-], resultController.getResults)
+], resultController.getAllResults)
+
+router.post('/results', [], resultController.deleteAllResults)
 
 router.post('/result', [], resultController.postResult)
 
