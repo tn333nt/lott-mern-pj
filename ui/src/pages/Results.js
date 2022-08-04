@@ -1,6 +1,5 @@
 
 import { useEffect } from 'react';
-import dateFormat from 'dateformat'
 import { UncontrolledAccordion, Spinner, Button, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -99,7 +98,7 @@ const Results = () => {
                             >
                                 <AccordionHeader targetId={result._id}  >
                                     <div className="d-flex flex-wrap justify-content-between w-100 px-5">
-                                        <div >date :  <strong>{dateFormat(result.date, "yyyy-mm-dd")}</strong></div>
+                                        <div >date :  <strong>{result.date}</strong></div>
                                         <div >game :  <strong>{result.game}</strong></div>
                                     </div>
                                 </AccordionHeader>
@@ -128,7 +127,7 @@ const Results = () => {
                             >
                                 <AccordionHeader targetId={result._id} >
                                     <div className="d-flex flex-wrap justify-content-between w-100 px-5">
-                                        <div >date :  <strong>{dateFormat(result.date, "yyyy-mm-dd")}</strong></div>
+                                        <div >date :  <strong>{result.date}</strong></div>
                                         <div >game :  <strong>{result.game}</strong></div>
                                     </div>
                                 </AccordionHeader>

@@ -2,25 +2,87 @@
 const express = require('express')
 const { body } = require('express-validator')
 
+const resultController = require('../controllers/result')
+const Result = require('../controllers/result')
+
 const router = express.Router()
 
-const resultController = require('../controllers/result')
+router.get('/results', resultController.getAllResults)
 
-router.get('/results', [
-    body('jackpot'),
-    body('firsttPrizes'),
-    body('secondPrizes'),
-    body('thirdPrizes'),
-    body('fourthPrizes'),
-    body('fifthPrizes'),
-], resultController.getAllResults)
+router.delete('/results', resultController.deleteAllResults)
 
-router.delete('/results', [], resultController.deleteAllResults)
+router.post('/result', [
+    body('jackpot')
+        // .matches(/^[0-9]{6}$/)
+        .not().isNumeric()
+        .withMessage("numbers only")
+    // .custom((value, { req }) => {
+    //     if (value.winningValues.length !== 1) {
+    //         return Promise.reject('wrong amount jackpot')
+    //     }
+    // })
 
-router.post('/result', [], resultController.postResult)
+    , body('firstPrizes')
+        // .matches(/^[0-9,]{6}$/)
+        .not().isNumeric()
+        .withMessage("numbers only")
+    // .custom((value, { req }) => {
+    //     if (value.winningValues.length !== 1) {
+    //         return Promise.reject('wrong amount firstPrizes')
+    //     }
 
-router.patch('/result/:resultId', [], resultController.patchResult)
+    //     value.winningValues.forEach(value => {
+    //         console.log(value, 111)
+    //         if (value.length < 6) {
+    //             return Promise.reject('wrong amount value in tickets of firstPrizes')
+    //         }
+    //     })
+    // })
+    , body('secondPrizes')
+        .not().isNumeric()
+        .withMessage("numbers only")
+    , body('thirdPrizes')
+        .not().isNumeric()
+        .withMessage("numbers only")
+    , body('fourthPrizes')
+        .not().isNumeric()
+        .withMessage("numbers only")
+    , body('fifthPrizes')
+        .not().isNumeric()
+        .withMessage("numbers only")
+], resultController.postResult)
+
+
+router.patch('/result/:resultId', [
+    body('jackpot')
+        .not().isNumeric()
+        .withMessage("numbers only")
+    , body('firstPrizes')
+        .not().isNumeric()
+        .withMessage("numbers only")
+    , body('secondPrizes')
+        .not().isNumeric()
+        .withMessage("numbers only")
+    , body('thirdPrizes')
+        .not().isNumeric()
+        .withMessage("numbers only")
+    , body('fourthPrizes')
+        .not().isNumeric()
+        .withMessage("numbers only")
+    , body('fifthPrizes')
+        .not().isNumeric()
+        .withMessage("numbers only")
+], resultController.patchResult)
 
 router.delete('/result/:resultId', [], resultController.deleteResult)
 
 module.exports = router
+
+
+/** regex
+ * https://itnext.io/understanding-regex-in-javascript-the-easy-way-ad0e5888a3ec
+ * https://regex101.com/r/u8xcBx/2
+ * 
+ * note
+ * \d eq [0-9]
+ */

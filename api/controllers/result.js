@@ -18,25 +18,13 @@ exports.getAllResults = async (req, res, next) => {
 
         const searchedResults = search && sortedResults.filter(result => {
             if (search !== '') {
-                const d = new Date(result.date);
-                d.setHours(d.getHours() + 7)
-                // console.log(d.toLocaleDateString('vi-vn', 'vn'), 'test')
-                const date = d.toISOString().includes(search.trim())
+                const date = result.date.includes(search.trim())
                 const game = result.game.includes(search.trim())
                 return date || game
             } else {
                 return null
             }
         })
-
-        // const searchedResults = Result.find({$regex: search})
-        // const regex = new RegExp(search, 'i')
-        // const searchedResults = Result.find({
-        //     $or: [
-        //         { date: {$regex: regex} },
-        //         { game: {$regex: regex} }
-        //     ]
-        // })
 
         res.status(200).json({
             results: sortedResults,
@@ -51,6 +39,26 @@ exports.getAllResults = async (req, res, next) => {
 }
 
 exports.postResult = async (req, res, next) => {
+
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        const error = errors.array()[0]
+        console.log(error)
+        const err = new Error(`validation failed at ${error.param} : ${error.msg}`)
+        err.statusCode = 422
+        throw err
+    }
+
+    const date = new Date()
+    const today = date.toLocaleDateString("vi-VN")
+    console.log(today) // thieu await
+    const todayResult = await Result.findOne({date: today})
+    if (todayResult) { 
+        const err = new Error("already have report for today")
+        err.statusCode = 422
+        throw err
+    }
+
     const jackpot = req.body.jackpot
     const firstPrizes = req.body.firstPrizes
     const secondPrizes = req.body.secondPrizes
@@ -61,15 +69,16 @@ exports.postResult = async (req, res, next) => {
     const seventhPrizes = req.body.seventhPrizes
     const eighthPrizes = req.body.eighthPrizes
 
-    const date = new Date()
-
     const currentPage = req.query.page
     const perPage = 6
+
+    console.log(jackpot, 'jackpot');
+    console.log(firstPrizes, 'firstPrizes');
 
     try {
 
         const result = new Result({
-            date: date.toISOString(),
+            date: today,
             game: 'abc',
             jackpot: jackpot,
             firstPrizes: firstPrizes,
@@ -109,7 +118,8 @@ exports.patchResult = async (req, res, next) => {
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        const err = new Error('validation failed')
+        const error = errors.array()[0]
+        const err = new Error(`validation failed at ${error.param} : ${error.msg}`)
         err.statusCode = 422
         throw err
     }
@@ -131,7 +141,7 @@ exports.patchResult = async (req, res, next) => {
         const updatingResult = await Result.findById(resultId)
 
         if (!updatingResult) {
-            const err = new Error('No result found')
+            const err = new Error('No result found to update')
             err.statusCode = 404
             throw err
         }
@@ -177,10 +187,11 @@ exports.deleteResult = async (req, res, next) => {
         const deletingResult = Result.findById(resultId)
 
         if (!deletingResult) {
-            const err = new Error('No result found')
+            const err = new Error('No result found to delete')
             err.statusCode = 404
             throw err
         }
+
         await Result.findByIdAndRemove(resultId)
 
         const updatedResults = await Result.find().sort({ date: 'desc' })

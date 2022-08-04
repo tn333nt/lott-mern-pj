@@ -4,7 +4,6 @@ import { Table, Button } from 'reactstrap';
 // import _ from "lodash";
 
 import { setValues, toggleModalMessage, toggleModalUpdate } from '../../flux/resultsSlice';
-import dateFormat from 'dateformat'
 
 export const ResultDetail = props => {
 
@@ -25,7 +24,7 @@ export const ResultDetail = props => {
 
     const handleDeleteModal = resultId => {
         const deletingResult = results.find(result => result._id === resultId)
-        const date = dateFormat(result.date, "yyyy-mm-dd")
+        const date = deletingResult.date
 
         const confirm = `delete result of ${date} ?`
 

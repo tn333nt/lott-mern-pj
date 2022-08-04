@@ -1,9 +1,10 @@
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormText, FormGroup, Input, Label } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormText, FormFeedback, FormGroup, Input, Label } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setValues, toggleModalAdd, toggleModalUpdate, addResult, updateResult } from '../../flux/resultsSlice';
+import { setValues, toggleModalAdd, toggleModalUpdate, addResult, updateResult, setValidation } from '../../flux/resultsSlice';
 import Messenger from '../Messenger'
+import { required, length } from '../../util/validators';
 
 export const ResultForm = props => {
 
@@ -11,6 +12,9 @@ export const ResultForm = props => {
 
     const isOpenAddModal = useSelector(state => state.results.isOpen.addModal)
     const isOpenUpdateModal = useSelector(state => state.results.isOpen.updateModal)
+
+    const validation = useSelector(state => state.results.validation)
+    const isFormValid = useSelector(state => state.results.isFormValid)
 
     const pickedResult = useSelector(state => state.results.pickedResult)
 
@@ -25,12 +29,44 @@ export const ResultForm = props => {
         const name = e.target.name
         const strValue = e.target.value.trim()
 
-        // vi trim() strValue chua remove dc space khoi tung phan tu
+        // trigger all validators -> compare with input
+        let isValid = true;
+        for (const validator of validation[name].validators) {
+            console.log(typeof validator === "function", 1)
+            isValid = isValid && validator(strValue);
+        }
+
+        // remove space from each item
         const values = strValue.split(',')
         const arrValues = []
-        values.forEach(value => {
-            arrValues.push(value.trim())
+        values.forEach((item, index) => {
+            const value = item.trim()
+            // https://stackoverflow.com/a/48540808
+            // const test = length({ exact: 6 })(value) // check length for each item 
+            // isValid = isValid && test
+            arrValues.push(value)
         })
+
+        // check amount of items
+        if (name !== 'jackpot' && arrValues.length >= 0) {
+            isValid = isValid && arrValues.length === 3
+        }
+
+        // customize feedback later
+
+        const updatedValidation = {
+            ...validation,
+            [name]: {
+                ...validation[name],
+                isValid: isValid
+            }
+        }
+
+        // check xem valid all chua
+        let isFormValid = true;
+        for (const name in updatedValidation) {
+            isFormValid = isFormValid && updatedValidation[name].isValid;
+        }
 
         const result = {
             ...pickedResult,
@@ -40,11 +76,15 @@ export const ResultForm = props => {
             }
         }
 
+        dispatch(setValidation({
+            validation: updatedValidation,
+            isFormValid: isFormValid
+        }))
         dispatch(setValues(result))
-
     }
 
     const submitForm = () => {
+
         const result = {
             ...pickedResult,
             _id: pickedResult._id,
@@ -89,7 +129,6 @@ export const ResultForm = props => {
                 currentPage: currentPage
             }))
         }
-
     }
 
     return (
@@ -108,7 +147,8 @@ export const ResultForm = props => {
                             <FormText>
                                 <p className="mb-3">
                                     {/* hardcoded here */}
-                                    * note : each prize's ticket / value has 6 numbers and be seperated by a comma
+                                    * each prize has <strong>x</strong> ticket(s) <br />
+                                    * each ticket has <strong>y</strong> NUMBERS and be seperated by a COMMA
                                 </p>
                             </FormText>
 
@@ -143,10 +183,15 @@ export const ResultForm = props => {
                                     value={pickedResult.jackpot.winningValues.length > 0 ? pickedResult.jackpot.winningValues : ''}
                                     // later : if err -> keep value
                                     onChange={handleChange}
+                                    valid={validation.jackpot.isValid}
+                                    invalid={!validation.jackpot.isValid}
                                 />
                                 <Label for='jackpot'>
                                     jackpot
                                 </Label>
+                                <FormFeedback invalid className="mx-3" >
+                                    x=1,y=6
+                                </FormFeedback>
                             </FormGroup>
 
                             <FormGroup floating >
@@ -157,10 +202,15 @@ export const ResultForm = props => {
                                     placeholder='firstPrizes'
                                     value={pickedResult.firstPrizes.winningValues.length > 0 ? pickedResult.firstPrizes.winningValues : ''}
                                     onChange={handleChange}
+                                    valid={validation.firstPrizes.isValid}
+                                    invalid={!validation.firstPrizes.isValid}
                                 />
                                 <Label for='firstPrizes'>
                                     firstPrizes
                                 </Label>
+                                <FormFeedback invalid className="mx-3" >
+                                    x=3,y=6
+                                </FormFeedback>
                             </FormGroup>
 
                             <FormGroup floating >
@@ -171,10 +221,15 @@ export const ResultForm = props => {
                                     placeholder='secondPrizes'
                                     value={pickedResult.secondPrizes.winningValues.length > 0 ? pickedResult.secondPrizes.winningValues : ''}
                                     onChange={handleChange}
+                                    valid={validation.secondPrizes.isValid}
+                                    invalid={!validation.secondPrizes.isValid}
                                 />
                                 <Label for='secondPrizes'>
                                     secondPrizes
                                 </Label>
+                                <FormFeedback invalid className="mx-3" >
+                                    x=3,y=5
+                                </FormFeedback>
                             </FormGroup>
 
                             <FormGroup floating >
@@ -185,10 +240,15 @@ export const ResultForm = props => {
                                     placeholder='thirdPrizes'
                                     value={pickedResult.thirdPrizes.winningValues.length > 0 ? pickedResult.thirdPrizes.winningValues : ''}
                                     onChange={handleChange}
+                                    valid={validation.thirdPrizes.isValid}
+                                    invalid={!validation.thirdPrizes.isValid}
                                 />
                                 <Label for='thirdPrizes'>
                                     thirdPrizes
                                 </Label>
+                                <FormFeedback invalid className="mx-3" >
+                                    x=3,y=4
+                                </FormFeedback>
                             </FormGroup>
 
                             <FormGroup floating >
@@ -199,10 +259,15 @@ export const ResultForm = props => {
                                     placeholder='fourthPrizes'
                                     value={pickedResult.fourthPrizes.winningValues.length > 0 ? pickedResult.fourthPrizes.winningValues : ''}
                                     onChange={handleChange}
+                                    valid={validation.fourthPrizes.isValid}
+                                    invalid={!validation.fourthPrizes.isValid}
                                 />
                                 <Label for='fourthPrizes'>
                                     fourthPrizes
                                 </Label>
+                                <FormFeedback invalid className="mx-3" >
+                                    x=3,y=3
+                                </FormFeedback>
                             </FormGroup>
 
                             <FormGroup floating >
@@ -213,10 +278,15 @@ export const ResultForm = props => {
                                     placeholder='fifthPrizes'
                                     value={pickedResult.fifthPrizes.winningValues.length > 0 ? pickedResult.fifthPrizes.winningValues : ''}
                                     onChange={handleChange}
+                                    valid={validation.fifthPrizes.isValid}
+                                    invalid={!validation.fifthPrizes.isValid}
                                 />
                                 <Label for='fifthPrizes'>
                                     fifthPrizes
                                 </Label>
+                                <FormFeedback invalid className="mx-3" >
+                                    x=3,y=2
+                                </FormFeedback>
                             </FormGroup>
 
                         </Form >
@@ -227,6 +297,7 @@ export const ResultForm = props => {
                             className="me-5 px-3 "
                             color="primary"
                             onClick={submitForm}
+                            disabled={!isFormValid}
                         >
                             Submit
                         </Button>

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { isNumberOrComma, length, required } from "../util/validators";
 
 
 export const fetchAllResults = createAsyncThunk('fetchAllResults', async (props) => { // (action's prefix , cb)
@@ -16,7 +17,7 @@ export const fetchAllResults = createAsyncThunk('fetchAllResults', async (props)
 
 export const addResult = createAsyncThunk('addResult', async (props) => {
     const newResult = props.newResult
-
+console.log(JSON.stringify(newResult), 'JSON.stringify(newResult)')
     const url = `http://localhost:8080/results/result?page=${props.currentPage}`
     const res = await fetch(url, {
         method: 'POST',
@@ -143,7 +144,40 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
         },
         searchText: '', // final value to search
         message: '',
-        confirm: ''
+        confirm: '',
+        validation: {
+            jackpot: {
+                isValid: false,
+                // feedback: '',
+                validators: [required, length({ exact: 6 }), isNumberOrComma]
+            },
+            firstPrizes: {
+                isValid: false,
+                // feedback: '',
+                validators: [required, length({ exact: 20 }), isNumberOrComma]
+            },
+            secondPrizes: {
+                isValid: false,
+                // feedback: '',
+                validators: [required, length({ exact: 17 }), isNumberOrComma]
+            },
+            thirdPrizes: {
+                isValid: false,
+                // feedback: '',
+                validators: [required, length({ exact: 14 }), isNumberOrComma]
+            },
+            fourthPrizes: {
+                isValid: false,
+                // feedback: '',
+                validators: [required, length({ exact: 11 }), isNumberOrComma]
+            },
+            fifthPrizes: {
+                isValid: false,
+                // feedback: '',
+                validators: [required, length({ exact: 8 }), isNumberOrComma]
+            },
+        },
+        isFormValid: false
     },
 
     reducers: {
@@ -171,6 +205,10 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
         },
         setValues: (state, action) => {
             state.pickedResult = action.payload ? action.payload : initialResult
+        },
+        setValidation: (state, action) => {
+            state.validation = action.payload.validation
+            state.isFormValid = action.payload.isFormValid
         },
 
         fetchPreviousPage: (state) => {
@@ -221,9 +259,9 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
                 state.isLoading = true
             })
             .addCase(updateResult.fulfilled, (state, action) => {
+                state.isLoading = false
                 state.results = action.payload.results
                 state.paginatedResults = action.payload.paginatedResults
-                state.isLoading = false
             })
             .addCase(updateResult.rejected, (state, action) => {
                 state.isLoading = false
@@ -238,14 +276,17 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
                 state.isLoading = false
                 state.isOpen.messageModal = true
                 state.message = "delete successfully"
+
                 state.results = action.payload.results
                 state.paginatedResults = action.payload.paginatedResults
+
             })
             .addCase(deleteResult.rejected, (state, action) => {
                 state.isLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
+
             .addCase(deleteAllResults.pending, (state, action) => {
                 state.isLoading = true
             })
@@ -253,8 +294,10 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
                 state.isLoading = false
                 state.isOpen.messageModal = true
                 state.message = "deleted all"
+
                 state.results = []
                 state.paginatedResults = []
+
             })
             .addCase(deleteAllResults.rejected, (state, action) => {
                 state.isLoading = false
@@ -272,7 +315,8 @@ export const {
     setSearchText,
     fetchPreviousPage,
     fetchNextPage,
-    setValues
+    setValues,
+    setValidation
 } = resultsSlice.actions
 
 

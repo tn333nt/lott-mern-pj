@@ -2,7 +2,6 @@
 import { Modal, ModalBody, ModalFooter } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
-import dateFormat from 'dateformat'
 
 import { deleteAllResults, toggleModalMessage, deleteResult, setValues } from '../flux/resultsSlice';
 
@@ -16,7 +15,7 @@ const Messenger = props => {
 
     const pickedResult = useSelector(state => state.results.pickedResult)
     const currentPage = useSelector(state => state.results.currentPage)
-    const date = dateFormat(pickedResult.date, "yyyy-mm-dd")
+    const date = pickedResult.date
     const passingValues = {
         currentPage: currentPage,
         deletingResult: pickedResult
