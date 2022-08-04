@@ -4,11 +4,9 @@ const { validationResult } = require('express-validator')
 const Result = require('../models/result')
 
 exports.getAllResults = async (req, res, next) => {
+    const search = req.query.search
     const currentPage = req.query.page || 1
     const perPage = 6
-    // let results
-
-    const search = req.query.search
 
     try {
         const sortedResults = await Result.find().sort({ date: 'desc' })
@@ -40,40 +38,15 @@ exports.getAllResults = async (req, res, next) => {
         //     ]
         // })
 
-        console.log(searchedResults.length, 'check');
-        console.log(sortedResults[0].date, 'check');
-
         res.status(200).json({
             results: sortedResults,
             searchedResults: searchedResults,
             paginatedResults: paginatedResults
         })
+
     } catch (err) {
         next(err);
     }
-
-
-    // Result.find()
-    //     // .countDocuments()
-    //     .sort({ date: 'desc' })
-    //     .then(data => {
-    //         results = data
-    //         return Result.find()
-    //             .sort({ date: 'desc' })
-    //             .skip((currentPage - 1) * perPage)
-    //             .limit(perPage)
-    //     })
-    //     .then(paginatedResults => {
-    //         console.log(results[0], 'results',)
-    //         console.log(paginatedResults[0], 'paginatedResults',)
-    //         res.status(200).json({
-    //             results: results,
-    //             // totalItems: totalItems,
-    //             paginatedResults: paginatedResults
-    //         })
-    //     })
-    //     .catch(err => next(err))
-
 
 }
 
@@ -93,10 +66,8 @@ exports.postResult = async (req, res, next) => {
     const currentPage = req.query.page
     const perPage = 6
 
-    
-
     try {
-        
+
         const result = new Result({
             date: date.toISOString(),
             game: 'abc',
@@ -113,9 +84,6 @@ exports.postResult = async (req, res, next) => {
 
         await result.save()
 
-        // state.results.unshift(action.payload)
-        // state.paginatedResults.unshift(action.payload)
-
         const updatedResults = await Result.find().sort({ date: 'desc' })
 
         const paginatedResults = await Result.find()
@@ -124,7 +92,6 @@ exports.postResult = async (req, res, next) => {
             .limit(perPage)
 
         res.status(200).json({
-            // result: savedResult
             results: updatedResults,
             paginatedResults: paginatedResults
         })
@@ -134,16 +101,6 @@ exports.postResult = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
-
-
-    // result.save()
-    //     .then(resultData => {
-    //         console.log(resultData)
-    //         res.status(201).json({
-    //             result: resultData
-    //         })
-    //     })
-    //     .catch(err => next(err))
 
 }
 
@@ -156,9 +113,6 @@ exports.patchResult = async (req, res, next) => {
         err.statusCode = 422
         throw err
     }
-
-    console.log(req.body, 'body')
-    // why body gửi từ ui luôn {} ? trong khi check bên ui thì có data lol
 
     const jackpot = req.body.jackpot
     const firstPrizes = req.body.firstPrizes
@@ -192,18 +146,7 @@ exports.patchResult = async (req, res, next) => {
         updatingResult.seventhPrizes = seventhPrizes
         updatingResult.eighthPrizes = eighthPrizes
 
-        // console.log(updatingResult)
-
         await updatingResult.save()
-
-        // res.status(200).json({ result: updatingResult })
-
-        // const resultIndex = state.results.findIndex(
-        //     result => result._id === state.pickedResult._id
-        // );
-        // const paginatedResultIndex = state.paginatedResults.findIndex(
-        //     result => result._id === state.pickedResult._id
-        // );
 
         const updatedResults = await Result.find().sort({ date: 'desc' })
 
@@ -211,9 +154,6 @@ exports.patchResult = async (req, res, next) => {
             .sort({ date: 'desc' })
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
-
-        // state.results[resultIndex] = action.payload;
-        // state.paginatedResults[paginatedResultIndex] = action.payload;
 
         res.status(200).json({
             results: updatedResults,
@@ -226,31 +166,6 @@ exports.patchResult = async (req, res, next) => {
         next(err)
     }
 
-
-    // Result.findById(resultId)
-    //     .then(result => {
-    //         if (!result) {
-    //             const err = new Error('No result found')
-    //             err.statusCode = 404
-    //             throw err
-    //         }
-
-    //         result.jackpot = jackpot
-    //         result.firstPrizes = firstPrizes
-    //         result.secondPrizes = secondPrizes
-    //         result.thirdPrizes = thirdPrizes
-    //         result.fourthPrizes = fourthPrizes
-    //         result.fifthPrizes = fifthPrizes
-    //         result.sixthPrizes = sixthPrizes
-    //         result.seventhPrizes = seventhPrizes
-    //         result.eighthPrizes = eighthPrizes
-
-    //         return result.save()
-    //     })
-    //     .then(updatedResult => {
-    //         res.status(200).json({ result: updatedResult })
-    //     })
-    //     .catch(err => next(err))
 }
 
 exports.deleteResult = async (req, res, next) => {
@@ -275,11 +190,8 @@ exports.deleteResult = async (req, res, next) => {
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
 
-        // const updatedPaginatedResults = paginatedResults.filter(result => result._id !== resultId);
-
         res.status(200).json({
             results: updatedResults,
-            // paginatedResults: updatedPaginatedResults,
             paginatedResults: paginatedResults
         })
 
@@ -289,19 +201,6 @@ exports.deleteResult = async (req, res, next) => {
         next(err)
     }
 
-
-    // Result.findById(resultId)
-    //     .then(result => {
-    //         if (!result) {
-    //             const err = new Error('No result found')
-    //             err.statusCode = 404
-    //             throw err
-    //         }
-
-    //         console.log('deleted')
-    //         return Result.findByIdAndRemove(resultId)
-    //     })
-    //     .catch(err => next(err))
 }
 
 

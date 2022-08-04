@@ -15,7 +15,7 @@ router.get('/results', [
     body('fifthPrizes'),
 ], resultController.getAllResults)
 
-router.post('/results', [], resultController.deleteAllResults)
+router.delete('/results', [], resultController.deleteAllResults)
 
 router.post('/result', [], resultController.postResult)
 

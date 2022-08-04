@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Input } from "reactstrap";
 import { FaSearch } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { setSearchText } from "../../flux/resultsSlice";
 
@@ -9,9 +9,7 @@ export const Search = props => {
 
     const dispatch = useDispatch()
 
-    // const searchText = useSelector(state => state.results.searchText)
-
-    const [search, setSearch] = useState('')
+    const [search, setSearch] = useState('') // searching value to update input
 
     const handleSearch = () => {
         dispatch(setSearchText(search))

@@ -8,13 +8,13 @@ const Paginator = props => {
   const dispatch = useDispatch()
 
   const totalResults = useSelector(state => state.results.results.length)
-  // const perPage = useSelector(state => state.results.paginatedResults.length) // forget case length = 0
 
   const currentPage = useSelector(state => state.results.currentPage)
-  const lastPage = Math.ceil(totalResults / 6) 
+  const lastPage = Math.ceil(totalResults / 6)
 
   return (
     <div className="d-flex justify-content-center p-1 m-3">
+
       {currentPage > 1 && (
         <Button
           outline
@@ -24,6 +24,7 @@ const Paginator = props => {
           Previous
         </Button>
       )}
+
       {currentPage < lastPage && (
         <Button
           outline
@@ -33,6 +34,7 @@ const Paginator = props => {
           Next
         </Button>
       )}
+      
     </div>
   )
 }

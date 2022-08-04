@@ -1,10 +1,9 @@
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Table, Button, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap';
-import _ from "lodash";
+import { Table, Button } from 'reactstrap';
+// import _ from "lodash";
 
-import { deleteResult, setValues, toggleModalMessage, toggleModalUpdate } from '../../flux/resultsSlice';
-import Messenger from '../Messenger';
+import { setValues, toggleModalMessage, toggleModalUpdate } from '../../flux/resultsSlice';
 import dateFormat from 'dateformat'
 
 export const ResultDetail = props => {
@@ -14,25 +13,15 @@ export const ResultDetail = props => {
     const result = props.result
     const results = useSelector(state => state.results.results)
 
-    const currentPage = useSelector(state => state.results.currentPage)
-
     const handleUpdateModal = resultId => {
         const updatingResult = results.find(result => {
-            console.log(typeof result._id)
             return result._id === resultId
         })
-        console.log(updatingResult, 444)
-        // () => dispatch(toggleModalUpdate(result))
 
         dispatch(toggleModalUpdate())
         dispatch(setValues(updatingResult))
-        // dispatch(setResult(r))
-        
-    }
-    
-    // const pickedResult = useSelector(state => state.results.pickedResult)
-    // console.log(pickedResult, 333); // sao no ko truyen vao ?
 
+    }
 
     const handleDeleteModal = resultId => {
         const deletingResult = results.find(result => result._id === resultId)
@@ -42,24 +31,8 @@ export const ResultDetail = props => {
 
         dispatch(toggleModalMessage(confirm))
         dispatch(setValues(deletingResult))
-        // dispatch(deleteResult({
-        //     currentPage: currentPage,
-        //     deletingResult: deletingResult
-        // }))
 
-        // const values = {
-        //     currentPage: currentPage,
-        //     deletingResult: deletingResult
-        // }
-
-        // return <Messenger
-        //     values={values}
-        //     for="deleteResult"
-        //     confirm={confirm}
-        // />
     }
-
-    console.log(result.secondPrizes, 'check')
 
     return (
         <>
@@ -89,10 +62,7 @@ export const ResultDetail = props => {
                         <tr>
                             <th scope="row"> firstPrizes</th>
                             <td className="d-flex flex-wrap justify-content-evenly">
-                                {result.firstPrizes.winningValues.map(value => {
-                                    // console.log(value, result._id)
-                                    return <div >{value}</div>
-                                })}
+                                {result.firstPrizes.winningValues.map(value => <span>{value}</span>)}
                             </td >
                             <td>{result.firstPrizes.reward}</td>
                         </tr>
@@ -117,8 +87,6 @@ export const ResultDetail = props => {
                             <td>{result.thirdPrizes.reward}</td>
                         </tr>
                     )}
-                    {/* {console.log(result.thirdPrizes.winningValues.length > 0, 123)} */}
-
 
                     {result.fourthPrizes.winningValues.length > 0 && (
                         <tr>
@@ -143,7 +111,6 @@ export const ResultDetail = props => {
                     {
                         // result.sixthPrizes.winningValues.length > 0 && (
                         //     <tr>
-                        //         {/* {console.log(345)} */}
                         //         <th scope="row"> sixthPrizes</th>
                         //         <td className="d-flex flex-wrap justify-content-evenly">
                         //             {result.sixthPrizes.winningValues.map(value => <span>{value}</span>)}
@@ -184,7 +151,6 @@ export const ResultDetail = props => {
                 <Button
                     className="me-5 px-3 "
                     onClick={() => handleUpdateModal(props.result._id)}
-                // isUpdate={true}
                 >
                     update
                 </Button>

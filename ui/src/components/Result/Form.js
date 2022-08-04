@@ -1,5 +1,4 @@
 
-import { useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormText, FormGroup, Input, Label } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -8,87 +7,49 @@ import Messenger from '../Messenger'
 
 export const ResultForm = props => {
 
-    // useEffect(() => {
-    //     testF()
-    // }, []);
-
     const dispatch = useDispatch()
-
-    // const prizesAmount = useSelector(state => state.results.results.prizesAmount)
-    const isUpdating = useSelector(state => state.results.isUpdating)
-    const error = useSelector(state => state.results.error)
 
     const isOpenAddModal = useSelector(state => state.results.isOpen.addModal)
     const isOpenUpdateModal = useSelector(state => state.results.isOpen.updateModal)
-
-    const toggleModal = () => {
-        isOpenAddModal && dispatch(toggleModalAdd())
-        isOpenUpdateModal && dispatch(toggleModalUpdate())
-
-        // isOpenUpdateModal && dispatch(toggleModalUpdate())
-    }
 
     const pickedResult = useSelector(state => state.results.pickedResult)
 
     const currentPage = useSelector(state => state.results.currentPage)
 
-    // const winningValues = useSelector(state => state.results.winningValues)
+    const toggleModal = () => {
+        isOpenAddModal && dispatch(toggleModalAdd())
+        isOpenUpdateModal && dispatch(toggleModalUpdate())
+    }
 
     const handleChange = e => {
         const name = e.target.name
-        const value = e.target.value.trim()
+        const strValue = e.target.value.trim()
 
-        // de ko gui nguyen chuoi ['...,...']
-        // const values = e.target.value.trim().split(',')
-        
-        // vi trim() value ko remove space khoi tung phan tu
-        
-        const test = value.split(',')
-        const arr = []
-        test.forEach((t, i) => {
-            arr.push(t.trim())
+        // vi trim() strValue chua remove dc space khoi tung phan tu
+        const values = strValue.split(',')
+        const arrValues = []
+        values.forEach(value => {
+            arrValues.push(value.trim())
         })
-        console.log(test, 'test')
-        console.log(arr.toString(), 'arr')
 
         const result = {
             ...pickedResult,
             [name]: {
                 ...pickedResult[name],
-                winningValues: arr
+                winningValues: arrValues
             }
         }
 
-
-        console.log(result[name].winningValues, 'name');
-        console.log(typeof result[name].winningValues, 'values');
-
-        // values.map(value => {
-        //     console.log(value, 'value');
-        //     test.push(value)
-        // })
-        // tại value cũng lấy ở đó ra nên onChange thì cũng change ở đó
-
         dispatch(setValues(result))
 
-        // console.log(pickedResult, 123) 
-        // validate: tao f validate pickedResult.winningNumbers -> return <FormFeedback>
-
-        // (e) => setJackpot(e.target.value.trim())
     }
 
-    console.log(pickedResult, 'winningValues.firstPrizes')
-
     const submitForm = () => {
-        // const date = new Date()
-
         const result = {
             ...pickedResult,
-            _id: pickedResult._id, // in add case : auto gen follow mgs mechanism (ignore if we've set custom _id)
-            // date: date.toISOString(),
+            _id: pickedResult._id,
             jackpot: {
-                ...pickedResult.jackpot, // sao ben tren save dc ma o day ko save reward ?
-                // lol case do data cu empty
+                ...pickedResult.jackpot,
                 winningValues: pickedResult.jackpot.winningValues,
             },
             firstPrizes: {
@@ -113,8 +74,6 @@ export const ResultForm = props => {
             }
         }
 
-        console.log(result, 'abcabcabcabc')
-
         if (isOpenAddModal) {
             dispatch(toggleModalAdd())
             dispatch(addResult({
@@ -122,9 +81,9 @@ export const ResultForm = props => {
                 currentPage: currentPage
             }))
         }
+
         if (isOpenUpdateModal) {
             dispatch(toggleModalUpdate())
-            // dispatch(setValues(result))
             dispatch(updateResult({
                 updatedResult: result,
                 currentPage: currentPage
@@ -156,26 +115,23 @@ export const ResultForm = props => {
                             {/* later : input for gening date & game & prizesAmount*/}
 
                             {/* {prizesArr.map((item, index) => (
-                            <FormGroup
-                                floating
-                            // ${(item[index] <= prizesAmount) ? '' : 'disabled'}
-                            // or check xem neu rong thi ko lay (_.isEqual ...)
-                            >
-                                {console.log(item === 'jackpot', 123)}
-                                {console.log(results[index]['jackpot'],  'jackpot')}
-
-                                <Input
-                                    name={item}
-                                    type="text"
-                                    id={item}
-                                    placeholder={titles[index]}
-                                    value={isUpdating || error ? results[index][`${item}`] : ''}
-                                />
-                                <Label for={item}>
-                                    {titles[index]}
-                                </Label>
-                            </FormGroup>
-                        ))} */}
+                                <FormGroup
+                                    floating
+                                // ${(item[index] <= prizesAmount) ? '' : 'disabled'}
+                                // or check xem neu rong thi ko lay (_.isEqual ...)
+                                >
+                                    <Input
+                                        name={item}
+                                        type="text"
+                                        id={item}
+                                        placeholder={titles[index]}
+                                        value={isUpdating || error ? results[index][`${item}`] : ''}
+                                    />
+                                    <Label for={item}>
+                                        {titles[index]}
+                                    </Label>
+                                </FormGroup>
+                            ))} */}
 
                             {/* hardcoded here */}
                             <FormGroup floating >

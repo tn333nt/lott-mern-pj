@@ -1,5 +1,5 @@
 
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalBody, ModalFooter } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
 import dateFormat from 'dateformat'
@@ -12,7 +12,6 @@ const Messenger = props => {
 
     const isOpen = useSelector(state => state.results.isOpen.messageModal)
     const confirm = useSelector(state => state.results.confirm)
-    // const confirm = props.confirm
     const message = useSelector(state => state.results.message)
 
     const pickedResult = useSelector(state => state.results.pickedResult)
@@ -23,34 +22,18 @@ const Messenger = props => {
         deletingResult: pickedResult
     }
 
-    console.log(confirm === `delete result of ${date} ?`, '67698')
-    console.log(date)
-
     const handleAccept = () => {
-        // () => dispatch(toggleModalMessage())
-
-        // if (props.for === "deleteAllResults {
-        //     dispatch(deleteAllResults())
-        // }
-
-        // if (props.for === "deleteResult") {
-        //     dispatch(deleteResult(props.values))
-        // }
 
         if (confirm === "delete all results ?") {
             dispatch(deleteAllResults())
         }
 
         if (confirm === `delete result of ${date} ?`) {
-            console.log(123)
             dispatch(deleteResult(passingValues))
         }
 
         dispatch(toggleModalMessage())
         dispatch(setValues())
-
-    console.log(pickedResult, 'pickedResult')
-
 
     }
 
@@ -59,8 +42,6 @@ const Messenger = props => {
         dispatch(setValues())
 
     }
-
-    // console.log(message, 8989) 
 
     return (
         <>
@@ -86,13 +67,13 @@ const Messenger = props => {
             {confirm !== '' && (
                 <Modal isOpen={isOpen} toggle={() => dispatch(toggleModalMessage())}>
 
-                    <ModalBody>
+                    <ModalBody className="text-danger">
                         {confirm && confirm}
                     </ModalBody>
 
                     <ModalFooter>
                         <Button
-                            color="dark"
+                            color="danger"
                             outline
                             className="mx-3 py-1 px-3"
                             onClick={handleAccept}
@@ -100,6 +81,7 @@ const Messenger = props => {
                         </Button>
                         <Button
                             color="dark"
+                            outline
                             className="mx-3 py-1 px-3"
                             onClick={handleCancel}
                         > cancel

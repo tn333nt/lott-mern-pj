@@ -9,5 +9,3 @@ const store = configureStore({
 })
 
 export default store
-
-// https://redux-toolkit.js.org/tutorials/quick-start
