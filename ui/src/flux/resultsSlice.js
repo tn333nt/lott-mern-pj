@@ -17,7 +17,7 @@ export const fetchAllResults = createAsyncThunk('fetchAllResults', async (props)
 
 export const addResult = createAsyncThunk('addResult', async (props) => {
     const newResult = props.newResult
-console.log(JSON.stringify(newResult), 'JSON.stringify(newResult)')
+
     const url = `http://localhost:8080/results/result?page=${props.currentPage}`
     const res = await fetch(url, {
         method: 'POST',
@@ -55,32 +55,6 @@ export const updateResult = createAsyncThunk('updateResult', async (props) => {
 
     const data = await res.json()
     return data
-})
-
-
-export const deleteResult = createAsyncThunk('deleteResult', async (props) => {
-    const resultId = props.deletingResult._id
-    const url = `http://localhost:8080/results/result/${resultId}?page=${props.currentPage}`
-    const res = await fetch(url, {
-        method: 'DELETE',
-        body: JSON.stringify(props.deletingResult)
-    })
-
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to delete result');
-    }
-    const data = await res.json()
-    return data
-})
-
-export const deleteAllResults = createAsyncThunk('deleteAllResults', async () => {
-    const url = 'http://localhost:8080/results/results'
-    const res = await fetch(url, {
-        method: 'DELETE'
-    })
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to delete all results');
-    }
 })
 
 
@@ -186,6 +160,7 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
                 state.pickedResult = initialResult
             }
             state.isOpen.addModal = !state.isOpen.addModal
+            state.isUpdating = false
         },
         toggleModalUpdate: (state, action) => {
             state.isOpen.updateModal = !state.isOpen.updateModal
@@ -250,6 +225,7 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
                 state.paginatedResults = action.payload.paginatedResults
             })
             .addCase(addResult.rejected, (state, action) => {
+                console.log(action.error.message, 'action.error.message2')
                 state.isLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
@@ -264,42 +240,6 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
                 state.paginatedResults = action.payload.paginatedResults
             })
             .addCase(updateResult.rejected, (state, action) => {
-                state.isLoading = false
-                state.isOpen.messageModal = true
-                state.message = action.error.message
-            })
-            // D
-            .addCase(deleteResult.pending, (state, action) => {
-                state.isLoading = true
-            })
-            .addCase(deleteResult.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isOpen.messageModal = true
-                state.message = "delete successfully"
-
-                state.results = action.payload.results
-                state.paginatedResults = action.payload.paginatedResults
-
-            })
-            .addCase(deleteResult.rejected, (state, action) => {
-                state.isLoading = false
-                state.isOpen.messageModal = true
-                state.message = action.error.message
-            })
-
-            .addCase(deleteAllResults.pending, (state, action) => {
-                state.isLoading = true
-            })
-            .addCase(deleteAllResults.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isOpen.messageModal = true
-                state.message = "deleted all"
-
-                state.results = []
-                state.paginatedResults = []
-
-            })
-            .addCase(deleteAllResults.rejected, (state, action) => {
                 state.isLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message

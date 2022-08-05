@@ -1,13 +1,19 @@
 
-import { Provider } from 'react-redux'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
+import { Header } from './components/Header.js'
 import Results from './pages/Results.js'
-import store from './flux/store'
+import Users from './pages/Users.js'
 
 const App = () => (
-    <Provider store={store}>
-        <Results />
-    </Provider>
+    <div>
+        <Header />
+        <Routes>
+            <Route path="/Results" element={<Results />} />
+            <Route path="/Users" element={<Users />} />
+            <Route path="/" element={<Navigate to="/Results" />} />
+        </Routes>
+    </div>
 )
 
 export default App

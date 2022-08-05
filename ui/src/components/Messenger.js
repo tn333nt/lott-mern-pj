@@ -2,53 +2,75 @@
 import { Modal, ModalBody, ModalFooter } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
+import { useLocation } from 'react-router-dom';
 
-import { deleteAllResults, toggleModalMessage, deleteResult, setValues } from '../flux/resultsSlice';
+import {
+    deleteAllUsers, deleteUser, setUser,
+    toggleModalMessage as toggleUserMessage
+} from '../flux/usersSlice';
+
+import {
+    toggleModalMessage as toggleResultMessage
+} from '../flux/resultsSlice';
+
 
 const Messenger = props => {
 
     const dispatch = useDispatch()
+    const location = useLocation()
 
-    const isOpen = useSelector(state => state.results.isOpen.messageModal)
-    const confirm = useSelector(state => state.results.confirm)
-    const message = useSelector(state => state.results.message)
+    const beingInResults = location.pathname === "/results"
+    const beingInUsers = location.pathname === "/users"
 
-    const pickedResult = useSelector(state => state.results.pickedResult)
-    const currentPage = useSelector(state => state.results.currentPage)
-    const date = pickedResult.date
+    const isOpen = useSelector(state => state.users.isOpen.messageModal)
+    const confirm = useSelector(state => state.users.confirm)
+
+    const userMsg = useSelector(state => state.users.message)
+    const resultMsg = useSelector(state => state.results.message)
+console.log((userMsg !== '' || resultMsg !== ''), 'resultMsg')
+    const user = useSelector(state => state.users.user)
+
+    const currentPage = useSelector(state => state.users.currentPage)
+
     const passingValues = {
         currentPage: currentPage,
-        deletingResult: pickedResult
+        deletingUser: user
+    }
+
+    const toggle = () => {
+        beingInResults && dispatch(toggleResultMessage())
+        beingInUsers && dispatch(toggleUserMessage())
     }
 
     const handleAccept = () => {
 
-        if (confirm === "delete all results ?") {
-            dispatch(deleteAllResults())
+        if (confirm === "delete all users ?") {
+            dispatch(deleteAllUsers())
         }
 
-        if (confirm === `delete result of ${date} ?`) {
-            dispatch(deleteResult(passingValues))
+        if (confirm === `delete user ${user.username} ?`) {
+            dispatch(deleteUser(passingValues))
         }
 
-        dispatch(toggleModalMessage())
-        dispatch(setValues())
+        dispatch(toggleUserMessage())
+        dispatch(setUser())
 
     }
 
     const handleCancel = () => {
-        dispatch(toggleModalMessage())
-        dispatch(setValues())
+        dispatch(toggleUserMessage())
+        dispatch(setUser())
 
     }
 
     return (
         <>
-            {message !== '' && (
-                <Modal isOpen={isOpen} toggle={() => dispatch(toggleModalMessage())}>
+            {(userMsg !== '' || resultMsg !== '') && (
+                <Modal isOpen={isOpen} toggle={toggle}>
 
                     <ModalBody>
-                        {message && message}
+                        {userMsg && userMsg}
+                        {resultMsg && resultMsg}
                     </ModalBody>
 
                     <ModalFooter>
@@ -56,7 +78,7 @@ const Messenger = props => {
                             color="dark"
                             outline
                             className="mx-3 py-1 px-3"
-                            onClick={handleCancel}
+                            onClick={toggle}
                         > ok </Button>
                     </ModalFooter>
 
@@ -64,7 +86,7 @@ const Messenger = props => {
             )}
 
             {confirm !== '' && (
-                <Modal isOpen={isOpen} toggle={() => dispatch(toggleModalMessage())}>
+                <Modal isOpen={isOpen} toggle={toggle}>
 
                     <ModalBody className="text-danger">
                         {confirm && confirm}

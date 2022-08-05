@@ -1,5 +1,5 @@
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormText, FormFeedback, FormGroup, Input, Label } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormText, FormFeedback, FormGroup, Input, Label, Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setValues, toggleModalAdd, toggleModalUpdate, addResult, updateResult, setValidation } from '../../flux/resultsSlice';
@@ -16,9 +16,18 @@ export const ResultForm = props => {
     const validation = useSelector(state => state.results.validation)
     const isFormValid = useSelector(state => state.results.isFormValid)
 
+    const results = useSelector(state => state.results.results)
     const pickedResult = useSelector(state => state.results.pickedResult)
 
     const currentPage = useSelector(state => state.results.currentPage)
+
+    const date = new Date()
+    const today = date.toLocaleDateString("vi-VN")
+    const todayResult = results.find(result => result.date === today)
+
+    const isUpdating = useSelector(state => state.results.isUpdating)
+
+    console.log(todayResult, 7236716)
 
     const toggleModal = () => {
         isOpenAddModal && dispatch(toggleModalAdd())
@@ -134,27 +143,32 @@ export const ResultForm = props => {
     return (
         <>
             <Messenger />
-            <div>
-                <Modal isOpen={isOpenAddModal ? isOpenAddModal : isOpenUpdateModal} toggle={toggleModal} >
+            <Modal isOpen={isOpenAddModal ? isOpenAddModal : isOpenUpdateModal} toggle={toggleModal} >
 
-                    <ModalHeader toggle={toggleModal}>
-                        {isOpenAddModal && 'Add Result'}
-                        {isOpenUpdateModal && 'Update Result'}
-                    </ModalHeader>
+                <ModalHeader toggle={toggleModal}>
+                    {isOpenAddModal && 'Add Result'}
+                    {isOpenUpdateModal && 'Update Result'}
+                </ModalHeader>
 
-                    <ModalBody>
-                        <Form className='px-2' inline>
-                            <FormText>
-                                <p className="mb-3">
-                                    {/* hardcoded here */}
-                                    * each prize has <strong>x</strong> ticket(s) <br />
-                                    * each ticket has <strong>y</strong> NUMBERS and be seperated by a COMMA
-                                </p>
-                            </FormText>
+                {(todayResult && !isUpdating) ? (
+                    <Alert color="danger">
+                        ! already have report for today
+                    </Alert>
+                ) : (
+                    <>
+                        <ModalBody>
+                            <Form className='px-2' inline>
 
-                            {/* later : input for gening date & game & prizesAmount*/}
+                                <FormText>
+                                    <p className="mb-3">
+                                        {/* hardcoded here */}
+                                        * each prize has <strong>x</strong> ticket(s) <br />
+                                        * each ticket has <strong>y</strong> NUMBERS and be seperated by a COMMA
+                                    </p>
+                                </FormText>
 
-                            {/* {prizesArr.map((item, index) => (
+                                {/* later : input for gening date & game & prizesAmount*/}
+                                {/* {prizesArr.map((item, index) => (
                                 <FormGroup
                                     floating
                                 // ${(item[index] <= prizesAmount) ? '' : 'disabled'}
@@ -171,140 +185,143 @@ export const ResultForm = props => {
                                         {titles[index]}
                                     </Label>
                                 </FormGroup>
-                            ))} */}
+                            ))} 
+                            */}
 
-                            {/* hardcoded here */}
-                            <FormGroup floating >
-                                <Input
-                                    name='jackpot'
-                                    type="text"
-                                    id='jackpot'
-                                    placeholder='jackpot'
-                                    value={pickedResult.jackpot.winningValues.length > 0 ? pickedResult.jackpot.winningValues : ''}
-                                    // later : if err -> keep value
-                                    onChange={handleChange}
-                                    valid={validation.jackpot.isValid}
-                                    invalid={!validation.jackpot.isValid}
-                                />
-                                <Label for='jackpot'>
-                                    jackpot
-                                </Label>
-                                <FormFeedback invalid className="mx-3" >
-                                    x=1,y=6
-                                </FormFeedback>
-                            </FormGroup>
+                                {/* hardcoded here */}
+                                <FormGroup floating >
+                                    <Input
+                                        name='jackpot'
+                                        type="text"
+                                        id='jackpot'
+                                        placeholder='jackpot'
+                                        value={pickedResult.jackpot.winningValues.length > 0 ? pickedResult.jackpot.winningValues : ''}
+                                        // later : if err -> keep value
+                                        onChange={handleChange}
+                                        valid={validation.jackpot.isValid}
+                                        invalid={!validation.jackpot.isValid}
+                                    />
+                                    <Label for='jackpot'>
+                                        jackpot
+                                    </Label>
+                                    <FormFeedback invalid className="mx-3" >
+                                        x=1,y=6
+                                    </FormFeedback>
+                                </FormGroup>
 
-                            <FormGroup floating >
-                                <Input
-                                    name='firstPrizes'
-                                    type="text"
-                                    id='firstPrizes'
-                                    placeholder='firstPrizes'
-                                    value={pickedResult.firstPrizes.winningValues.length > 0 ? pickedResult.firstPrizes.winningValues : ''}
-                                    onChange={handleChange}
-                                    valid={validation.firstPrizes.isValid}
-                                    invalid={!validation.firstPrizes.isValid}
-                                />
-                                <Label for='firstPrizes'>
-                                    firstPrizes
-                                </Label>
-                                <FormFeedback invalid className="mx-3" >
-                                    x=3,y=6
-                                </FormFeedback>
-                            </FormGroup>
+                                <FormGroup floating >
+                                    <Input
+                                        name='firstPrizes'
+                                        type="text"
+                                        id='firstPrizes'
+                                        placeholder='firstPrizes'
+                                        value={pickedResult.firstPrizes.winningValues.length > 0 ? pickedResult.firstPrizes.winningValues : ''}
+                                        onChange={handleChange}
+                                        valid={validation.firstPrizes.isValid}
+                                        invalid={!validation.firstPrizes.isValid}
+                                    />
+                                    <Label for='firstPrizes'>
+                                        firstPrizes
+                                    </Label>
+                                    <FormFeedback invalid className="mx-3" >
+                                        x=3,y=6
+                                    </FormFeedback>
+                                </FormGroup>
 
-                            <FormGroup floating >
-                                <Input
-                                    name='secondPrizes'
-                                    type="text"
-                                    id='secondPrizes'
-                                    placeholder='secondPrizes'
-                                    value={pickedResult.secondPrizes.winningValues.length > 0 ? pickedResult.secondPrizes.winningValues : ''}
-                                    onChange={handleChange}
-                                    valid={validation.secondPrizes.isValid}
-                                    invalid={!validation.secondPrizes.isValid}
-                                />
-                                <Label for='secondPrizes'>
-                                    secondPrizes
-                                </Label>
-                                <FormFeedback invalid className="mx-3" >
-                                    x=3,y=5
-                                </FormFeedback>
-                            </FormGroup>
+                                <FormGroup floating >
+                                    <Input
+                                        name='secondPrizes'
+                                        type="text"
+                                        id='secondPrizes'
+                                        placeholder='secondPrizes'
+                                        value={pickedResult.secondPrizes.winningValues.length > 0 ? pickedResult.secondPrizes.winningValues : ''}
+                                        onChange={handleChange}
+                                        valid={validation.secondPrizes.isValid}
+                                        invalid={!validation.secondPrizes.isValid}
+                                    />
+                                    <Label for='secondPrizes'>
+                                        secondPrizes
+                                    </Label>
+                                    <FormFeedback invalid className="mx-3" >
+                                        x=3,y=5
+                                    </FormFeedback>
+                                </FormGroup>
 
-                            <FormGroup floating >
-                                <Input
-                                    name='thirdPrizes'
-                                    type="text"
-                                    id='thirdPrizes'
-                                    placeholder='thirdPrizes'
-                                    value={pickedResult.thirdPrizes.winningValues.length > 0 ? pickedResult.thirdPrizes.winningValues : ''}
-                                    onChange={handleChange}
-                                    valid={validation.thirdPrizes.isValid}
-                                    invalid={!validation.thirdPrizes.isValid}
-                                />
-                                <Label for='thirdPrizes'>
-                                    thirdPrizes
-                                </Label>
-                                <FormFeedback invalid className="mx-3" >
-                                    x=3,y=4
-                                </FormFeedback>
-                            </FormGroup>
+                                <FormGroup floating >
+                                    <Input
+                                        name='thirdPrizes'
+                                        type="text"
+                                        id='thirdPrizes'
+                                        placeholder='thirdPrizes'
+                                        value={pickedResult.thirdPrizes.winningValues.length > 0 ? pickedResult.thirdPrizes.winningValues : ''}
+                                        onChange={handleChange}
+                                        valid={validation.thirdPrizes.isValid}
+                                        invalid={!validation.thirdPrizes.isValid}
+                                    />
+                                    <Label for='thirdPrizes'>
+                                        thirdPrizes
+                                    </Label>
+                                    <FormFeedback invalid className="mx-3" >
+                                        x=3,y=4
+                                    </FormFeedback>
+                                </FormGroup>
 
-                            <FormGroup floating >
-                                <Input
-                                    name='fourthPrizes'
-                                    type="text"
-                                    id='fourthPrizes'
-                                    placeholder='fourthPrizes'
-                                    value={pickedResult.fourthPrizes.winningValues.length > 0 ? pickedResult.fourthPrizes.winningValues : ''}
-                                    onChange={handleChange}
-                                    valid={validation.fourthPrizes.isValid}
-                                    invalid={!validation.fourthPrizes.isValid}
-                                />
-                                <Label for='fourthPrizes'>
-                                    fourthPrizes
-                                </Label>
-                                <FormFeedback invalid className="mx-3" >
-                                    x=3,y=3
-                                </FormFeedback>
-                            </FormGroup>
+                                <FormGroup floating >
+                                    <Input
+                                        name='fourthPrizes'
+                                        type="text"
+                                        id='fourthPrizes'
+                                        placeholder='fourthPrizes'
+                                        value={pickedResult.fourthPrizes.winningValues.length > 0 ? pickedResult.fourthPrizes.winningValues : ''}
+                                        onChange={handleChange}
+                                        valid={validation.fourthPrizes.isValid}
+                                        invalid={!validation.fourthPrizes.isValid}
+                                    />
+                                    <Label for='fourthPrizes'>
+                                        fourthPrizes
+                                    </Label>
+                                    <FormFeedback invalid className="mx-3" >
+                                        x=3,y=3
+                                    </FormFeedback>
+                                </FormGroup>
 
-                            <FormGroup floating >
-                                <Input
-                                    name='fifthPrizes'
-                                    type="text"
-                                    id='fifthPrizes'
-                                    placeholder='fifthPrizes'
-                                    value={pickedResult.fifthPrizes.winningValues.length > 0 ? pickedResult.fifthPrizes.winningValues : ''}
-                                    onChange={handleChange}
-                                    valid={validation.fifthPrizes.isValid}
-                                    invalid={!validation.fifthPrizes.isValid}
-                                />
-                                <Label for='fifthPrizes'>
-                                    fifthPrizes
-                                </Label>
-                                <FormFeedback invalid className="mx-3" >
-                                    x=3,y=2
-                                </FormFeedback>
-                            </FormGroup>
+                                <FormGroup floating >
+                                    <Input
+                                        name='fifthPrizes'
+                                        type="text"
+                                        id='fifthPrizes'
+                                        placeholder='fifthPrizes'
+                                        value={pickedResult.fifthPrizes.winningValues.length > 0 ? pickedResult.fifthPrizes.winningValues : ''}
+                                        onChange={handleChange}
+                                        valid={validation.fifthPrizes.isValid}
+                                        invalid={!validation.fifthPrizes.isValid}
+                                    />
+                                    <Label for='fifthPrizes'>
+                                        fifthPrizes
+                                    </Label>
+                                    <FormFeedback invalid className="mx-3" >
+                                        x=3,y=2
+                                    </FormFeedback>
+                                </FormGroup>
 
-                        </Form >
-                    </ModalBody>
+                            </Form >
+                        </ModalBody>
 
-                    <ModalFooter>
-                        <Button
-                            className="me-5 px-3 "
-                            color="primary"
-                            onClick={submitForm}
-                            disabled={!isFormValid}
-                        >
-                            Submit
-                        </Button>
-                    </ModalFooter>
+                        <ModalFooter>
 
-                </Modal>
-            </div>
+                            <Button
+                                className="me-5 px-3 "
+                                color="primary"
+                                onClick={submitForm}
+                                disabled={!isFormValid}
+                            >
+                                Submit
+                            </Button>
+                        </ModalFooter>
+                    </>
+                )}
+
+            </Modal>
         </>
     )
 }

@@ -6,7 +6,7 @@ const Result = require('../models/result')
 exports.getAllResults = async (req, res, next) => {
     const search = req.query.search
     const currentPage = req.query.page || 1
-    const perPage = 6
+    const perPage = 9
 
     try {
         const sortedResults = await Result.find().sort({ date: 'desc' })
@@ -52,8 +52,8 @@ exports.postResult = async (req, res, next) => {
     const date = new Date()
     const today = date.toLocaleDateString("vi-VN")
     console.log(today) // thieu await
-    const todayResult = await Result.findOne({date: today})
-    if (todayResult) { 
+    const todayResult = await Result.findOne({ date: today })
+    if (todayResult) {
         const err = new Error("already have report for today")
         err.statusCode = 422
         throw err
@@ -70,7 +70,7 @@ exports.postResult = async (req, res, next) => {
     const eighthPrizes = req.body.eighthPrizes
 
     const currentPage = req.query.page
-    const perPage = 6
+    const perPage = 9
 
     console.log(jackpot, 'jackpot');
     console.log(firstPrizes, 'firstPrizes');
@@ -135,7 +135,7 @@ exports.patchResult = async (req, res, next) => {
     const eighthPrizes = req.body.eighthPrizes
 
     const currentPage = req.query.page
-    const perPage = 6
+    const perPage = 9
 
     try {
         const updatingResult = await Result.findById(resultId)
@@ -176,60 +176,4 @@ exports.patchResult = async (req, res, next) => {
         next(err)
     }
 
-}
-
-exports.deleteResult = async (req, res, next) => {
-    const resultId = req.params.resultId
-    const currentPage = req.query.page
-    const perPage = 6
-
-    try {
-        const deletingResult = Result.findById(resultId)
-
-        if (!deletingResult) {
-            const err = new Error('No result found to delete')
-            err.statusCode = 404
-            throw err
-        }
-
-        await Result.findByIdAndRemove(resultId)
-
-        const updatedResults = await Result.find().sort({ date: 'desc' })
-
-        const paginatedResults = await Result.find()
-            .sort({ date: 'desc' })
-            .skip((currentPage - 1) * perPage)
-            .limit(perPage)
-
-        res.status(200).json({
-            results: updatedResults,
-            paginatedResults: paginatedResults
-        })
-
-        console.log('deleted')
-
-    } catch (err) {
-        next(err)
-    }
-
-}
-
-
-exports.deleteAllResults = async (req, res, next) => {
-    try {
-        await Result.deleteMany({})
-    } catch (err) {
-        next(err)
-    }
-}
-
-
-exports.deleteManyResults = async (req, res, next) => {
-    const Ids = req.body.Ids // pattern : 'id1,id2,...'
-
-    try {
-        await Result.deleteMany({ _id: { $in: Ids.split(',') } })
-    } catch (err) {
-        next(err)
-    }
 }

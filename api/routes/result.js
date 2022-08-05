@@ -3,13 +3,10 @@ const express = require('express')
 const { body } = require('express-validator')
 
 const resultController = require('../controllers/result')
-const Result = require('../controllers/result')
 
 const router = express.Router()
 
 router.get('/results', resultController.getAllResults)
-
-router.delete('/results', resultController.deleteAllResults)
 
 router.post('/result', [
     body('jackpot')
@@ -73,8 +70,6 @@ router.patch('/result/:resultId', [
         .not().isNumeric()
         .withMessage("numbers only")
 ], resultController.patchResult)
-
-router.delete('/result/:resultId', [], resultController.deleteResult)
 
 module.exports = router
 

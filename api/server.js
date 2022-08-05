@@ -7,6 +7,7 @@ const port = 8080
 const connectURL = "mongodb+srv://test:bJYVI29LEAjl147U@cluster0.ti4jx.mongodb.net/lottery"
 
 const ResultRoutes = require('./routes/result')
+const UserRoutes = require('./routes/user')
 
 app.use(express.json())
 
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
 })
 
 app.use('/results', ResultRoutes)
+app.use('/users', UserRoutes)
 
 app.use((err, req, res, next) => {
     console.log(err);

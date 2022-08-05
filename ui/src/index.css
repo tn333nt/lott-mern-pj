@@ -14,3 +14,10 @@
 }
 
  */
+
+.nav-item a:hover,
+.nav-item a:active,
+.nav-item button:hover,
+.nav-item button:active {
+  color: #df4759;
+}
