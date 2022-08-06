@@ -6,10 +6,6 @@ import {
     NavbarToggler,
     Nav,
     NavItem,
-    NavLink,
-    Offcanvas,
-    OffcanvasHeader,
-    OffcanvasBody,
     Collapse
 } from 'reactstrap';
 
@@ -23,23 +19,30 @@ export const Header = props => {
     return (
         <div >
             <Navbar color="light" expand="md" className="py-3" >
-                <NavbarToggler  onClick={toggle} />
-                {/* <Offcanvas toggle={isOpen} navbar > */}
-                <Collapse isOpen={isOpen} navbar>
-                    {/* <OffcanvasHeader toggle={toggle}>
-                        header
-                    </OffcanvasHeader> */}
-                    {/* <OffcanvasBody> */}
-                        <Nav navbar>
-                            <NavItem>
-                                <Link className="nav-link fs-3 px-5" to="/results">results</Link>
-                            </NavItem>
-                            <NavItem>
-                                <Link className="nav-link fs-3 px-5" to="/users">users</Link>
-                            </NavItem>
-                        </Nav>
-                    {/* </OffcanvasBody> */}
-                {/* </Offcanvas> */}
+                <NavbarToggler onClick={toggle} />
+                <Collapse isOpen={isOpen} navbar className="d-flex justify-content-between">
+                    <Nav navbar>
+                        <NavItem>
+                            <Link className="nav-link fs-3 px-5" to="/home">home</Link>
+                        </NavItem>
+                        <NavItem>
+                            <Link className="nav-link fs-3 px-5" to="/results">results</Link>
+                        </NavItem>
+                        <NavItem>
+                            <Link className="nav-link fs-3 px-5" to="/users">users</Link>
+                        </NavItem>
+                    </Nav>
+                    <Nav navbar>
+                        <NavItem>
+                            <Link className="nav-link fs-3 px-5" to="/signup">signup</Link>
+                        </NavItem>
+                        <NavItem>
+                            <Link className="nav-link fs-3 px-5" to="/login">login</Link>
+                        </NavItem>
+                        <NavItem>
+                            <Link className="nav-link fs-3 px-5" to="/logout">logout</Link>
+                        </NavItem>
+                    </Nav>
                 </Collapse>
             </Navbar>
         </div>

@@ -3,12 +3,12 @@ import { useEffect } from 'react';
 import { UncontrolledAccordion, Spinner, Button, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllResults, toggleModalAdd, toggleModalMessage, setValues, toggleModalUpdate } from '../flux/resultsSlice';
-import { Search } from '../components/Search';
-import { ResultForm } from '../components/Result/Form';
-import { ResultDetail } from '../components/Result/Detail';
-import Paginator from '../components/Paginator';
-import Messenger from '../components/Messenger';
+import { fetchAllResults, toggleModalAdd, setValues, toggleModalUpdate } from '../../flux/resultsSlice';
+import { Search } from '../../components/Search';
+import { ResultForm } from '../../components/Result/Form';
+import { ResultDetail } from '../../components/Result/Detail';
+import Paginator from '../../components/Paginator';
+import Messenger from '../../components/Messenger';
 
 
 const Results = () => {
@@ -45,7 +45,7 @@ const Results = () => {
 
 
     return (
-        <div className="container pt-4 mw-100">
+        <div className="container pt-5 mw-100">
             <Messenger />
             <ResultForm />
             <title className="row">
@@ -112,7 +112,7 @@ const Results = () => {
                                 </AccordionHeader>
 
                                 <AccordionBody accordionId={result._id}>
-                                    <ResultDetail result={result} />
+                                    <ResultDetail result={result} color="light" />
                                 </AccordionBody>
                             </AccordionItem>
                         ))
@@ -147,7 +147,7 @@ const Results = () => {
                                 </AccordionHeader>
 
                                 <AccordionBody accordionId={result._id}>
-                                    <ResultDetail result={result} />
+                                    <ResultDetail result={result} color="light" />
                                 </AccordionBody>
                             </AccordionItem>
                         ))}

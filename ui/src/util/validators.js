@@ -16,3 +16,10 @@ export const length = props => value => {
 
 export const isNumberOrComma = value => /^[0-9,]*$/.test(value)
 
+export const isNonAlphabetic = value => /^[0-9()-\s]*$/.test(value)
+// later : check amount of numeric chars
+
+export const isEmail = value =>
+  /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+    .test(value)
+

@@ -3,10 +3,10 @@ import { useEffect } from 'react';
 import { UncontrolledAccordion, Spinner, Button, AccordionItem, AccordionHeader, AccordionBody, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllUsers, toggleModalAdd, toggleModalMessage, setUser, toggleModalUpdate } from '../flux/usersSlice';
-import { Search } from '../components/Search';
-import Paginator from '../components/Paginator';
-import Messenger from '../components/Messenger';
+import { fetchAllUsers, toggleModalAdd, toggleModalMessage, setUser, toggleModalUpdate } from '../../flux/usersSlice';
+import { Search } from '../../components/Search';
+import Paginator from '../../components/Paginator';
+import Messenger from '../../components/Messenger';
 
 
 const Users = () => {

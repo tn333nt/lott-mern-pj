@@ -7,9 +7,11 @@ export const ResultDetail = props => {
 
     return (
 
-        <Table bordered className="table-light text-center" responsive >
+        <Table bordered responsive
+            className={props.color ? `table-${props.color} text-center` : 'text-center'}
+        >
             <thead>
-                <tr className="text-secondary">
+                <tr className={props.text ? `text-${props.text}` : "text-secondary"}>
                     <th> prize </th>
                     <th> winning values </th>
                     <th> reward ($) </th>

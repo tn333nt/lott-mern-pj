@@ -117,3 +117,6 @@ console.log((userMsg !== '' || resultMsg !== ''), 'resultMsg')
 }
 
 export default Messenger
+
+
+// later : separate msg, err vs confirm
