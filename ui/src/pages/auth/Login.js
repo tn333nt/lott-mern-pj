@@ -1,37 +1,82 @@
 import { Button, Form, FormText, FormGroup, Input, Label, Alert, Col } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 import { isEmail, length } from '../../util/validators'
+import { handleLogin } from '../../flux/slices/authSlice';
 
 const Login = () => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
 
-    const [text, setText] = useState('')
+    const token = useSelector(state => state.auth.token)
+    const users = useSelector(state => state.users.users)
+    console.log(users)
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const [emailErr, setEmailErr] = useState('')
+    const [passwordErr, setPasswordErr] = useState('')
+
     const [validated, setValidated] = useState('')
 
     const handleChange = e => {
         const name = e.target.name
         const value = e.target.value
 
-        setText(e.target.value)
-
         if (name === 'email') {
-            const isValidated = isEmail(value)
-            !isValidated && setValidated('incorrect email')
-            isValidated && setValidated('')
+            const isValidated = isEmail(value) && length({ min: 6, max: 30 })(value)
+            if (isValidated) {
+                setEmailErr("")
+                setValidated('')
+            } else {
+                setEmailErr('incorrect email')
+            }
+            setEmail(value)
         }
 
         if (name === 'password') {
             const isValidated = length({ min: 6, max: 30 })(value)
-            !isValidated && setValidated("6 characters minimum")
-            isValidated && setValidated("")
+            if (isValidated) {
+                setPasswordErr("")
+                setValidated('')
+            } else {
+                setPasswordErr("6 characters minimum")
+            }
+            setPassword(value)
         }
     }
 
     const HandleLogin = () => {
-        const isValid = isEmail(text)
-        // !isValid && setValidated(false)
+        const authData = {
+            email: email,
+            password: password,
+            token: token
+        }
+
+        const filledAll = email !== '' && password !== '' 
+        if (filledAll) {
+            setValidated('')
+        } else {
+            return setValidated('fill all input')
+        }
+
+        const validatedAll = emailErr === '' && passwordErr === ''
+        if (validatedAll) {
+            setValidated('')
+        } else if (emailErr !== '') {
+            return setValidated(emailErr)
+        } else if (passwordErr !== '') {
+            return setValidated(passwordErr)
+        }
+
+
+        if (validated === '') {
+            dispatch(handleLogin(authData))
+            navigate('/')
+        }
     }
 
     return (
@@ -39,7 +84,8 @@ const Login = () => {
             <Col xs="12" sm="11" md="9" lg="4">
                 <Form>
                     <h1>Login</h1>
-                    {validated !== '' && <Alert color="danger">{validated}</Alert>}
+                    {emailErr !== '' && <Alert color="danger">{emailErr}</Alert>}
+                    {passwordErr !== '' && <Alert color="danger">{passwordErr}</Alert>}
                     <FormGroup className="mt-3">
                         <Label>email</Label>
                         <Input
@@ -64,7 +110,7 @@ const Login = () => {
                         color="dark"
                         size="lg"
                         className="mt-4"
-                        disabled={validated !== '' ? true : false}
+                        disabled={validated !== ''}
                         onClick={HandleLogin}
                     >
                         login

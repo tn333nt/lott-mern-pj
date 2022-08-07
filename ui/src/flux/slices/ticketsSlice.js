@@ -1,4 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+
+export const deleteAllTickets = createAsyncThunk('deleteAllTickets', async () => {
+    const url = 'http://localhost:8080/tickets/tickets'
+    const res = await fetch(url, {
+        method: 'DELETE'
+    })
+    if (res.status !== 200 && res.status !== 201) {
+        throw new Error('Failed to delete all users');
+    }
+})
 
 // tu h : ticket = 1 ve 6 num , value = nums in 1 ve (can be 2-6)
 const ticketsSlice = createSlice({

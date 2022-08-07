@@ -1,19 +1,113 @@
 
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button, Form, FormText, FormGroup, Input, Label, Alert, Col, Row, ListGroup, ListGroupItem, ListGroupItemText } from 'reactstrap';
-import { fetchAllUsers } from '../flux/slices/usersSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { Button, Form, FormGroup, Input, Label, Col, Row, Alert } from 'reactstrap';
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { isMatch, length } from '../util/validators';
+import { resetPassword } from '../flux/slices/authSlice';
+import { fetchAllUsers } from './../flux/slices/usersSlice';
 
 
 const Account = () => {
 
     const dispatch = useDispatch()
-    useEffect(() => {
-        dispatch(fetchAllUsers())
-    }, [dispatch])
 
-    const users = useSelector(state => state.users.users)
+    const user = useSelector(state => state.auth.user)
+    const token = useSelector(state => state.auth.token)
 
+    // useEffect(() => {
+    //     dispatch(fetchAllUsers({ token: token }))
+    // }, [dispatch, token])
+    // const users = useSelector(state => state.users.users)
+    // console.log(users)
+
+    const [oldPassword, setOldPassword] = useState('')
+    const [newPassword, setNewPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+
+    const [oldErr, setOldErr] = useState('')
+    const [newErr, setNewErr] = useState('')
+    const [confirmErr, setConfirmErr] = useState('')
+
+    const [validated, setValidated] = useState('')
+    const [successText, setSuccessText] = useState('')
+
+
+    const handleChange = e => {
+        const name = e.target.name
+        const value = e.target.value
+
+        if (name === 'oldPassword') {
+            const isValidated = length({ min: 6, max: 30 })(value)
+            if (isValidated) {
+                setOldErr("")
+                setValidated('')
+            } else {
+                setOldErr("6 characters minimum")
+                setSuccessText('')
+            }
+            setOldPassword(value)
+        }
+
+        if (name === 'newPassword') {
+            const isValidated = length({ min: 6, max: 30 })(value)
+            if (isValidated) {
+                setNewErr("")
+                setValidated('')
+            } else {
+                setNewErr("6 characters minimum")
+                setSuccessText('')
+            }
+            setNewPassword(value)
+        }
+
+        if (name === 'confirmPassword') {
+            const isValidated = isMatch(newPassword)(value) && length({ min: 6, max: 30 })(value)
+            if (isValidated) {
+                setConfirmErr("")
+                setValidated('')
+            } else {
+                setConfirmErr("passwords did not match")
+                setSuccessText('')
+            }
+            setConfirmPassword(value)
+        }
+    }
+
+
+    const HandleSubmit = () => {
+        const authData = {
+            oldPassword: oldPassword,
+            newPassword: newPassword,
+            confirmPassword: confirmPassword,
+            token: token
+        }
+
+        const filledAll = oldPassword !== '' && newPassword !== '' && confirmPassword !== ''
+        if (filledAll) {
+            setValidated('')
+        } else {
+            return setValidated('fill all input')
+        }
+
+        const validatedAll = oldErr === '' && newErr === '' && confirmErr === ''
+        if (validatedAll) {
+            setValidated('')
+        } else if (oldErr !== '') {
+            return setValidated(oldErr)
+        } else if (newErr !== '') {
+            return setValidated(newErr)
+        } else if (confirmErr !== '') {
+            return setValidated(confirmErr)
+        }
+
+        dispatch(resetPassword(authData))
+        setOldPassword('')
+        setNewPassword('')
+        setConfirmPassword('')
+        setSuccessText('changed')
+
+    }
 
     return (
         <div className="container pt-5 my-5 mw-100">
@@ -21,14 +115,13 @@ const Account = () => {
                 <Col xs="12" md="6" className="d-flex justify-content-center">
                     <Form inline className="w-75">
                         <h1 className="mb-5 text-dark text-center"><mark>personal information</mark></h1>
-                        <h3 className="mb-5 text-danger text-center">{users[0].email}</h3>
-
+                        <h3 className="mb-5 text-danger text-center">{user.email}</h3>
                         <FormGroup floating className="mt-3">
                             <Input
                                 type="text"
                                 bsSize="lg"
                                 name="username"
-                                value={users[0].fullName}
+                                value={user.fullName}
                                 disabled
                             />
                             <Label>username</Label>
@@ -38,7 +131,7 @@ const Account = () => {
                                 type="text"
                                 bsSize="lg"
                                 name="mobile"
-                                value={users[0].mobile}
+                                value={user.mobile}
                                 disabled
                             />
                             <Label>mobile</Label>
@@ -48,7 +141,7 @@ const Account = () => {
                                 type="text"
                                 bsSize="lg"
                                 name="country"
-                                value={users[0].country}
+                                value={user.country}
                                 disabled
                             />
                             <Label>country</Label>
@@ -58,7 +151,7 @@ const Account = () => {
                                 type="text"
                                 bsSize="lg"
                                 name="city"
-                                value={users[0].city}
+                                value={user.city}
                                 disabled
                             />
                             <Label>city</Label>
@@ -68,7 +161,7 @@ const Account = () => {
                                 type="text"
                                 bsSize="lg"
                                 name="address"
-                                value={users[0].address}
+                                value={user.address}
                                 disabled
                             />
                             <Label>address</Label>
@@ -79,20 +172,24 @@ const Account = () => {
                             className="mt-4"
                             disabled
                         >update</Button>
-
                     </Form>
                 </Col>
                 <Col xs="12" md="6" className="d-flex justify-content-center">
                     <Form inline>
                         <h1 className="mb-5 text-danger text-center">change password</h1>
 
-                        {/* {validated !== '' && <Alert color="danger">{validated}</Alert>} */}
+                        {oldErr !== '' && <Alert color="danger">{oldErr}</Alert>}
+                        {newErr !== '' && <Alert color="danger">{newErr}</Alert>}
+                        {confirmErr !== '' && <Alert color="danger">{confirmErr}</Alert>}
+                        {validated !== '' && <Alert color="danger">{validated}</Alert>}
+                        {validated === '' && successText !== '' && <Alert color="success">{successText}</Alert>}
+                        
                         <FormGroup floating className="mt-3">
                             <Input
-                                name="password"
+                                name="oldPassword"
                                 type="text"
                                 bsSize="lg"
-                            // onChange={handleChange}
+                                onChange={handleChange}
                             />
                             <Label> old password</Label>
                         </FormGroup>
@@ -101,7 +198,7 @@ const Account = () => {
                                 name="newPassword"
                                 type="newPassword"
                                 bsSize="lg"
-                            // onChange={handleChange}
+                                onChange={handleChange}
                             />
                             <Label>new password</Label>
                         </FormGroup>
@@ -110,7 +207,7 @@ const Account = () => {
                                 name="confirmPassword"
                                 type="confirmPassword"
                                 bsSize="lg"
-                            // onChange={handleChange}
+                                onChange={handleChange}
                             />
                             <Label>confirm new password</Label>
                         </FormGroup>
@@ -118,8 +215,8 @@ const Account = () => {
                             color="dark"
                             size="lg"
                             className="mt-3 mb-5"
-                        // disabled={validated !== '' ? true : false}
-                        // onClick={handleCheck}
+                            disabled={validated !== ''}
+                            onClick={HandleSubmit}
                         >
                             change
                         </Button>

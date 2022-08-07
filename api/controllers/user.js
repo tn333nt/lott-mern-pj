@@ -1,13 +1,11 @@
 
-const { validationResult } = require('express-validator')
-
 const User = require('../models/user')
 
 exports.getAllUsers = async (req, res, next) => {
     const search = req.query.search
     const currentPage = req.query.page || 1
     const perPage = 9
-
+console.log(search, 'search')
     try {
         const users = await User.find()
 
@@ -17,9 +15,8 @@ exports.getAllUsers = async (req, res, next) => {
 
         const searchedUsers = search && users.filter(user => {
             if (search !== '') {
-                const username = user.username.includes(search.trim())
-                const mobile = user.mobile.includes(search.trim())
-                return username || mobile
+                const email = user.email.includes(search.trim())
+                return email
             } else {
                 return null
             }
@@ -37,73 +34,9 @@ exports.getAllUsers = async (req, res, next) => {
 
 }
 
-exports.postUser = async (req, res, next) => {
-
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        const error = errors.array()[0]
-        const err = new Error(`validation failed at ${error.param} : ${error.msg}`)
-        err.statusCode = 422
-        throw err
-    }
-
-    if (todayResult) {
-        const err = new Error("already have report for today")
-        err.statusCode = 422
-        throw err
-    }
-
-    const username = req.body.username
-    const email = req.body.email
-    const password = req.body.password
-    const mobile = req.body.mobile
-
-    const currentPage = req.query.page
-    const perPage = 9
-
-    try {
-
-        const user = new User({
-            username: username,
-            email: email,
-            password: password,
-            mobile: mobile
-        })
-
-        await user.save()
-
-        const updatedUsers = await User.find()
-
-        const paginatedUsers = await User.find()
-            .skip((currentPage - 1) * perPage)
-            .limit(perPage)
-
-        res.status(200).json({
-            users: updatedUsers,
-            paginatedUsers: paginatedUsers
-        })
-
-    } catch (err) {
-        next(err)
-    }
-
-}
-
-exports.patchUser = async (req, res, next) => {
+exports.setAdmin = async (req, res, next) => {
     const userId = req.params.userId
 
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        const error = errors.array()[0]
-        const err = new Error(`validation failed at ${error.param} : ${error.msg}`)
-        err.statusCode = 422
-        throw err
-    }
-
-    const username = req.body.username
-    const email = req.body.email
-    const password = req.body.password
-    const mobile = req.body.mobile
     const isAdmin = req.body.isAdmin
 
     const currentPage = req.query.page
@@ -113,21 +46,21 @@ exports.patchUser = async (req, res, next) => {
         const updatingUser = await User.findById(userId)
 
         if (!updatingUser) {
-            const err = new Error('No user found to update')
+            const err = new Error('Not found user')
             err.statusCode = 404
             throw err
         }
 
-        updatingUser.username = username
-        updatingUser.email = email
-        updatingUser.password = password
-        updatingUser.mobile = mobile
-        updatingUser.isAdmin = isAdmin
+        if (!req.user.isAdmin) {
+            const err = new Error('Not authorized');
+            err.statusCode = 403;
+            throw err;
+        }
 
+        updatingUser.isAdmin = isAdmin
         await updatingUser.save()
 
         const updatedUsers = await User.find()
-
         const paginatedUsers = await User.find()
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
@@ -157,6 +90,12 @@ exports.deleteUser = async (req, res, next) => {
             throw err
         }
 
+        if (!req.user.isAdmin) {
+            const err = new Error('Not authorized');
+            err.statusCode = 403;
+            throw err;
+        }
+
         await User.findByIdAndRemove(userId)
 
         const updatedUsers = await User.find()
@@ -173,13 +112,57 @@ exports.deleteUser = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
-
 }
-
 
 exports.deleteAllUsers = async (req, res, next) => {
     try {
         await User.deleteMany({})
+    } catch (err) {
+        next(err)
+    }
+}
+
+
+exports.changePassword = async (req, res, next) => {
+    const userId = req.user._id
+
+    const oldPassword = req.body.oldPassword
+    const newPassword = req.body.newPassword
+    const confirmPassword = req.body.confirmPassword
+
+    try {
+        const user = await User.findById(userId)
+        if (!user) {
+            const err = new Error('no found user')
+            err.statusCode = 404
+            throw err
+        }
+        
+        // compare old pw with data in db
+        const isValid = await bcrypt.compare(oldPassword, user.password)
+        // const isValid = +oldPassword === +123123
+        if (!isValid) {
+            const err = new Error('wrong password')
+            err.statusCode = 401
+            throw err
+        }
+        
+        // compare new pw with confirm
+        const isMatched = newPassword === confirmPassword
+        if (!isMatched) {
+            const err = new Error('passwords did not match')
+            err.statusCode = 422
+            throw err
+        }
+
+        console.log(isValid, isMatched)
+
+        const hashedPassword = await bcrypt.hash(newPassword, 12)
+        user.password = hashedPassword
+        await user.save()
+
+        res.status(201).json({ user: user })
+
     } catch (err) {
         next(err)
     }

@@ -1,50 +1,121 @@
 import { Button, Form, FormText, FormFeedback, FormGroup, Input, Label, Alert, Col } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
-import { isEmail, length, isNonAlphabetic, isMatch } from '../../util/validators'
+import { isEmail, length, isMatch } from '../../util/validators'
+import { handleSingup } from '../../flux/slices/authSlice';
+import { fetchAllUsers } from '../../flux/slices/usersSlice';
 
 const SignUp = () => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
 
-    const [text, setText] = useState('')
+    const token = useSelector(state => state.auth.token)
+    const users = useSelector(state => state.users.users)
+
+    // later : sap xep vao store
+    const [email, setEmail] = useState('') // use to get value to validate and change input
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+
+    const [emailErr, setEmailErr] = useState('') // use to show error message
+    const [passwordErr, setPasswordErr] = useState('')
+    const [confirmErr, setConfirmErr] = useState('')
     const [validated, setValidated] = useState('')
+
 
     const handleChange = e => {
         const name = e.target.name
         const value = e.target.value
 
-        setText(e.target.value)
-
         if (name === 'email') {
             const isValidated = isEmail(value) && length({ min: 6, max: 30 })(value)
-            !isValidated && setValidated('incorrect email')
-            isValidated && setValidated('')
+            if (isValidated) {
+                setEmailErr("")
+                setValidated('')
+            } else {
+                setEmailErr('incorrect email')
+            }
+            setEmail(value)
         }
 
         if (name === 'password') {
             const isValidated = length({ min: 6, max: 30 })(value)
-            !isValidated && setValidated("6 characters minimum")
-            isValidated && setValidated("")
+            if (isValidated) {
+                setPasswordErr("")
+                setValidated('')
+            } else {
+                setPasswordErr("6 characters minimum")
+            }
             setPassword(value)
         }
 
         if (name === 'confirmPassword') {
-            const isValidated = isMatch(password)(value)
-            !isValidated && setValidated("passwords did not match")
-            isValidated && setValidated("")
+            const isValidated = isMatch(password)(value) && length({ min: 6, max: 30 })(value)
+            if (isValidated) {
+                setConfirmErr("")
+                setValidated('')
+            } else {
+                setConfirmErr("passwords did not match")
+            }
+            setConfirmPassword(value)
         }
-
     }
 
-    const HandleSignup = () => { }
+
+
+    const HandleSubmit = () => {
+        const authData = {
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword
+        }
+
+        const filledAll = email !== '' && password !== '' && confirmPassword !== ''
+        if (filledAll) {
+            setValidated('')
+        } else {
+            return setValidated('fill all input')
+        }
+
+        const validatedAll = emailErr === '' && passwordErr === '' && confirmErr === ''
+        if (validatedAll) {
+            setValidated('')
+        } else if (emailErr !== '') {
+            return setValidated(emailErr)
+        } else if (passwordErr !== '') {
+            return setValidated(passwordErr)
+        } else if (confirmErr !== '') {
+            return setValidated(confirmErr)
+        }
+
+        // const isValidEmail = users.find(user => user.email === email)
+        // if (isValidEmail) {
+        //     setValidated('')
+        // } else {
+        //     return setValidated('valid email')
+        // }
+        // console.log(isValidEmail) // dang loi fetch
+
+
+        // if (filledAll && validated === '' && !isValidEmail) {
+        dispatch(handleSingup(authData))
+        navigate('/login')
+        // } else {
+        // navigate(-1)
+        // }
+
+    }
 
     return (
         <div className="container pt-5 mw-100 d-flex justify-content-center">
             <Col xs="12" sm="11" md="9" lg="4">
                 <Form>
                     <h1>SignUp</h1>
+                    {emailErr !== '' && <Alert color="danger">{emailErr}</Alert>}
+                    {passwordErr !== '' && <Alert color="danger">{passwordErr}</Alert>}
+                    {confirmErr !== '' && <Alert color="danger">{confirmErr}</Alert>}
                     {validated !== '' && <Alert color="danger">{validated}</Alert>}
                     <FormGroup className="mt-3">
                         <Label>email</Label>
@@ -80,8 +151,8 @@ const SignUp = () => {
                         color="dark"
                         size="lg"
                         className="mt-4"
-                        disabled={validated !== '' ? true : false}
-                        onClick={HandleSignup}
+                        disabled={validated !== ''}
+                        onClick={HandleSubmit}
                     >
                         SignUp
                     </Button>

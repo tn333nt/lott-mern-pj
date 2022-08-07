@@ -9,11 +9,14 @@ export const ResultForm = props => {
 
     const dispatch = useDispatch()
 
+    const token = useSelector(state => state.auth.token)
+
     const isOpenAddModal = useSelector(state => state.results.isOpen.addModal)
     const isOpenUpdateModal = useSelector(state => state.results.isOpen.updateModal)
 
     const validation = useSelector(state => state.results.validation)
     const isFormValid = useSelector(state => state.results.isFormValid)
+    const isUpdating = useSelector(state => state.results.isUpdating)
 
     const results = useSelector(state => state.results.results)
     const pickedResult = useSelector(state => state.results.pickedResult)
@@ -23,8 +26,6 @@ export const ResultForm = props => {
     const date = new Date()
     const today = date.toLocaleDateString("vi-VN")
     const todayResult = results.find(result => result.date === today)
-
-    const isUpdating = useSelector(state => state.results.isUpdating)
 
     const toggleModal = () => {
         isOpenAddModal && dispatch(toggleModalAdd())
@@ -80,7 +81,8 @@ export const ResultForm = props => {
 
         dispatch(setValidation({
             validation: updatedValidation,
-            isFormValid: isFormValid
+            isFormValid: isFormValid,
+            token: token
         }))
         dispatch(setResult(result))
     }
@@ -120,7 +122,8 @@ export const ResultForm = props => {
             dispatch(toggleModalAdd())
             dispatch(addResult({
                 newResult: result,
-                currentPage: currentPage
+                currentPage: currentPage,
+                token: token
             }))
         }
 
@@ -128,7 +131,8 @@ export const ResultForm = props => {
             dispatch(toggleModalUpdate())
             dispatch(updateResult({
                 updatedResult: result,
-                currentPage: currentPage
+                currentPage: currentPage,
+                token: token
             }))
         }
     }

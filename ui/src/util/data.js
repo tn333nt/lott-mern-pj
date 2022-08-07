@@ -504,7 +504,7 @@ export const users =
     [
         {
             userId: 0,
-            username: '123',
+            username: '123123',
             email: '123@gmail.com',
             password: 123,
             isAdmin: true,
@@ -521,7 +521,7 @@ export const users =
             userId: 1,
             username: 'user0',
             email: 'user0@gmail.com',
-            password: 'user0',
+            password: 'user00',
             isAdmin: false,
             historyCheck: [
                 {

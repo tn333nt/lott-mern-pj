@@ -2,10 +2,12 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const fetchAllUsers = createAsyncThunk('fetchAllUsers', async (props) => {
     const currentPage = props ? props.currentPage : 1
-    const searchText = props ? props.searchText : ''
+    const searchText = props ? props.searchText : null
 
     const url = `http://localhost:8080/users/users?page=${currentPage}&search=${searchText}`
-    const res = await fetch(url)
+    const res = await fetch(url, {
+        headers: { Authorization: props.token }
+    })
 
     if (res.status !== 200) {
         throw new Error('Failed to fetch users');
@@ -25,6 +27,7 @@ export const addUser = createAsyncThunk('addUser', async (props) => {
         body: JSON.stringify(newUser),
         headers: {
             "Content-type": "application/json; charset=UTF-8",
+            Authorization: props.token
         }
     })
 
@@ -37,7 +40,7 @@ export const addUser = createAsyncThunk('addUser', async (props) => {
 
 })
 
-export const updateUser = createAsyncThunk('updateUser', async (props) => {
+export const setAdmin = createAsyncThunk('setAdmin', async (props) => {
     const _id = props.updatedUser._id
     const updatedUser = props.updatedUser
 
@@ -47,6 +50,7 @@ export const updateUser = createAsyncThunk('updateUser', async (props) => {
         body: JSON.stringify(updatedUser),
         headers: {
             "Content-type": "application/json; charset=UTF-8",
+            Authorization: props.token
         }
     })
 
@@ -64,7 +68,8 @@ export const deleteUser = createAsyncThunk('deleteUser', async (props) => {
     const url = `http://localhost:8080/users/user/${resultId}?page=${props.currentPage}`
     const res = await fetch(url, {
         method: 'DELETE',
-        body: JSON.stringify(props.deletingUser)
+        body: JSON.stringify(props.deletingUser),
+        headers: { Authorization: props.token }
     })
 
     if (res.status !== 200 && res.status !== 201) {
@@ -85,6 +90,28 @@ export const deleteAllUsers = createAsyncThunk('deleteAllUsers', async () => {
 })
 
 
+export const changePassword = createAsyncThunk('changePassword', async (authData) => {
+    const url = "http://localhost:8080/users/changePassword"
+    const res = await fetch(url, {
+        method: 'PATCH',
+        body: JSON.stringify(authData),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: authData.token
+        }
+    })
+
+    console.log(res, 'resetpw')
+
+    if (res.status !== 200 && res.status !== 201) {
+        throw new Error('Failed to reset')
+    }
+
+    const data = await res.json()
+    return data
+})
+
+
 const initialUser = {
     email: '',
     password: '',
@@ -102,7 +129,7 @@ const usersSlice = createSlice({
         users: [],
         searchedUsers: [],
         paginatedUsers: [],
-        user: initialUser,
+        pickedUser: initialUser,
         currentPage: 1,
         isOpen: {
             updateModal: false,
@@ -130,7 +157,7 @@ const usersSlice = createSlice({
             state.searchText = action.payload
         },
         setUser: (state, action) => {
-            state.user = action.payload ? action.payload : initialUser
+            state.pickedUser = action.payload ? action.payload : initialUser
         },
 
         fetchPreviousPage: (state) => {
@@ -177,15 +204,15 @@ const usersSlice = createSlice({
                 state.message = action.error.message
             })
            
-            .addCase(updateUser.pending, (state, action) => {
+            .addCase(setAdmin.pending, (state, action) => {
                 state.isLoading = true
             })
-            .addCase(updateUser.fulfilled, (state, action) => {
+            .addCase(setAdmin.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.users = action.payload.users
                 state.paginatedUsers = action.payload.paginatedUsers
             })
-            .addCase(updateUser.rejected, (state, action) => {
+            .addCase(setAdmin.rejected, (state, action) => {
                 state.isLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message

@@ -4,10 +4,12 @@ import { isNumberOrComma, length, required } from "../../util/validators";
 
 export const fetchAllResults = createAsyncThunk('fetchAllResults', async (props) => { // (action's prefix , cb)
     const currentPage = props ? props.currentPage : 1
-    const searchText = props ? props.searchText : ''
+    const searchText = props ? props.searchText : null
 
     const url = `http://localhost:8080/results/results?page=${currentPage}&search=${searchText}`
-    const res = await fetch(url) // data get from the next then block
+    const res = await fetch(url, {
+        headers: { Authorization: props.token }
+    }) // data get from the next then block
 
     if (res.status !== 200) {
         throw new Error('Failed to fetch results');
@@ -27,6 +29,7 @@ export const addResult = createAsyncThunk('addResult', async (props) => {
         body: JSON.stringify(newResult),
         headers: {
             "Content-type": "application/json; charset=UTF-8",
+            Authorization: props.token
         }
     })
 
@@ -42,6 +45,7 @@ export const addResult = createAsyncThunk('addResult', async (props) => {
 export const updateResult = createAsyncThunk('updateResult', async (props) => {
     const _id = props.updatedResult._id
     const updatedResult = props.updatedResult
+    console.log(props, props)
 
     const url = `http://localhost:8080/results/result/${_id}?page=${props.currentPage}`
     const res = await fetch(url, {
@@ -49,8 +53,11 @@ export const updateResult = createAsyncThunk('updateResult', async (props) => {
         body: JSON.stringify(updatedResult),
         headers: {
             "Content-type": "application/json; charset=UTF-8",
+            Authorization: props.token
         }
     })
+
+    console.log(res)
 
     if (res.status !== 200 && res.status !== 201) {
         throw new Error('Failed to update result');

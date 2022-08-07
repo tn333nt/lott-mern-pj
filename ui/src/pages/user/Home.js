@@ -12,15 +12,7 @@ import { fetchAllUsers } from '../../flux/slices/usersSlice';
 
 const Home = () => {
 
-    // why can't i fetch it in here but can in <Results/> ???
-    // lol thieu data
-    // sao cu bat truyen cP : null moi dc vay ?
-    const dispatch = useDispatch()
-    useEffect(() => {
-        dispatch(fetchAllResults())
-        dispatch(fetchAllUsers())
-    }, [dispatch])
-    // later : set specific result to fetch
+    const isAuth = useSelector(state => state.auth.isAuth)
 
     return (
         <div className="container pt-5 mw-100">
@@ -39,9 +31,16 @@ const Home = () => {
 
             <hr className="mt-5" />
 
-            <section>
-                <HistoryCheck />
-            </section>
+            {isAuth ? (
+                <section>
+                    <HistoryCheck />
+                </section>
+            ) : (
+            <h3 className="text-center text-danger fs-1 fw-bolder my-5">
+                login to save your checking history
+            </h3>
+            )}
+
 
         </div >
     )

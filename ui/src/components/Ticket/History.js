@@ -13,8 +13,10 @@ const HistoryCheck = () => {
 
     const dispatch = useDispatch()
 
-    const users = useSelector(state => state.users.users)
-    console.log(users, 'users')
+    // const users = useSelector(state => state.users.users)
+
+    const user = useSelector(state => state.auth.user)
+    console.log(user, 'user')
 
     const handleDelete = () => {
 
@@ -27,18 +29,20 @@ const HistoryCheck = () => {
                     <div> checking history</div>
                 </div>
 
-                <div
-                    className="m-3 d-flex justify-content-start"
-                    style={{ gap: '1rem' }}
-                >
-                    <Button
-                        className="mx-3 px-3"
-                        color="dark"
-                        // onClick={handleDeleteAll}
+                {user && user.historyCheck.length && (
+                    <div
+                        className="m-3 d-flex justify-content-start"
+                        style={{ gap: '1rem' }}
                     >
-                        delete history
-                    </Button>
-                </div>
+                        <Button
+                            className="mx-3 px-3"
+                            color="dark"
+                        // onClick={handleDeleteAll}
+                        >
+                            delete history
+                        </Button>
+                    </div>
+                )}
 
                 < Table striped responsive className="text-center">
                     <thead>
@@ -50,7 +54,7 @@ const HistoryCheck = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users[9].historyCheck.map((check, index) => (
+                        {user && user.historyCheck.length > 0 && user.historyCheck.map((check, index) => (
                             <tr key={check}>
                                 <th scope="row">{index}</th>
                                 <td>{dateFormat(check.date, "d/m/yyyy")}</td>
@@ -63,7 +67,7 @@ const HistoryCheck = () => {
                         ))}
                     </tbody>
                 </Table>
-                <p>total {users[9].historyCheck.length} found</p>
+                <p>total {user ? user.historyCheck.length : 0} found</p>
                 {/* sao cu load lai cai la thanh do */}
             </div>
         </>

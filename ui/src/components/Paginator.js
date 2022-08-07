@@ -32,8 +32,6 @@ const Paginator = props => {
   const lastPageResults = Math.ceil(totalResults / 9)
   const lastPageUsers = Math.ceil(totalUsers / 9)
 
-  console.log(beingInResults)
-  console.log(currentPageUsers > 1)
 
   const handlePrevious = () => {
     if (beingInResults) {
@@ -62,7 +60,8 @@ const Paginator = props => {
         && (
           <Button
             outline
-            className="me-5 px-3 "
+            color="dark"
+            className="me-5 px-5"
             onClick={handlePrevious}
           >
             Previous
@@ -76,7 +75,7 @@ const Paginator = props => {
           <Button
             outline
             color="dark"
-            className="me-5 px-3"
+            className="me-5 px-5"
             onClick={handleNext}
           >
             Next

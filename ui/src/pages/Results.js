@@ -3,17 +3,20 @@ import { useEffect } from 'react';
 import { UncontrolledAccordion, Spinner, Button, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllResults, toggleModalAdd, setResult, toggleModalUpdate } from '../../flux/slices/resultsSlice';
-import { Search } from '../../components/Search';
-import { ResultForm } from '../../components/Result/Form';
-import { ResultDetail } from '../../components/Result/Detail';
-import Paginator from '../../components/Paginator';
-import Messenger from '../../components/Messenger';
+import { fetchAllResults, toggleModalAdd, setResult, toggleModalUpdate } from '../flux/slices/resultsSlice';
+import { Search } from '../components/Search';
+import { ResultForm } from '../components/Result/Form';
+import { ResultDetail } from '../components/Result/Detail';
+import Paginator from '../components/Paginator';
+import Messenger from '../components/Messenger';
 
 
 const Results = () => {
 
     const dispatch = useDispatch()
+
+    const token = useSelector(state => state.auth.token)
+    const user = useSelector(state => state.auth.user)
 
     const results = useSelector(state => state.results.results)
     const paginatedResults = useSelector(state => state.results.paginatedResults)
@@ -38,9 +41,10 @@ const Results = () => {
     useEffect(() => {
         dispatch(fetchAllResults({
             currentPage: currentPage,
-            searchText: searchText
+            searchText: searchText,
+            token: token
         }))
-    }, [currentPage, searchText, dispatch])
+    }, [currentPage, searchText, token, dispatch])
 
 
     return (
@@ -49,7 +53,11 @@ const Results = () => {
             <ResultForm />
             <title className="row">
                 <div className="col-12 text-center text-primary fs-1 fw-bolder">
-                    <div> lottery results management</div>
+                    {user && user.isAdmin ? (
+                        <div> results management</div>
+                    ) : (
+                        <div className='text-uppercase'> lottery results </div>
+                    )}
                     <hr />
                 </div>
             </title>
@@ -58,13 +66,15 @@ const Results = () => {
                 className="m-3 d-flex justify-content-between flex-wrap"
                 style={{ gap: '1rem' }}
             >
-                <Button
-                    className="me-5 px-3"
-                    color="primary"
-                    onClick={() => dispatch(toggleModalAdd())}
-                >
-                    + new result
-                </Button>
+                {user && user.isAdmin && (
+                    <Button
+                        className="me-5 px-3 fs-6"
+                        color="primary"
+                        onClick={() => dispatch(toggleModalAdd())}
+                    >
+                        + new result
+                    </Button>
+                )}
                 <Search placeholder='type date/game' color="primary" />
                 {/* later :  search by date OR and AND game */}
             </div>
@@ -99,14 +109,16 @@ const Results = () => {
                             >
                                 <AccordionHeader targetId={result._id}  >
                                     <div className="d-flex flex-wrap justify-content-between w-100 px-5">
-                                        <div >date :  <strong>{result.date}</strong></div>
-                                        <Button
-                                            className="px-3"
-                                            color="dark"
-                                            onClick={() => handleUpdate(result._id)}
-                                        >
-                                            update
-                                        </Button>
+                                        <p className="fs-5">date : {result.date}</p>
+                                        {user && user.isAdmin && (
+                                            <Button
+                                                className="px-3"
+                                                color="dark"
+                                                onClick={() => handleUpdate(result._id)}
+                                            >
+                                                update
+                                            </Button>
+                                        )}
                                     </div>
                                 </AccordionHeader>
 
@@ -133,15 +145,17 @@ const Results = () => {
                                 className="col-12 mt-3"
                             >
                                 <AccordionHeader targetId={result._id} >
-                                    <div className="d-flex flex-wrap justify-content-between align-items-center w-100 px-5">
-                                        <div >date :  <strong>{result.date}</strong></div>
-                                        <Button
-                                            className="px-3"
-                                            color="dark"
-                                            onClick={() => handleUpdate(result._id)}
-                                        >
-                                            update
-                                        </Button>
+                                    <div className="d-flex flex-wrap justify-content-between align-items-center w-100 px-5 ">
+                                        <p className="fs-5"> date : {result.date}</p>
+                                        {user && user.isAdmin && (
+                                            <Button
+                                                className="px-3"
+                                                color="dark"
+                                                onClick={() => handleUpdate(result._id)}
+                                            >
+                                                update
+                                            </Button>
+                                        )}
                                     </div>
                                 </AccordionHeader>
 

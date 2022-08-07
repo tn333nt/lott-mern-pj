@@ -19,19 +19,22 @@ const Messenger = props => {
 
     const dispatch = useDispatch()
 
+    const token = useSelector(state => state.auth.token)
+
     const isOpen = useSelector(state => state.users.isOpen.messageModal)
     const confirm = useSelector(state => state.users.confirm)
 
     const userMsg = useSelector(state => state.users.message)
     const resultMsg = useSelector(state => state.results.message)
 
-    const user = useSelector(state => state.users.user)
+    const pickedUser = useSelector(state => state.users.pickedUser)
 
     const currentPage = useSelector(state => state.users.currentPage)
 
     const passingValues = {
         currentPage: currentPage,
-        deletingUser: user
+        deletingUser: pickedUser,
+        token : token
     }
 
     const toggle = () => {
@@ -45,7 +48,7 @@ const Messenger = props => {
             dispatch(deleteAllUsers())
         }
 
-        if (confirm === `delete user ${user.username} ?`) {
+        if (confirm === `delete user ${pickedUser.email} ?`) {
             dispatch(deleteUser(passingValues))
         }
 

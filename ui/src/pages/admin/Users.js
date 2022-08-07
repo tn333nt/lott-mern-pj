@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Spinner, Button, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllUsers, toggleModalMessage, setUser, updateUser } from '../../flux/slices/usersSlice';
+import { fetchAllUsers, toggleModalMessage, setUser, setAdmin } from '../../flux/slices/usersSlice';
 import { Search } from '../../components/Search';
 import Paginator from '../../components/Paginator';
 import Messenger from '../../components/Messenger';
@@ -13,28 +13,23 @@ const Users = () => {
 
     const dispatch = useDispatch()
 
+    const token = useSelector(state => state.auth.token)
+
     const users = useSelector(state => state.users.users)
     const paginatedUsers = useSelector(state => state.users.paginatedUsers)
     const searchedUsers = useSelector(state => state.users.searchedUsers)
-    const user = useSelector(state => state.users.user)
-
+    const pickedUser = useSelector(state => state.users.pickedUser)
+console.log(users)
     const currentPage = useSelector(state => state.users.currentPage)
-
     const searchText = useSelector(state => state.users.searchText)
-
     const isLoading = useSelector(state => state.users.isLoading)
-
-
-    const handleDeleteAll = () => {
-        dispatch(toggleModalMessage("delete all users ?"))
-    }
 
     const handleDelete = userId => {
         const deletingUser = users.find(user => user._id === userId)
 
-        const username = deletingUser.username
+        const email = deletingUser.email
 
-        const confirm = `delete user ${username} ?`
+        const confirm = `delete user ${email} ?`
 
         dispatch(toggleModalMessage(confirm))
         dispatch(setUser(deletingUser))
@@ -46,13 +41,14 @@ const Users = () => {
         dispatch(setUser(updatingUser))
 
         const updatedUser = {
-            ...user,
+            ...pickedUser,
             isAdmin: true
         }
 
-        dispatch(updateUser({
+        dispatch(setAdmin({
             updatedUser: updatedUser,
-            currentPage: currentPage
+            currentPage: currentPage,
+            token: token
         }))
     }
 
@@ -60,9 +56,10 @@ const Users = () => {
     useEffect(() => {
         dispatch(fetchAllUsers({
             currentPage: currentPage,
-            searchText: searchText
+            searchText: searchText,
+            token: token
         }))
-    }, [currentPage, searchText, dispatch])
+    }, [currentPage, searchText, token, dispatch])
 
 
     return (
@@ -79,7 +76,7 @@ const Users = () => {
                 className="m-3 d-flex justify-content-end flex-wrap"
                 style={{ gap: '1rem' }}
             >
-                <Search placeholder='type name/mail' />
+                <Search placeholder='type email' />
             </div>
 
 
@@ -112,7 +109,7 @@ const Users = () => {
                         </thead>
                         <tbody>
                             {searchedUsers.map((user, index) => (
-                                <tr key={user}>
+                                <tr key={user._id}>
                                     <th scope="row">{index}</th>
                                     <td>{user.email}</td>
                                     <td>{user.username}</td>
@@ -155,7 +152,7 @@ const Users = () => {
                         </thead>
                         <tbody>
                             {paginatedUsers.map((user, index) => (
-                                <tr key={user}>
+                                <tr key={user._id}>
                                     {/* later : admin thi xep trc */}
                                     <th scope="row">{index}</th>
                                     <td>{user.email}</td>
