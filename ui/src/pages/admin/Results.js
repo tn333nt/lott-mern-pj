@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { UncontrolledAccordion, Spinner, Button, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllResults, toggleModalAdd, setValues, toggleModalUpdate } from '../../flux/resultsSlice';
+import { fetchAllResults, toggleModalAdd, setResult, toggleModalUpdate } from '../../flux/slices/resultsSlice';
 import { Search } from '../../components/Search';
 import { ResultForm } from '../../components/Result/Form';
 import { ResultDetail } from '../../components/Result/Detail';
@@ -20,7 +20,6 @@ const Results = () => {
     const searchedResults = useSelector(state => state.results.searchedResults)
 
     const currentPage = useSelector(state => state.results.currentPage)
-
     const searchText = useSelector(state => state.results.searchText)
 
     const isLoading = useSelector(state => state.results.isLoading)
@@ -31,7 +30,7 @@ const Results = () => {
         })
 
         dispatch(toggleModalUpdate())
-        dispatch(setValues(updatingResult))
+        dispatch(setResult(updatingResult))
 
     }
 
@@ -49,7 +48,7 @@ const Results = () => {
             <Messenger />
             <ResultForm />
             <title className="row">
-                <div className="col-12 text-center text-secondary fs-1 fw-bolder">
+                <div className="col-12 text-center text-primary fs-1 fw-bolder">
                     <div> lottery results management</div>
                     <hr />
                 </div>
@@ -61,12 +60,12 @@ const Results = () => {
             >
                 <Button
                     className="me-5 px-3"
-                    color="dark"
+                    color="primary"
                     onClick={() => dispatch(toggleModalAdd())}
                 >
-                    + add new result
+                    + new result
                 </Button>
-                <Search placeholder='type date/game' />
+                <Search placeholder='type date/game' color="primary" />
                 {/* later :  search by date OR and AND game */}
             </div>
 
@@ -75,7 +74,7 @@ const Results = () => {
                 <div className="m-3 d-flex justify-content-center" >
                     <Spinner
                         className="m-3"
-                        color="secondary"
+                        color="primary"
                     >
                         Loading...
                     </Spinner>
@@ -103,7 +102,7 @@ const Results = () => {
                                         <div >date :  <strong>{result.date}</strong></div>
                                         <Button
                                             className="px-3"
-                                            color="primary"
+                                            color="dark"
                                             onClick={() => handleUpdate(result._id)}
                                         >
                                             update
@@ -138,7 +137,7 @@ const Results = () => {
                                         <div >date :  <strong>{result.date}</strong></div>
                                         <Button
                                             className="px-3"
-                                            color="primary"
+                                            color="dark"
                                             onClick={() => handleUpdate(result._id)}
                                         >
                                             update

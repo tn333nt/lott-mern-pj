@@ -1,9 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { isNumberOrComma, length, required } from "../util/validators";
+import { isNumberOrComma, length, required } from "../../util/validators";
 
 
 export const fetchAllResults = createAsyncThunk('fetchAllResults', async (props) => { // (action's prefix , cb)
-    const url = `http://localhost:8080/results/results?page=${props.currentPage}&search=${props.searchText}`
+    const currentPage = props ? props.currentPage : 1
+    const searchText = props ? props.searchText : ''
+
+    const url = `http://localhost:8080/results/results?page=${currentPage}&search=${searchText}`
     const res = await fetch(url) // data get from the next then block
 
     if (res.status !== 200) {
@@ -178,7 +181,7 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
         setSearchText: (state, action) => {
             state.searchText = action.payload
         },
-        setValues: (state, action) => {
+        setResult: (state, action) => {
             state.pickedResult = action.payload ? action.payload : initialResult
         },
         setValidation: (state, action) => {
@@ -255,7 +258,7 @@ export const {
     setSearchText,
     fetchPreviousPage,
     fetchNextPage,
-    setValues,
+    setResult,
     setValidation
 } = resultsSlice.actions
 

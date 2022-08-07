@@ -2,9 +2,8 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormText, FormFeedback, FormGroup, Input, Label, Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setValues, toggleModalAdd, toggleModalUpdate, addResult, updateResult, setValidation } from '../../flux/resultsSlice';
+import { setResult, toggleModalAdd, toggleModalUpdate, addResult, updateResult, setValidation } from '../../flux/slices/resultsSlice';
 import Messenger from '../Messenger'
-import { required, length } from '../../util/validators';
 
 export const ResultForm = props => {
 
@@ -27,8 +26,6 @@ export const ResultForm = props => {
 
     const isUpdating = useSelector(state => state.results.isUpdating)
 
-    console.log(todayResult, 7236716)
-
     const toggleModal = () => {
         isOpenAddModal && dispatch(toggleModalAdd())
         isOpenUpdateModal && dispatch(toggleModalUpdate())
@@ -41,7 +38,6 @@ export const ResultForm = props => {
         // trigger all validators -> compare with input
         let isValid = true;
         for (const validator of validation[name].validators) {
-            console.log(typeof validator === "function", 1)
             isValid = isValid && validator(strValue);
         }
 
@@ -50,9 +46,6 @@ export const ResultForm = props => {
         const arrValues = []
         values.forEach((item, index) => {
             const value = item.trim()
-            // https://stackoverflow.com/a/48540808
-            // const test = length({ exact: 6 })(value) // check length for each item 
-            // isValid = isValid && test
             arrValues.push(value)
         })
 
@@ -89,7 +82,7 @@ export const ResultForm = props => {
             validation: updatedValidation,
             isFormValid: isFormValid
         }))
-        dispatch(setValues(result))
+        dispatch(setResult(result))
     }
 
     const submitForm = () => {
@@ -169,24 +162,23 @@ export const ResultForm = props => {
 
                                 {/* later : input for gening date & game & prizesAmount*/}
                                 {/* {prizesArr.map((item, index) => (
-                                <FormGroup
-                                    floating
-                                // ${(item[index] <= prizesAmount) ? '' : 'disabled'}
-                                // or check xem neu rong thi ko lay (_.isEqual ...)
-                                >
-                                    <Input
-                                        name={item}
-                                        type="text"
-                                        id={item}
-                                        placeholder={titles[index]}
-                                        value={isUpdating || error ? results[index][`${item}`] : ''}
-                                    />
-                                    <Label for={item}>
-                                        {titles[index]}
-                                    </Label>
-                                </FormGroup>
-                            ))} 
-                            */}
+                                    <FormGroup
+                                        floating
+                                        disabled={(item[index] <= prizesAmount)}
+                                    >
+                                        <Input
+                                            name={item}
+                                            type="text"
+                                            id={item}
+                                            placeholder={titles[index]}
+                                            value={isUpdating || error ? results[index][`${item}`] : ''}
+                                        />
+                                        <Label for={item}>
+                                            {titles[index]}
+                                        </Label>
+                                    </FormGroup>
+                                ))} */}
+
 
                                 {/* hardcoded here */}
                                 <FormGroup floating >

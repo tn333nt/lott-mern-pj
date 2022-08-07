@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { isNumberOrComma, length, required } from "../util/validators";
-
 
 export const fetchAllUsers = createAsyncThunk('fetchAllUsers', async (props) => {
-    const url = `http://localhost:8080/users/users?page=${props.currentPage}&search=${props.searchText}`
+    const currentPage = props ? props.currentPage : 1
+    const searchText = props ? props.searchText : ''
+
+    const url = `http://localhost:8080/users/users?page=${currentPage}&search=${searchText}`
     const res = await fetch(url)
 
     if (res.status !== 200) {
@@ -37,13 +38,13 @@ export const addUser = createAsyncThunk('addUser', async (props) => {
 })
 
 export const updateUser = createAsyncThunk('updateUser', async (props) => {
-    const _id = props.updatedResult._id
-    const updatedResult = props.updatedResult
+    const _id = props.updatedUser._id
+    const updatedUser = props.updatedUser
 
     const url = `http://localhost:8080/users/user/${_id}?page=${props.currentPage}`
     const res = await fetch(url, {
         method: 'PATCH',
-        body: JSON.stringify(updatedResult),
+        body: JSON.stringify(updatedUser),
         headers: {
             "Content-type": "application/json; charset=UTF-8",
         }
@@ -87,7 +88,9 @@ export const deleteAllUsers = createAsyncThunk('deleteAllUsers', async () => {
 const initialUser = {
     email: '',
     password: '',
-    name: ''
+    isAdmin: false,
+    name: '',
+    mobile: '',
 }
 
 
@@ -107,9 +110,7 @@ const usersSlice = createSlice({
         },
         searchText: '',
         message: '',
-        confirm: '',
-        validation: { },
-        isFormValid: false
+        confirm: ''
     },
 
     reducers: {
@@ -130,10 +131,6 @@ const usersSlice = createSlice({
         },
         setUser: (state, action) => {
             state.user = action.payload ? action.payload : initialUser
-        },
-        setValidation: (state, action) => {
-            state.validation = action.payload.validation
-            state.isFormValid = action.payload.isFormValid
         },
 
         fetchPreviousPage: (state) => {

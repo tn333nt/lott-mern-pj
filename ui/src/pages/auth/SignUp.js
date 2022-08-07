@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
-import { isEmail, length, isNonAlphabetic } from '../../util/validators'
+import { isEmail, length, isNonAlphabetic, isMatch } from '../../util/validators'
 
 const SignUp = () => {
 
     const [text, setText] = useState('')
+    const [password, setPassword] = useState('')
     const [validated, setValidated] = useState('')
 
     const handleChange = e => {
@@ -26,13 +27,15 @@ const SignUp = () => {
             const isValidated = length({ min: 6, max: 30 })(value)
             !isValidated && setValidated("6 characters minimum")
             isValidated && setValidated("")
+            setPassword(value)
         }
 
-        if (name === 'mobile') {
-            const isValidated = isNonAlphabetic(value) && length({ min: 6, max: 15 })(value)
-            !isValidated && setValidated('incorrect mobile')
+        if (name === 'confirmPassword') {
+            const isValidated = isMatch(password)(value)
+            !isValidated && setValidated("passwords did not match")
             isValidated && setValidated("")
         }
+
     }
 
     const HandleSignup = () => { }
@@ -64,11 +67,11 @@ const SignUp = () => {
                         />
                     </FormGroup>
                     <FormGroup className="mt-3">
-                        <Label>mobile</Label>
+                        <Label>confirm password</Label>
                         <Input
-                            name="mobile"
-                            type="mobile"
-                            placeholder="mobile"
+                            name="confirmPassword"
+                            type="password"
+                            placeholder="confirmPassword"
                             bsSize="lg"
                             onChange={handleChange}
                         />

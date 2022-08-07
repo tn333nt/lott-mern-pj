@@ -7,27 +7,24 @@ import { useLocation } from 'react-router-dom';
 import {
     deleteAllUsers, deleteUser, setUser,
     toggleModalMessage as toggleUserMessage
-} from '../flux/usersSlice';
+} from '../flux/slices/usersSlice';
 
 import {
+    setResult,
     toggleModalMessage as toggleResultMessage
-} from '../flux/resultsSlice';
+} from '../flux/slices/resultsSlice';
 
 
 const Messenger = props => {
 
     const dispatch = useDispatch()
-    const location = useLocation()
-
-    const beingInResults = location.pathname === "/results"
-    const beingInUsers = location.pathname === "/users"
 
     const isOpen = useSelector(state => state.users.isOpen.messageModal)
     const confirm = useSelector(state => state.users.confirm)
 
     const userMsg = useSelector(state => state.users.message)
     const resultMsg = useSelector(state => state.results.message)
-console.log((userMsg !== '' || resultMsg !== ''), 'resultMsg')
+
     const user = useSelector(state => state.users.user)
 
     const currentPage = useSelector(state => state.users.currentPage)
@@ -38,8 +35,8 @@ console.log((userMsg !== '' || resultMsg !== ''), 'resultMsg')
     }
 
     const toggle = () => {
-        beingInResults && dispatch(toggleResultMessage())
-        beingInUsers && dispatch(toggleUserMessage())
+        dispatch(toggleResultMessage())
+        dispatch(toggleUserMessage())
     }
 
     const handleAccept = () => {
@@ -60,7 +57,8 @@ console.log((userMsg !== '' || resultMsg !== ''), 'resultMsg')
     const handleCancel = () => {
         dispatch(toggleUserMessage())
         dispatch(setUser())
-
+        dispatch(toggleResultMessage())
+        dispatch(setResult())
     }
 
     return (

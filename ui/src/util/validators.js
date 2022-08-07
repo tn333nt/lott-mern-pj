@@ -14,7 +14,11 @@ export const length = props => value => {
   return isValid;
 };
 
+export const isMatch = value => matchedValue => value.trim() === matchedValue.trim()
+
 export const isNumberOrComma = value => /^[0-9,]*$/.test(value)
+
+export const isNumber = value => /^[\d]*$/.test(value)
 
 export const isNonAlphabetic = value => /^[0-9()-\s]*$/.test(value)
 // later : check amount of numeric chars

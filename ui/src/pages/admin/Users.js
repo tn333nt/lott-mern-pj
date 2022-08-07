@@ -1,9 +1,9 @@
 
 import { useEffect } from 'react';
-import { UncontrolledAccordion, Spinner, Button, AccordionItem, AccordionHeader, AccordionBody, Table } from 'reactstrap'
+import { Spinner, Button, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllUsers, toggleModalAdd, toggleModalMessage, setUser, toggleModalUpdate } from '../../flux/usersSlice';
+import { fetchAllUsers, toggleModalMessage, setUser, updateUser } from '../../flux/slices/usersSlice';
 import { Search } from '../../components/Search';
 import Paginator from '../../components/Paginator';
 import Messenger from '../../components/Messenger';
@@ -16,6 +16,7 @@ const Users = () => {
     const users = useSelector(state => state.users.users)
     const paginatedUsers = useSelector(state => state.users.paginatedUsers)
     const searchedUsers = useSelector(state => state.users.searchedUsers)
+    const user = useSelector(state => state.users.user)
 
     const currentPage = useSelector(state => state.users.currentPage)
 
@@ -28,10 +29,9 @@ const Users = () => {
         dispatch(toggleModalMessage("delete all users ?"))
     }
 
-
     const handleDelete = userId => {
         const deletingUser = users.find(user => user._id === userId)
-        console.log(deletingUser, 123)
+
         const username = deletingUser.username
 
         const confirm = `delete user ${username} ?`
@@ -39,6 +39,21 @@ const Users = () => {
         dispatch(toggleModalMessage(confirm))
         dispatch(setUser(deletingUser))
 
+    }
+
+    const handleAdmin = userId => {
+        const updatingUser = users.find(user => user._id === userId)
+        dispatch(setUser(updatingUser))
+
+        const updatedUser = {
+            ...user,
+            isAdmin: true
+        }
+
+        dispatch(updateUser({
+            updatedUser: updatedUser,
+            currentPage: currentPage
+        }))
     }
 
 
@@ -51,7 +66,7 @@ const Users = () => {
 
 
     return (
-        <div className="container pt-4 mw-100">
+        <div className="container pt-5 mw-100">
             <Messenger />
             <title className="row">
                 <div className="col-12 text-center text-danger fs-1 fw-bolder">
@@ -61,16 +76,9 @@ const Users = () => {
             </title>
 
             <div
-                className="m-3 d-flex justify-content-between flex-wrap"
+                className="m-3 d-flex justify-content-end flex-wrap"
                 style={{ gap: '1rem' }}
             >
-                <Button
-                    className="mx-3 px-3"
-                    color="dark"
-                    onClick={handleDeleteAll}
-                >
-                    delete all users
-                </Button>
                 <Search placeholder='type name/mail' />
             </div>
 
@@ -99,7 +107,7 @@ const Users = () => {
                                 <th> email </th>
                                 <th> username </th>
                                 <th> mobile </th>
-                                <th> update </th> {/* isAdmin */}
+                                <th> update </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -110,14 +118,24 @@ const Users = () => {
                                     <td>{user.username}</td>
                                     <td>{user.mobile}</td>
                                     <td>
-                                        <Button onClick={handleDelete} className="mx-3 my-1" color="dark" >delete</Button>
-                                        <Button color="danger">admin</Button>
-                                    </td> {/* isAdmin */}
+                                        {user.isAdmin ? 'isAdmin' : (
+                                            <>
+                                                <Button
+                                                    onClick={() => handleDelete(user._id)}
+                                                    className="mx-3 my-1" color="dark"
+                                                >delete</Button>
+                                                <Button
+                                                    onClick={() => handleAdmin(user._id)}
+                                                    color="danger"
+                                                >admin</Button>
+                                            </>
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </Table>
-                    <p>total {users.length} found</p>
+                    <p>total {searchedUsers.length} found</p>
                 </>
             )
             }
@@ -132,20 +150,31 @@ const Users = () => {
                                 <th> email </th>
                                 <th> username </th>
                                 <th> mobile </th>
-                                <th> update </th> {/* check isAdmin */}
+                                <th> update </th>
                             </tr>
                         </thead>
                         <tbody>
                             {paginatedUsers.map((user, index) => (
                                 <tr key={user}>
+                                    {/* later : admin thi xep trc */}
                                     <th scope="row">{index}</th>
                                     <td>{user.email}</td>
                                     <td>{user.username}</td>
                                     <td>{user.mobile}</td>
                                     <td>
-                                        <Button onClick={() => handleDelete(user._id)} className="mx-3 my-1" color="dark">delete</Button>
-                                        <Button color="danger">admin</Button>
-                                    </td> {/* check isAdmin */}
+                                        {user.isAdmin ? 'isAdmin' : (
+                                            <>
+                                                <Button
+                                                    onClick={() => handleDelete(user._id)}
+                                                    className="mx-3 my-1" color="dark"
+                                                >delete</Button>
+                                                <Button
+                                                    onClick={() => handleAdmin(user._id)}
+                                                    color="danger"
+                                                >admin</Button>
+                                            </>
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

@@ -1,9 +1,17 @@
 
+import { useSelector } from 'react-redux';
 import { Table } from 'reactstrap';
 
 export const ResultDetail = props => {
 
     const result = props.result
+
+    const indexJP = useSelector(state => state.tickets.indexes.JP)
+    const indexP1 = useSelector(state => state.tickets.indexes.P1)
+    const indexP2 = useSelector(state => state.tickets.indexes.P2)
+    const indexP3 = useSelector(state => state.tickets.indexes.P3)
+    const indexP4 = useSelector(state => state.tickets.indexes.P4)
+    const indexP5 = useSelector(state => state.tickets.indexes.P5)
 
     return (
 
@@ -24,7 +32,11 @@ export const ResultDetail = props => {
                     <tr>
                         <th scope="row"> jackpot</th>
                         <td >
-                            {result.jackpot.winningValues.map(value => <span>{value}</span>)}
+                            {result.jackpot.winningValues.map((value, index) => (
+                                <span
+                                    className={+indexJP === +index ? 'text-success fw-bold' : ''}
+                                >{value}</span>
+                            ))}
                         </td>
                         <td>{result.jackpot.reward}</td>
                     </tr>
@@ -34,7 +46,11 @@ export const ResultDetail = props => {
                     <tr>
                         <th scope="row"> firstPrizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
-                            {result.firstPrizes.winningValues.map(value => <span>{value}</span>)}
+                            {result.firstPrizes.winningValues.map((value, index) => (
+                                <span
+                                    className={+indexP1 === +index ? 'text-success fw-bold' : ''}
+                                >{value}</span>
+                            ))}
                         </td >
                         <td>{result.firstPrizes.reward}</td>
                     </tr>
@@ -44,7 +60,11 @@ export const ResultDetail = props => {
                     <tr>
                         <th scope="row"> secondPrizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
-                            {result.secondPrizes.winningValues.map(value => <span>{value}</span>)}
+                            {result.secondPrizes.winningValues.map((value, index) => (
+                                <span
+                                    className={+indexP2 === +index ? 'text-success fw-bold' : ''}
+                                >{value}</span>
+                            ))}
                         </td>
                         <td>{result.secondPrizes.reward}</td>
                     </tr>
@@ -54,7 +74,11 @@ export const ResultDetail = props => {
                     <tr>
                         <th scope="row"> thirdPrizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
-                            {result.thirdPrizes.winningValues.map(value => <span>{value}</span>)}
+                            {result.thirdPrizes.winningValues.map((value, index) => (
+                                <span
+                                    className={+indexP3 === +index ? 'text-success fw-bold' : ''}
+                                >{value}</span>
+                            ))}
                         </td>
                         <td>{result.thirdPrizes.reward}</td>
                     </tr>
@@ -64,7 +88,11 @@ export const ResultDetail = props => {
                     <tr>
                         <th scope="row"> fourthPrizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
-                            {result.fourthPrizes.winningValues.map(value => <span>{value}</span>)}
+                            {result.fourthPrizes.winningValues.map((value, index) => (
+                                <span
+                                    className={+indexP4 === +index ? 'text-success fw-bold' : ''}
+                                >{value}</span>
+                            ))}
                         </td>
                         <td>{result.fourthPrizes.reward}</td>
                     </tr>
@@ -74,7 +102,11 @@ export const ResultDetail = props => {
                     <tr>
                         <th scope="row"> fifthPrizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
-                            {result.fifthPrizes.winningValues.map(value => <span>{value}</span>)}
+                            {result.fifthPrizes.winningValues.map((value, index) => (
+                                <span
+                                    className={+indexP5 === +index ? 'text-success fw-bold' : ''}
+                                >{value}</span>
+                            ))}
                         </td>
                         <td>{result.fifthPrizes.reward}</td>
                     </tr>

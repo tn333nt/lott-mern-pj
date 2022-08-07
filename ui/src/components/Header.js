@@ -6,15 +6,14 @@ import {
     NavbarToggler,
     Nav,
     NavItem,
-    Collapse
+    Collapse,
+    NavLink
 } from 'reactstrap';
 
 export const Header = props => {
     const [isOpen, setIsOpen] = useState(false)
 
-    const toggle = () => {
-        setIsOpen(!isOpen)
-    }
+    const toggle = () => setIsOpen(!isOpen)
 
     return (
         <div >
@@ -23,14 +22,14 @@ export const Header = props => {
                 <Collapse isOpen={isOpen} navbar className="d-flex justify-content-between">
                     <Nav navbar>
                         <NavItem>
-                            <Link className="nav-link fs-3 px-5" to="/home">home</Link>
+                            <Link className="nav-link fs-3 px-5" to="/">home</Link>
                         </NavItem>
-                        <NavItem>
+                        {/* <NavItem>
                             <Link className="nav-link fs-3 px-5" to="/results">results</Link>
                         </NavItem>
                         <NavItem>
                             <Link className="nav-link fs-3 px-5" to="/users">users</Link>
-                        </NavItem>
+                        </NavItem> */}
                     </Nav>
                     <Nav navbar>
                         <NavItem>
@@ -38,6 +37,9 @@ export const Header = props => {
                         </NavItem>
                         <NavItem>
                             <Link className="nav-link fs-3 px-5" to="/login">login</Link>
+                        </NavItem>
+                        <NavItem>
+                            <Link className="nav-link fs-3 px-5" to="/account">account</Link>
                         </NavItem>
                         <NavItem>
                             <Link className="nav-link fs-3 px-5" to="/logout">logout</Link>

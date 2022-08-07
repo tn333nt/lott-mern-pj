@@ -5,13 +5,13 @@ import { useLocation } from 'react-router-dom';
 import {
   fetchPreviousPage as fetchPreviousPageForResults,
   fetchNextPage as fetchNextPageForResults
-} from '../flux/resultsSlice'
+} from '../flux/slices/resultsSlice'
 
 
 import {
   fetchPreviousPage as fetchPreviousPageForUsers,
   fetchNextPage as fetchNextPageForUsers
-} from '../flux/usersSlice'
+} from '../flux/slices/usersSlice'
 
 const Paginator = props => {
 

@@ -4,8 +4,8 @@ import { FaSearch } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
-import { setSearchText as setSearchTextForResults } from "../flux/resultsSlice";
-import { setSearchText as setSearchTextForUsers } from "../flux/usersSlice";
+import { setSearchText as setSearchTextForResults } from "../flux/slices/resultsSlice";
+import { setSearchText as setSearchTextForUsers } from "../flux/slices/usersSlice";
 
 export const Search = props => {
     const location = useLocation();
@@ -38,7 +38,7 @@ export const Search = props => {
                 name="search"
                 onChange={(e) => setSearch(e.target.value)}
             />
-            <Button className="ms-2 d-flex" color="dark" onClick={handleSearch}>
+            <Button className="ms-2 d-flex align-self-stretch align-items-center" color={props.color ? props.color : "dark" } onClick={handleSearch}>
                 <FaSearch />
             </Button>
         </div>

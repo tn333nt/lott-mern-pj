@@ -104,6 +104,7 @@ exports.patchUser = async (req, res, next) => {
     const email = req.body.email
     const password = req.body.password
     const mobile = req.body.mobile
+    const isAdmin = req.body.isAdmin
 
     const currentPage = req.query.page
     const perPage = 9
@@ -121,6 +122,7 @@ exports.patchUser = async (req, res, next) => {
         updatingUser.email = email
         updatingUser.password = password
         updatingUser.mobile = mobile
+        updatingUser.isAdmin = isAdmin
 
         await updatingUser.save()
 
