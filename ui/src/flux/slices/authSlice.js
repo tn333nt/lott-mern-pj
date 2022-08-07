@@ -2,10 +2,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 
 export const resetPassword = createAsyncThunk('resetPassword', async (email) => {
+    console.log(JSON.stringify({email:email}), 'JSON.stringify(email)')
     const url = "http://localhost:8080/auth/resetPassword"
     const res = await fetch(url, {
         method: 'PATCH',
-        body: JSON.stringify(email),
+        body: JSON.stringify({email:email}),
         headers: {
             "Content-type": "application/json; charset=UTF-8"
         }
@@ -18,6 +19,7 @@ export const resetPassword = createAsyncThunk('resetPassword', async (email) => 
     }
 
     const data = await res.json()
+    console.log(data, 'data')
     return data
 })
 

@@ -10,11 +10,12 @@ import { fetchAllUsers } from '../../flux/slices/usersSlice';
 const ResetPassword = () => {
 
     const dispatch = useDispatch()
-    useEffect(() => {
-        dispatch(fetchAllUsers())
-    }, [dispatch])
-    const users = useSelector(state => state.users.users)
-    console.log(users)
+    // useEffect(() => {
+    //     dispatch(fetchAllUsers())
+    // }, [dispatch])
+    // const users = useSelector(state => state.users.users)
+    // console.log(users)
+
     const [email, setEmail] = useState('')
 
     const [validated, setValidated] = useState('')
@@ -34,11 +35,12 @@ const ResetPassword = () => {
         if (email === '') {
             return setValidated('fill your email')
         }
+        console.log(email, 'email')
 
-        const isValid = users.find(user => user.email === email)
-        if (!isValid) {
-            return setValidated('not found email')
-        }
+        // const isValid = users.find(user => user.email === email)
+        // if (!isValid) {
+        //     return setValidated('not found email')
+        // }
 
         dispatch(resetPassword(email))
         setSuccessText('sent')
