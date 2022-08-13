@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 import { Input, Button, Form, Alert, FormGroup, Label } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { isNumber, length, required } from '../../util/validators';
-import { setError, setIndexes, setMessage, setTicket } from '../../flux/slices/ticketsSlice';
+import { isNumber, length } from '../../util/validators';
+import { setError, setIndexes, setMessage, setSuccess, setTicket } from '../../flux/slices/ticketsSlice';
 import { setResult } from '../../flux/slices/resultsSlice';
+import { postTicket } from '../../flux/slices/authSlice';
 
 const CheckTicket = () => {
 
@@ -13,31 +14,16 @@ const CheckTicket = () => {
     const [validated, setValidated] = useState('')
 
     const results = useSelector(state => state.results.results)
-    const pickedResult = useSelector(state => state.results.pickedResult)
 
     const checkingTicket = useSelector(state => state.tickets.checkingTicket)
     const indexes = useSelector(state => state.tickets.indexes)
 
-    // convert each date to a Date() and take the max
-    // const dates = []
-    // results.map(result => {
-    //     const date = new Date(result.createdAt)
-    //     console.log(date, typeof date, 123) 
-    //     dates.push(date)
-    // })
-    // // const result = results.find(result => result.date === Math.max(dates))
-
-    // console.log(results, 'results')
-    // console.log(Math.max(...dates), 'Math.max(dates)')
-
-    // https://stackoverflow.com/a/36578942
-
+    const isAuth = useSelector(state => state.auth.isAuth)
+    const token = useSelector(state => state.auth.token)
 
     const handleChange = e => {
         const name = e.target.name
         const value = e.target.value
-
-        console.log(typeof value)
 
         if (name === 'value') {
             const isValidated = length({ exact: 6 })(value) && isNumber(value)
@@ -54,6 +40,7 @@ const CheckTicket = () => {
 
     }
 
+
     const handleCheck = () => {
 
         if (checkingTicket.date === 'Invalid Date' ||
@@ -63,50 +50,31 @@ const CheckTicket = () => {
             return setValidated('fill all input')
         }
 
-        // 1. find la dc r
-        // 2. check nhu the chi dc nhung giai cung length thoi (hien tai cung chua dam bao dc vi tri so)
-        // 3. neu luu chung nthe no se highlight all lol
-        // 4. neu luu chung nthe no se highlight all lol
-
+        // find checking result
         const checkingResult = results.find(result => result.date === checkingTicket.date)
-        console.log(results, 'results')
-        console.log(checkingResult, 'checkingResult')
 
         if (checkingResult) {
-
-            // check if checking value has included any winning value
-            const indexCheckingJP = checkingResult.jackpot.winningValues.findIndex(value => checkingTicket.value === value)
             const indexChecking1P = checkingResult.firstPrizes.winningValues.findIndex(value => checkingTicket.value === value)
-            // const won2P = checkingResult.secondPrizes.winningValues.findIndex(value => checkingTicket.value.includes(value))
-            // const won3P = checkingResult.thirdPrizes.winningValues.findIndex(value => checkingTicket.value.includes(value))
-            // const won4P = checkingResult.fourthPrizes.winningValues.findIndex(value => checkingTicket.value.includes(value))
-            // const won5P = checkingResult.fifthPrizes.winningValues.findIndex(value => checkingTicket.value.includes(value))
-    
-            // -1 = no match is found
+            const indexCheckingJP = checkingResult.jackpot.winningValues.findIndex(value => checkingTicket.value === value)
+
             const indexChecking2P = checkingResult.secondPrizes.winningValues.findIndex(value => {
-                // check if x last number of checking value === winning value
                 // get x last num of cV
-                console.log(checkingTicket, 'checkingTicket')
                 const comparedNumbers = checkingTicket.value.substring(1)
-                // compare these last nums to wV , return T F
+                // check if x last number of checking value === winning value
                 const isCompared = comparedNumbers === value
-                // return isCompared ? isCompared : null
-                console.log(value, 'value')
-                console.log(comparedNumbers, 'comparedNumbers')
-                console.log(isCompared, 'isCompared')
                 return isCompared
             })
-    
+
             const indexChecking3P = checkingResult.thirdPrizes.winningValues
                 .findIndex(value => checkingTicket.value.substring(2) === value)
-    
+
             const indexChecking4P = checkingResult.fourthPrizes.winningValues
                 .findIndex(value => checkingTicket.value.substring(3) === value)
-    
+
             const indexChecking5P = checkingResult.fifthPrizes.winningValues
                 .findIndex(value => checkingTicket.value.substring(4) === value)
-            
-            
+
+
             // 1. save indexes to highlight 
             dispatch(setIndexes({
                 ...indexes,
@@ -117,21 +85,113 @@ const CheckTicket = () => {
                 P4: indexChecking4P,
                 P5: indexChecking5P
             }))
-    
+
             // 2. pass found out result to render
             dispatch(setResult(checkingResult))
-            console.log(pickedResult, 'pickedResult')
-    
-            // 3. pass msg to show
-            indexCheckingJP!==-1 && dispatch(setMessage('you have won the jackpot'))
-            indexChecking1P!==-1 && dispatch(setMessage('you have won the first prize'))
-            indexChecking2P!==-1 && dispatch(setMessage('you have won the second prize'))
-            indexChecking3P!==-1 && dispatch(setMessage('you have won the third prize'))
-            indexChecking4P!==-1 && dispatch(setMessage('you have won the fourth prize'))
-            indexChecking5P!==-1 && dispatch(setMessage('you have won the fifth prize'))
+
+            // 3. pass msg to show if found index (return !== -1) , i.e won a prize + add check if be user
+// le ra no nen la arr nhu luc dau 
+// maybe can tach ra thanh tung case if
+// co cai nao thi pass value qua reducer xong push vao state 
+// later mb
+            // neu trung giai
+            if (indexCheckingJP !== -1) {
+                // neu la user thi add check to his
+                isAuth && dispatch(postTicket({
+                    ticket: {
+                        ...checkingTicket,
+                        wonPrize: 'jackpot'
+                    },
+                    token: token
+                }))
+                dispatch(setSuccess('you have won the jackpot'))
+                // clear old state
+                dispatch(setMessage())
+                dispatch(setError())
+            } else if (indexChecking1P !== -1) {
+                isAuth && dispatch(postTicket({
+                    ticket: {
+                        ...checkingTicket,
+                        wonPrize: 'firstPrize'
+                    },
+                    token: token
+                }))
+                dispatch(setSuccess('you have won the first prize'))
+                dispatch(setMessage())
+                dispatch(setError())
+            } else if (indexChecking2P !== -1) {
+                isAuth && dispatch(postTicket({
+                    ticket: {
+                        ...checkingTicket,
+                        wonPrize: 'secondPrize'
+                    },
+                    token: token
+                }))
+                dispatch(setSuccess('you have won the second prize'))
+                dispatch(setMessage())
+                dispatch(setError())
+            } else if (indexChecking3P !== -1) {
+                isAuth && dispatch(postTicket({
+                    ticket: {
+                        ...checkingTicket,
+                        wonPrize: 'thirdPrize'
+                    },
+                    token: token
+                }))
+                dispatch(setSuccess('you have won the third prize'))
+                dispatch(setMessage())
+                dispatch(setError())
+            } else if (indexChecking4P !== -1) {
+                isAuth && dispatch(postTicket({
+                    ticket: {
+                        ...checkingTicket,
+                        wonPrize: 'fourthPrize'
+                    },
+                    token: token
+                }))
+                dispatch(setSuccess('you have won the fourth prize'))
+                dispatch(setMessage())
+                dispatch(setError())
+            } else if (indexChecking5P !== -1) {
+                isAuth && dispatch(postTicket({
+                    ticket: {
+                        ...checkingTicket,
+                        wonPrize: 'fifthPrize'
+                    },
+                    token: token
+                }))
+                dispatch(setSuccess('you have won the fifth prize'))
+                dispatch(setMessage())
+                dispatch(setError())
+            } else {
+                // neu ko trung
+                const ticket = {
+                    ticket: checkingTicket,
+                    token: token
+                }
+                isAuth && dispatch(postTicket(ticket))
+                dispatch(setMessage('no won any prize')) 
+                dispatch(setSuccess())
+                dispatch(setError())
+
+                // clear input
+                dispatch(setTicket())
+                console.log(checkingTicket, 123)
+            }
+
+
 
         } else {
+            // neu ko co result cua ngay dc tim
             dispatch(setError('not found result'))
+            dispatch(setSuccess())
+            dispatch(setMessage())
+
+            // still pass date in to render
+            dispatch(setResult({
+                ...checkingResult,
+                date: checkingTicket.date
+            }))
         }
 
     }
@@ -148,6 +208,7 @@ const CheckTicket = () => {
                     name="value"
                     type="text"
                     bsSize="lg"
+                    // value={checkingTicket.value}
                     onChange={handleChange}
                 />
                 <Label>ticket</Label>
@@ -157,6 +218,7 @@ const CheckTicket = () => {
                     name="date"
                     type="date"
                     bsSize="lg"
+                    // value={checkingTicket.date}
                     onChange={handleChange}
                 />
                 <Label>date</Label>

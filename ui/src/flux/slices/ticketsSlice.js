@@ -1,68 +1,81 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-export const deleteAllTickets = createAsyncThunk('deleteAllTickets', async () => {
-    const url = 'http://localhost:8080/tickets/tickets'
-    const res = await fetch(url, {
-        method: 'DELETE'
-    })
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to delete all users');
-    }
-})
 
-// tu h : ticket = 1 ve 6 num , value = nums in 1 ve (can be 2-6)
+const initialIndexes = { // index of won value
+    JP: -1,
+    P1: -1,
+    P2: -1,
+    P3: -1,
+    P4: -1,
+    P5: -1
+}
+
+const initialTicket = {
+    value: '',
+    date: '',
+    wonPrize: ''
+}
+
 const ticketsSlice = createSlice({
     name: 'tickets',
     initialState: {
-        checkingTicket: {
-            value: '',
-            date: ''
-        },
+        checkingTicket: initialTicket,
         message: '',
         error: '',
-        isWon: '',
-        winningValue: '',
+        success: '',
         isLoading: false,
-        indexes: { // index of won value
-            JP: -1,
-            P1: -1,
-            P2: -1,
-            P3: -1,
-            P4: -1,
-            P5: -1
-        }
+        indexes: initialIndexes
     },
     reducers: {
         setTicket: (state, action) => {
-            const date = new Date(action.payload.date)
-            const updatedDate = date.toLocaleDateString("vi-VN")
             console.log(action.payload, 'action.payload')
-            console.log(updatedDate, 'date')
-
-            state.checkingTicket = {
+            const date = new Date(action.payload?.date)
+            const updatedDate = date.toLocaleDateString("vi-VN")
+            const ticket = {
                 ...action.payload,
                 date: updatedDate
             }
 
-            console.log(state.checkingTicket, 'state.checkingTicket')
+            state.checkingTicket = action.payload ? ticket : initialTicket
 
         },
         setMessage: (state, action) => {
-            state.message = action.payload
+            state.message = action.payload ? action.payload : ''
         },
         setError: (state, action) => {
-            state.error = action.payload
+            state.error = action.payload ? action.payload : ''
+        },
+        setSuccess: (state, action) => {
+            state.success = action.payload ? action.payload : ''
         },
         setIndexes: (state, action) => {
-            state.indexes = action.payload
+            state.indexes = action.payload ? action.payload : initialIndexes
         }
-    }
+    },
+    // extraReducers: builder => {
+    //     builder
+    //         .addCase(deleteAllTickets.pending, (state, action) => {
+    //             state.isLoading = true
+    //         })
+    //         .addCase(deleteAllTickets.fulfilled, (state, action) => {
+    //             console.log(action.payload, 'action.payload')
+    //             state.isLoading = false
+    //             state.message = "deleted all"
+
+    //         })
+    //         .addCase(deleteAllTickets.rejected, (state, action) => {
+    //             state.isLoading = false
+    //             state.message = action.error.message
+    //         })
+
+    // }
 })
 
 export const {
     setTicket,
     setMessage,
     setError,
+    setSuccess,
     setIndexes
 } = ticketsSlice.actions
 

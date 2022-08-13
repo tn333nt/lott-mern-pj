@@ -8,11 +8,8 @@ module.exports = (req, res, next) => {
         err.statusCode = 401
         throw err
     }
-    // pass qua body thi bi complex phan passing props
-    // hinh nhu 'Bearer ' dung de avoid case token be null
 
     const decodedToken = jwt.verify(token, 'privatekey') // decode & verify the token
-    // verified => loggedin
     if (!decodedToken) {
         const err = new Error('unable to verify the token')
         err.statusCode = 401
@@ -21,7 +18,6 @@ module.exports = (req, res, next) => {
 
     req.user = decodedToken.user
 
-    console.log(req.user)
     next()
 
 }

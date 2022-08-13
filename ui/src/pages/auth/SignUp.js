@@ -101,7 +101,7 @@ const SignUp = () => {
 
         // if (filledAll && validated === '' && !isValidEmail) {
         dispatch(handleSingup(authData))
-        navigate('/login')
+        navigate('/Login')
         // } else {
         // navigate(-1)
         // }
@@ -158,7 +158,7 @@ const SignUp = () => {
                     </Button>
                     <div className="text-center mt-4">
                         <FormText>already have an account ?</FormText>
-                        <span> <Link to="/Login"> login</Link></span>
+                        <span> <Link to="/login"> login</Link></span>
                     </div>
                 </Form>
             </Col>

@@ -1,14 +1,11 @@
 
-import { useEffect, useState } from 'react';
 import { Col, Row } from 'reactstrap'
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Messenger from '../../components/Messenger';
 import CheckTicket from '../../components/Ticket/Checking';
 import HistoryCheck from '../../components/Ticket/History';
 import CheckedResult from '../../components/Result/Checked';
-import { fetchAllResults } from '../../flux/slices/resultsSlice';
-import { fetchAllUsers } from '../../flux/slices/usersSlice';
 
 const Home = () => {
 
@@ -36,9 +33,9 @@ const Home = () => {
                     <HistoryCheck />
                 </section>
             ) : (
-            <h3 className="text-center text-danger fs-1 fw-bolder my-5">
-                login to save your checking history
-            </h3>
+                <h3 className="text-center text-danger fs-1 fw-bolder my-5">
+                    login to save your checking history
+                </h3>
             )}
 
 

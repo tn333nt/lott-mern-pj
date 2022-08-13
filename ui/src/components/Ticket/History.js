@@ -1,26 +1,21 @@
 
-import { useEffect, useState } from 'react';
 import { Button, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
-import dateFormat from 'dateformat'
 
-import { fetchAllResults } from '../../flux/slices/resultsSlice';
-import { isEmail, length } from '../../util/validators';
-import { fetchAllUsers } from '../../flux/slices/usersSlice';
-
+// import { deleteAllTickets } from '../../flux/slices/ticketsSlice';
+import { deleteAllTickets } from '../../flux/slices/authSlice';
 
 const HistoryCheck = () => {
 
     const dispatch = useDispatch()
 
-    // const users = useSelector(state => state.users.users)
-
+    const token = useSelector(state => state.auth.token)
     const user = useSelector(state => state.auth.user)
-    console.log(user, 'user')
 
-    const handleDelete = () => {
-
+    const handleDeleteAll = () => {
+        dispatch(deleteAllTickets(token))
     }
+
 
     return (
         <>
@@ -29,7 +24,7 @@ const HistoryCheck = () => {
                     <div> checking history</div>
                 </div>
 
-                {user && user.historyCheck.length && (
+                {user && (
                     <div
                         className="m-3 d-flex justify-content-start"
                         style={{ gap: '1rem' }}
@@ -37,7 +32,7 @@ const HistoryCheck = () => {
                         <Button
                             className="mx-3 px-3"
                             color="dark"
-                        // onClick={handleDeleteAll}
+                            onClick={handleDeleteAll}
                         >
                             delete history
                         </Button>
@@ -51,24 +46,24 @@ const HistoryCheck = () => {
                             <th> date </th>
                             <th> checking value</th>
                             <th> won </th>
+                            {/* <th> update </th> */}
                         </tr>
                     </thead>
                     <tbody>
-                        {user && user.historyCheck.length > 0 && user.historyCheck.map((check, index) => (
+                        {user && user?.historyCheck?.length > 0 && user?.historyCheck.map((check, index) => (
                             <tr key={check}>
-                                <th scope="row">{index}</th>
-                                <td>{dateFormat(check.date, "d/m/yyyy")}</td>
+                                <th scope="row">{+index+1}</th>
+                                <td>{check.date}</td>
                                 <td>{check.value}</td>
-                                <td>{check.win}</td>
-                                <td>
+                                <td>{check.wonPrize}</td>
+                                {/* <td>
                                     <Button onClick={handleDelete} className="mx-3 my-9" color="dark" >delete</Button>
-                                </td>
+                                </td> */}
                             </tr>
                         ))}
                     </tbody>
                 </Table>
-                <p>total {user ? user.historyCheck.length : 0} found</p>
-                {/* sao cu load lai cai la thanh do */}
+                <p>total {user ? user?.historyCheck?.length : '0'} found</p>
             </div>
         </>
     )

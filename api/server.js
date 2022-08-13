@@ -9,6 +9,7 @@ const connectURL = "mongodb+srv://test:bJYVI29LEAjl147U@cluster0.ti4jx.mongodb.n
 const ResultRoutes = require('./routes/result')
 const UserRoutes = require('./routes/user')
 const AuthRoutes = require('./routes/auth')
+const TicketRoutes = require('./routes/ticket')
 
 app.use(express.json())
 
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 app.use('/auth', AuthRoutes)
 app.use('/results', ResultRoutes)
 app.use('/users', UserRoutes)
+app.use('/tickets', TicketRoutes)
 
 app.use((err, req, res, next) => {
     console.log(err);

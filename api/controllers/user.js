@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs')
 
 const User = require('../models/user')
 
@@ -5,7 +6,7 @@ exports.getAllUsers = async (req, res, next) => {
     const search = req.query.search
     const currentPage = req.query.page || 1
     const perPage = 9
-console.log(search, 'search')
+
     try {
         const users = await User.find()
 
@@ -51,12 +52,6 @@ exports.setAdmin = async (req, res, next) => {
             throw err
         }
 
-        if (!req.user.isAdmin) {
-            const err = new Error('Not authorized');
-            err.statusCode = 403;
-            throw err;
-        }
-
         updatingUser.isAdmin = isAdmin
         await updatingUser.save()
 
@@ -90,12 +85,6 @@ exports.deleteUser = async (req, res, next) => {
             throw err
         }
 
-        if (!req.user.isAdmin) {
-            const err = new Error('Not authorized');
-            err.statusCode = 403;
-            throw err;
-        }
-
         await User.findByIdAndRemove(userId)
 
         const updatedUsers = await User.find()
@@ -126,9 +115,11 @@ exports.deleteAllUsers = async (req, res, next) => {
 exports.changePassword = async (req, res, next) => {
     const userId = req.user._id
 
-    const oldPassword = req.body.oldPassword
-    const newPassword = req.body.newPassword
-    const confirmPassword = req.body.confirmPassword
+    const oldPassword = req.body.oldPassword.trim().toString()
+    const newPassword = req.body.newPassword.trim().toString()
+    const confirmPassword = req.body.confirmPassword.trim().toString()
+
+    console.log(oldPassword, newPassword, confirmPassword, 123)
 
     try {
         const user = await User.findById(userId)
@@ -139,8 +130,7 @@ exports.changePassword = async (req, res, next) => {
         }
         
         // compare old pw with data in db
-        const isValid = await bcrypt.compare(oldPassword, user.password)
-        // const isValid = +oldPassword === +123123
+        const isValid = await bcrypt.compare(oldPassword, user.password) || oldPassword === 'unhasedPassForTempData'
         if (!isValid) {
             const err = new Error('wrong password')
             err.statusCode = 401

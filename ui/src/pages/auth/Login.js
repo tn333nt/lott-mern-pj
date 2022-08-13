@@ -5,14 +5,13 @@ import { useState } from 'react';
 
 import { isEmail, length } from '../../util/validators'
 import { handleLogin } from '../../flux/slices/authSlice';
+import { setError, setMessage, setSuccess } from '../../flux/slices/ticketsSlice';
 
 const Login = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const token = useSelector(state => state.auth.token)
-    const users = useSelector(state => state.users.users)
-    console.log(users)
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -56,7 +55,7 @@ const Login = () => {
             token: token
         }
 
-        const filledAll = email !== '' && password !== '' 
+        const filledAll = email !== '' && password !== ''
         if (filledAll) {
             setValidated('')
         } else {
@@ -75,6 +74,9 @@ const Login = () => {
 
         if (validated === '') {
             dispatch(handleLogin(authData))
+            // dispatch(setError())
+            // dispatch(setSuccess())
+            // dispatch(setMessage())
             navigate('/')
         }
     }
@@ -117,7 +119,7 @@ const Login = () => {
                     </Button>
                     <div className="text-center mt-3">
                         <FormText>forgot password ?</FormText>
-                        <span> <Link to="/ResetPassword">reset password</Link></span>
+                        <span> <Link to="/resetPassword">reset password</Link></span>
                     </div>
                 </Form>
             </Col>

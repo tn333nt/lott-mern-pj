@@ -1,11 +1,9 @@
 
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Form, FormGroup, Input, Label, Col, Row, Alert } from 'reactstrap';
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { isMatch, length } from '../util/validators';
-import { resetPassword } from '../flux/slices/authSlice';
-import { fetchAllUsers } from './../flux/slices/usersSlice';
+import { changePassword } from '../flux/slices/authSlice';
 
 
 const Account = () => {
@@ -14,12 +12,6 @@ const Account = () => {
 
     const user = useSelector(state => state.auth.user)
     const token = useSelector(state => state.auth.token)
-
-    // useEffect(() => {
-    //     dispatch(fetchAllUsers({ token: token }))
-    // }, [dispatch, token])
-    // const users = useSelector(state => state.users.users)
-    // console.log(users)
 
     const [oldPassword, setOldPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
@@ -101,7 +93,7 @@ const Account = () => {
             return setValidated(confirmErr)
         }
 
-        dispatch(resetPassword(authData))
+        dispatch(changePassword(authData))
         setOldPassword('')
         setNewPassword('')
         setConfirmPassword('')
@@ -187,7 +179,7 @@ const Account = () => {
                         <FormGroup floating className="mt-3">
                             <Input
                                 name="oldPassword"
-                                type="text"
+                                type="password"
                                 bsSize="lg"
                                 onChange={handleChange}
                             />
@@ -196,7 +188,7 @@ const Account = () => {
                         <FormGroup floating className="mt-3">
                             <Input
                                 name="newPassword"
-                                type="newPassword"
+                                type="password"
                                 bsSize="lg"
                                 onChange={handleChange}
                             />
@@ -205,7 +197,7 @@ const Account = () => {
                         <FormGroup floating className="mt-3">
                             <Input
                                 name="confirmPassword"
-                                type="confirmPassword"
+                                type="password"
                                 bsSize="lg"
                                 onChange={handleChange}
                             />

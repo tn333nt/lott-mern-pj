@@ -90,27 +90,6 @@ export const deleteAllUsers = createAsyncThunk('deleteAllUsers', async () => {
 })
 
 
-export const changePassword = createAsyncThunk('changePassword', async (authData) => {
-    const url = "http://localhost:8080/users/changePassword"
-    const res = await fetch(url, {
-        method: 'PATCH',
-        body: JSON.stringify(authData),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            Authorization: authData.token
-        }
-    })
-
-    console.log(res, 'resetpw')
-
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to reset')
-    }
-
-    const data = await res.json()
-    return data
-})
-
 
 const initialUser = {
     email: '',
@@ -235,7 +214,6 @@ const usersSlice = createSlice({
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
-
             .addCase(deleteAllUsers.pending, (state, action) => {
                 state.isLoading = true
             })
@@ -253,6 +231,8 @@ const usersSlice = createSlice({
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
+
+            
     }
 })
 

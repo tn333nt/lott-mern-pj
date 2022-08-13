@@ -10,7 +10,7 @@ const userSchema = new Schema({
         {
             date: String,
             value: String,
-            win: []
+            wonPrize: String
         }
     ],
     age: Number,

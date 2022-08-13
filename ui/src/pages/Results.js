@@ -147,20 +147,23 @@ const Results = () => {
                                 <AccordionHeader targetId={result._id} >
                                     <div className="d-flex flex-wrap justify-content-between align-items-center w-100 px-5 ">
                                         <p className="fs-5"> date : {result.date}</p>
+                                        
+                                    </div>
+                                </AccordionHeader>
+
+                                <AccordionBody accordionId={result._id}>
+                                    <ResultDetail result={result} color="light" />
+                                    <div className="d-flex flex-wrap justify-content-end align-items-center w-100 px-5 ">
                                         {user && user.isAdmin && (
                                             <Button
                                                 className="px-3"
-                                                color="dark"
+                                                color="primary"
                                                 onClick={() => handleUpdate(result._id)}
                                             >
                                                 update
                                             </Button>
                                         )}
                                     </div>
-                                </AccordionHeader>
-
-                                <AccordionBody accordionId={result._id}>
-                                    <ResultDetail result={result} color="light" />
                                 </AccordionBody>
                             </AccordionItem>
                         ))}

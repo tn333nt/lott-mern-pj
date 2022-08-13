@@ -8,7 +8,6 @@ import {
     Nav,
     NavItem,
     Collapse,
-    NavLink,
     Button
 } from 'reactstrap';
 import { handleLogout } from '../flux/slices/authSlice';
@@ -25,7 +24,7 @@ export const Header = props => {
 
     const handleLogOut = () => {
         dispatch(handleLogout())
-        navigate('/login')
+        navigate('/Login')
     }
 
 
@@ -68,7 +67,7 @@ export const Header = props => {
                                     <Link className="nav-link fs-3 px-5" to="/account">account</Link>
                                 </NavItem>
                                 <NavItem>
-                                    <Button className="nav-link fs-3 px-5" onClick={handleLogOut}>logout</Button>
+                                    <Button className="nav-link fs-3 px-5 btn-light" onClick={handleLogOut}>logout</Button>
                                 </NavItem>
                             </>
                         )}

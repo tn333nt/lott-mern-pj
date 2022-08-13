@@ -8,7 +8,7 @@ const router = express.Router()
 // router.get('/tickets', isAuth, ticketController.getAllTickets) // ma co user la co his r con dau
 
 // add check
-router.post('/ticket', ticketController.postTicket)
+router.post('/ticket', isAuth, ticketController.postTicket)
 // delete history
 router.delete('/tickets', isAuth, ticketController.deleteAllTickets)
 
