@@ -19,7 +19,7 @@ const Users = () => {
     const paginatedUsers = useSelector(state => state.users.paginatedUsers)
     const searchedUsers = useSelector(state => state.users.searchedUsers)
     const pickedUser = useSelector(state => state.users.pickedUser)
-console.log(users)
+    console.log(users)
     const currentPage = useSelector(state => state.users.currentPage)
     const searchText = useSelector(state => state.users.searchText)
     const isLoading = useSelector(state => state.users.isLoading)
@@ -67,7 +67,7 @@ console.log(users)
             <Messenger />
             <title className="row">
                 <div className="col-12 text-center text-danger fs-1 fw-bolder">
-                    <div> users management</div>
+                    <div> Users Management</div>
                     <hr />
                 </div>
             </title>
@@ -76,7 +76,7 @@ console.log(users)
                 className="m-3 d-flex justify-content-end flex-wrap"
                 style={{ gap: '1rem' }}
             >
-                <Search placeholder='type email' />
+                <Search placeholder='Type email' />
             </div>
 
 
@@ -92,7 +92,7 @@ console.log(users)
             )}
 
             {users.length <= 0 && !isLoading ? (
-                <p style={{ textAlign: 'center' }}> not found user </p>
+                <p style={{ textAlign: 'center' }}> Not found user </p>
             ) : null}
 
             {!isLoading && searchText && searchedUsers.length > 0 && (
@@ -101,16 +101,16 @@ console.log(users)
                         <thead>
                             <tr>
                                 <th> # </th>
-                                <th> email </th>
-                                <th> username </th>
-                                <th> mobile </th>
-                                <th> update </th>
+                                <th> Email </th>
+                                <th> Username </th>
+                                <th> Mobile </th>
+                                <th> Update </th>
                             </tr>
                         </thead>
                         <tbody>
                             {searchedUsers.map((user, index) => (
                                 <tr key={user._id}>
-                                    <th scope="row">{index}</th>
+                                    <th scope="row">{+index + 1}</th>
                                     <td>{user.email}</td>
                                     <td>{user.username}</td>
                                     <td>{user.mobile}</td>
@@ -120,11 +120,11 @@ console.log(users)
                                                 <Button
                                                     onClick={() => handleDelete(user._id)}
                                                     className="mx-3 my-1" color="dark"
-                                                >delete</Button>
+                                                >Delete</Button>
                                                 <Button
                                                     onClick={() => handleAdmin(user._id)}
                                                     color="danger"
-                                                >admin</Button>
+                                                >Admin</Button>
                                             </>
                                         )}
                                     </td>
@@ -132,7 +132,7 @@ console.log(users)
                             ))}
                         </tbody>
                     </Table>
-                    <p>total {searchedUsers.length} found</p>
+                    <p>Total <mark style={{ background: '#eeb69b' }}>{searchedUsers.length}</mark> user(s) found</p>
                 </>
             )
             }
@@ -144,17 +144,17 @@ console.log(users)
                         <thead>
                             <tr>
                                 <th> # </th>
-                                <th> email </th>
-                                <th> username </th>
-                                <th> mobile </th>
-                                <th> update </th>
+                                <th> Email </th>
+                                <th> Username </th>
+                                <th> Mobile </th>
+                                <th> Update </th>
                             </tr>
                         </thead>
                         <tbody>
                             {paginatedUsers.map((user, index) => (
                                 <tr key={user._id}>
                                     {/* later : admin thi xep trc */}
-                                    <th scope="row">{index}</th>
+                                    <th scope="row">{+index + 1}</th>
                                     <td>{user.email}</td>
                                     <td>{user.username}</td>
                                     <td>{user.mobile}</td>
@@ -164,11 +164,11 @@ console.log(users)
                                                 <Button
                                                     onClick={() => handleDelete(user._id)}
                                                     className="mx-3 my-1" color="dark"
-                                                >delete</Button>
+                                                >Delete</Button>
                                                 <Button
                                                     onClick={() => handleAdmin(user._id)}
                                                     color="danger"
-                                                >admin</Button>
+                                                >Admin</Button>
                                             </>
                                         )}
                                     </td>
@@ -176,15 +176,15 @@ console.log(users)
                             ))}
                         </tbody>
                     </Table>
-                    <p>total <strong>{users.length}</strong> users found</p>
-                    <p>page : {currentPage}</p>
+                    <p>Total <mark style={{ background: '#eeb69b' }}>{users.length}</mark> users found</p>
+                    <p>Page : {currentPage}</p>
                     <Paginator />
                 </>
             }
 
             {
                 !isLoading && searchText && searchedUsers.length <= 0 && (
-                    <p style={{ textAlign: 'center' }}> not found user </p>
+                    <p style={{ textAlign: 'center' }}> Not found user </p>
                 )
             }
 

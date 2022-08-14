@@ -5,7 +5,6 @@ import { useState } from 'react';
 
 import { isEmail, length } from '../../util/validators'
 import { handleLogin } from '../../flux/slices/authSlice';
-import { setError, setMessage, setSuccess } from '../../flux/slices/ticketsSlice';
 
 const Login = () => {
     const dispatch = useDispatch()
@@ -31,7 +30,7 @@ const Login = () => {
                 setEmailErr("")
                 setValidated('')
             } else {
-                setEmailErr('incorrect email')
+                setEmailErr('Incorrect email')
             }
             setEmail(value)
         }
@@ -59,7 +58,7 @@ const Login = () => {
         if (filledAll) {
             setValidated('')
         } else {
-            return setValidated('fill all input')
+            return setValidated('Fill all input')
         }
 
         const validatedAll = emailErr === '' && passwordErr === ''
@@ -74,9 +73,6 @@ const Login = () => {
 
         if (validated === '') {
             dispatch(handleLogin(authData))
-            // dispatch(setError())
-            // dispatch(setSuccess())
-            // dispatch(setMessage())
             navigate('/')
         }
     }
@@ -89,7 +85,7 @@ const Login = () => {
                     {emailErr !== '' && <Alert color="danger">{emailErr}</Alert>}
                     {passwordErr !== '' && <Alert color="danger">{passwordErr}</Alert>}
                     <FormGroup className="mt-3">
-                        <Label>email</Label>
+                        <Label>Email</Label>
                         <Input
                             name="email"
                             type="email"
@@ -99,7 +95,7 @@ const Login = () => {
                         />
                     </FormGroup>
                     <FormGroup className="mt-3">
-                        <Label>password</Label>
+                        <Label>Password</Label>
                         <Input
                             name="password"
                             type="password"
@@ -115,11 +111,11 @@ const Login = () => {
                         disabled={validated !== ''}
                         onClick={HandleLogin}
                     >
-                        login
+                        Login
                     </Button>
                     <div className="text-center mt-3">
-                        <FormText>forgot password ?</FormText>
-                        <span> <Link to="/resetPassword">reset password</Link></span>
+                        <FormText>Forgot password ?</FormText>
+                        <span> <Link to="/resetPassword">Reset password</Link></span>
                     </div>
                 </Form>
             </Col>

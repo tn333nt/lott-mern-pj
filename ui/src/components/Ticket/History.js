@@ -21,7 +21,7 @@ const HistoryCheck = () => {
         <>
             <div className="row m-5">
                 <div className="col-12 text-center text-danger fs-1 fw-bolder my-5">
-                    <div> checking history</div>
+                    <div> Checking history</div>
                 </div>
 
                 {user && (
@@ -34,7 +34,7 @@ const HistoryCheck = () => {
                             color="dark"
                             onClick={handleDeleteAll}
                         >
-                            delete history
+                            Delete history
                         </Button>
                     </div>
                 )}
@@ -43,9 +43,9 @@ const HistoryCheck = () => {
                     <thead>
                         <tr>
                             <th> # </th>
-                            <th> date </th>
-                            <th> checking value</th>
-                            <th> won </th>
+                            <th> Date </th>
+                            <th> Checking value</th>
+                            <th> Won </th>
                             {/* <th> update </th> */}
                         </tr>
                     </thead>
@@ -63,7 +63,7 @@ const HistoryCheck = () => {
                         ))}
                     </tbody>
                 </Table>
-                <p>total {user ? user?.historyCheck?.length : '0'} found</p>
+                <p>Total {user ? user?.historyCheck?.length : '0'} found</p>
             </div>
         </>
     )

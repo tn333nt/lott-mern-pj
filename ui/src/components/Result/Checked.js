@@ -13,15 +13,14 @@ const CheckedResult = () => {
     const error = useSelector(state => state.tickets.error)
     const message = useSelector(state => state.tickets.message)
     const success = useSelector(state => state.tickets.success)
-    console.log(success)
 
     return (
         <>
             <div style={{ marginRight: 21 }}>
                 <h1 className="text-center fs-1 fw-bolder" style={{ color: '#084298' }}>
-                    {!error && pickedResult.date !== '' && `result of ${pickedResult.date}`}
-                    {error && pickedResult.date !== '' && `result of ${pickedResult.date}`}
-                    {pickedResult.date === '' && results.length > 0 && `latest result of ${results[0].date}`}
+                    {!error && pickedResult.date !== '' && `Result of ${pickedResult.date}`}
+                    {error && pickedResult.date !== '' && `Result of ${pickedResult.date}`}
+                    {pickedResult.date === '' && results.length > 0 && `Latest result (${results[0].date})`}
                 </h1>
                 {error !== '' && <Alert color="danger">{error}</Alert>}
                 {message !== '' && <Alert color="warning">{message}</Alert>}
@@ -48,7 +47,7 @@ const CheckedResult = () => {
                     </div>
                 )}
             </div>
-            <p>see all results <Link to="/results">results</Link></p>
+            <p>See all results <Link to="/results">results</Link></p>
         </ >
     )
 

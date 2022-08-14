@@ -47,7 +47,7 @@ const CheckTicket = () => {
             checkingTicket.value === '' ||
             checkingTicket.date === ''
         ) {
-            return setValidated('fill all input')
+            return setValidated('Fill all input')
         }
 
         // find checking result
@@ -90,10 +90,10 @@ const CheckTicket = () => {
             dispatch(setResult(checkingResult))
 
             // 3. pass msg to show if found index (return !== -1) , i.e won a prize + add check if be user
-// le ra no nen la arr nhu luc dau 
-// maybe can tach ra thanh tung case if
-// co cai nao thi pass value qua reducer xong push vao state 
-// later mb
+            // le ra no nen la arr nhu luc dau 
+            // maybe can tach ra thanh tung case if
+            // co cai nao thi pass value qua reducer xong push vao state 
+            // later mb
             // neu trung giai
             if (indexCheckingJP !== -1) {
                 // neu la user thi add check to his
@@ -170,7 +170,7 @@ const CheckTicket = () => {
                     token: token
                 }
                 isAuth && dispatch(postTicket(ticket))
-                dispatch(setMessage('no won any prize')) 
+                dispatch(setMessage('no won any prize'))
                 dispatch(setSuccess())
                 dispatch(setError())
 
@@ -183,7 +183,7 @@ const CheckTicket = () => {
 
         } else {
             // neu ko co result cua ngay dc tim
-            dispatch(setError('not found result'))
+            dispatch(setError('Not found result'))
             dispatch(setSuccess())
             dispatch(setMessage())
 
@@ -200,7 +200,7 @@ const CheckTicket = () => {
     return (
         <Form inline className="w-50">
             <div className="text-center text-success fs-1 fw-bolder">
-                check the ticket
+                Check the ticket
             </div>
             {validated !== '' && <Alert color="danger">{validated}</Alert>}
             <FormGroup floating className="mt-3">
@@ -211,7 +211,7 @@ const CheckTicket = () => {
                     // value={checkingTicket.value}
                     onChange={handleChange}
                 />
-                <Label>ticket</Label>
+                <Label>Ticket</Label>
             </FormGroup>
             <FormGroup floating className="mt-3">
                 <Input
@@ -221,7 +221,7 @@ const CheckTicket = () => {
                     // value={checkingTicket.date}
                     onChange={handleChange}
                 />
-                <Label>date</Label>
+                <Label>Date</Label>
             </FormGroup>
             <Button block
                 color="success"
@@ -230,7 +230,7 @@ const CheckTicket = () => {
                 disabled={validated !== '' ? true : false}
                 onClick={handleCheck}
             >
-                check
+                Check
             </Button>
         </Form>
     )

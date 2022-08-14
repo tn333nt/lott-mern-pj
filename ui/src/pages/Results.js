@@ -54,7 +54,7 @@ const Results = () => {
             <title className="row">
                 <div className="col-12 text-center text-primary fs-1 fw-bolder">
                     {user && user.isAdmin ? (
-                        <div> results management</div>
+                        <div> Results Management</div>
                     ) : (
                         <div className='text-uppercase'> lottery results </div>
                     )}
@@ -72,10 +72,10 @@ const Results = () => {
                         color="primary"
                         onClick={() => dispatch(toggleModalAdd())}
                     >
-                        + new result
+                        + New result
                     </Button>
                 )}
-                <Search placeholder='type date/game' color="primary" />
+                <Search placeholder='Type date ...' color="primary" />
                 {/* later :  search by date OR and AND game */}
             </div>
 
@@ -92,7 +92,7 @@ const Results = () => {
             )}
 
             {results.length <= 0 && !isLoading ? (
-                <p style={{ textAlign: 'center' }}> not found result </p>
+                <p style={{ textAlign: 'center' }}> Not found result </p>
             ) : null}
 
             {!isLoading && searchText && searchedResults.length > 0 && (
@@ -109,14 +109,14 @@ const Results = () => {
                             >
                                 <AccordionHeader targetId={result._id}  >
                                     <div className="d-flex flex-wrap justify-content-between w-100 px-5">
-                                        <p className="fs-5">date : {result.date}</p>
+                                        <p className="fs-5"> Date : {result.date}</p>
                                         {user && user.isAdmin && (
                                             <Button
                                                 className="px-3"
                                                 color="dark"
                                                 onClick={() => handleUpdate(result._id)}
                                             >
-                                                update
+                                                Update
                                             </Button>
                                         )}
                                     </div>
@@ -129,6 +129,7 @@ const Results = () => {
                         ))
                         }
                     </UncontrolledAccordion>
+                    <p className="mx-5">Total <mark style={{background:'#bcecf6'}}>{searchedResults.length}</mark> result(s) found</p>
                 </>
             )}
 
@@ -146,8 +147,8 @@ const Results = () => {
                             >
                                 <AccordionHeader targetId={result._id} >
                                     <div className="d-flex flex-wrap justify-content-between align-items-center w-100 px-5 ">
-                                        <p className="fs-5"> date : {result.date}</p>
-                                        
+                                        <p className="fs-5"> Date : {result.date}</p>
+
                                     </div>
                                 </AccordionHeader>
 
@@ -160,7 +161,7 @@ const Results = () => {
                                                 color="primary"
                                                 onClick={() => handleUpdate(result._id)}
                                             >
-                                                update
+                                                Update
                                             </Button>
                                         )}
                                     </div>
@@ -168,14 +169,14 @@ const Results = () => {
                             </AccordionItem>
                         ))}
                     </UncontrolledAccordion>
-                    <p>total <strong>{results.length}</strong> users found</p>
-                    <p>page : {currentPage}</p>
+                    <p className="mx-5">Total <mark style={{background:'#bcecf6'}}>{results.length}</mark> results found</p>
+                    <p className="mx-5">Page : {currentPage}</p>
                     <Paginator />
                 </>
             }
 
             {!isLoading && searchText && searchedResults.length <= 0 && (
-                <p style={{ textAlign: 'center' }}> not found result </p>
+                <p style={{ textAlign: 'center' }}> Not found result </p>
             )}
 
         </div>

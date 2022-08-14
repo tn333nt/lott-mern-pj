@@ -26,15 +26,14 @@ export const handleSingup = createAsyncThunk('handleSingup', async (authData) =>
         body: JSON.stringify(authData)
     })
 
-    if (res.status === 422) {
-        throw new Error("Make sure the email address isn't used yet")
-    }
-
-    if (res.status !== 200) {
-        throw new Error('Failed to create account');
-    }
-
     const data = await res.json()
+    console.log(data, 909090)
+
+    if (res.status !== 200 && res.status !== 201) {
+        console.log(data, 909090)
+        throw new Error(data.message)
+    }
+
     return data
 })
 
@@ -48,15 +47,11 @@ export const handleLogin = createAsyncThunk('handleLogin', async (authData) => {
         body: JSON.stringify(authData)
     })
 
-    if (res.status === 422) {
-        throw new Error("Validation failed")
-    }
+    const data = await res.json()
 
     if (res.status !== 200) {
-        throw new Error('Failed to authenticate user');
+        throw new Error(data.message)
     }
-
-    const data = await res.json()
 
     return data
 })
@@ -69,10 +64,12 @@ export const postTicket = createAsyncThunk('postTicket', async (props) => {
         headers: { 'content-type': 'application/json', Authorization: props.token },
         body: JSON.stringify(props.ticket)
     })
+
+    const data = await res.json()
+
     if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to add new check')
+        throw new Error(data.message)
     }
-    const data = res.json()
     return data
 })
 
@@ -116,7 +113,7 @@ const authSlice = createSlice({
         token: null,
         user: null,
         isLoading: false,
-        error: null // later
+        error: ''
     },
     reducers: {
         // setAutoLogout: (state, action) => {
@@ -128,7 +125,7 @@ const authSlice = createSlice({
             state.user = null
         },
         setError: (state, action) => {
-            state.error = null
+            state.error = action.payload ? action.payload : ''
         },
         setUser: (state, action) => {
             state.user = action.payload
@@ -142,12 +139,16 @@ const authSlice = createSlice({
             .addCase(handleSingup.fulfilled, (state, action) => {
                 state.isAuth = false
                 state.isLoading = false
+                state.user = action.payload.user
+
             })
             .addCase(handleSingup.rejected, (state, action) => {
+                console.log(action.error.message)
                 state.isAuth = false
                 state.isLoading = false
-                state.error = action.error
+                state.error = action.error.message
             })
+
             .addCase(handleLogin.pending, (state, action) => {
                 state.isLoading = true
             })
@@ -159,6 +160,7 @@ const authSlice = createSlice({
 
             })
             .addCase(handleLogin.rejected, (state, action) => {
+                console.log(action.error.message)
                 state.isAuth = false
                 state.isLoading = false
                 state.error = action.error
@@ -179,7 +181,6 @@ const authSlice = createSlice({
                 state.isLoading = true
             })
             .addCase(postTicket.fulfilled, (state, action) => {
-                console.log(action.payload, 'action.payload')
                 state.isLoading = false
                 state.user = action.payload.user
             })

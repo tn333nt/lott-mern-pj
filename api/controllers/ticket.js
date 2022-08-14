@@ -7,12 +7,12 @@ exports.postTicket = async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         const error = errors.array()[0]
-        const err = new Error(`validation failed at ${error.param} : ${error.msg}`)
+        const err = new Error(error.msg)
+
         err.statusCode = 422
         throw err
     }
 
-    // nho check isAuth, or : isAuth() if 
     const date = req.body.date
     const value = req.body.value
     const wonPrize = req.body.wonPrize
@@ -20,7 +20,7 @@ exports.postTicket = async (req, res, next) => {
     try {
         const user = await User.findById(req.user._id)
         if (!user) {
-            const err = new Error('no found user')
+            const err = new Error('Not found user')
             err.statusCode = 401
             throw err
         }
@@ -46,7 +46,7 @@ exports.deleteAllTickets = async (req, res, next) => {
     try {
         const user = await User.findById(req.user._id)
         if (!user) {
-            const err = new Error('no found user')
+            const err = new Error('Not found user')
             err.statusCode = 401
             throw err
         }

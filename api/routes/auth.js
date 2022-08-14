@@ -8,23 +8,33 @@ const router = express.Router()
 
 router.put('/signup', [
     body('email')
+        .notEmpty()
+        .withMessage('Email is required')
         .isEmail()
-        .withMessage('incorrect email')
+        .withMessage('Incorrect email')
         .normalizeEmail()
         .custom(async (value, { req }) => {
+            console.log(value, 'value')
             const user = await User.findOne({ email: value })
-            user && Promise.reject('email already exists')
+            console.log(user, 'user')
+            // user && Promise.reject('Email already exists')
+            if (!user) {
+                return true
+            } else {
+                throw new Error('Email already exists')
+            }
         })
     , body('password')
         .trim()
         .isAlphanumeric()
         .isLength({ min: 6 })
+        .withMessage('6 characters minimum')
     , body('confirmPassword')
         .custom((value, { req }) => {
             if (value === req.body.password) {
                 return true
             }
-            throw new Error('check the confirm')
+            throw new Error('Passwords did not match')
         })
 ], authController.signup)
 

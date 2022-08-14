@@ -34,7 +34,7 @@ const Home = () => {
                 </section>
             ) : (
                 <h3 className="text-center text-danger fs-1 fw-bolder my-5">
-                    login to save your checking history
+                    Login to save your checking history
                 </h3>
             )}
 

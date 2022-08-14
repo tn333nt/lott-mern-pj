@@ -40,11 +40,11 @@ exports.getAllResults = async (req, res, next) => {
 
 exports.postResult = async (req, res, next) => {
 
-    console.log(req)
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         const error = errors.array()[0]
-        const err = new Error(`validation failed at ${error.param} : ${error.msg}`)
+        const err = new Error(error.msg)
+
         err.statusCode = 422
         throw err
     }
@@ -53,7 +53,7 @@ exports.postResult = async (req, res, next) => {
     const today = date.toLocaleDateString("vi-VN")
     const todayResult = await Result.findOne({ date: today })
     if (todayResult) {
-        const err = new Error("already have report for today")
+        const err = new Error("Already have report for today")
         err.statusCode = 422
         throw err
     }
@@ -70,9 +70,6 @@ exports.postResult = async (req, res, next) => {
 
     const currentPage = req.query.page
     const perPage = 9
-
-    console.log(jackpot, 'jackpot');
-    console.log(firstPrizes, 'firstPrizes');
 
     try {
 
@@ -104,8 +101,6 @@ exports.postResult = async (req, res, next) => {
             paginatedResults: paginatedResults
         })
 
-        console.log('posted')
-
     } catch (err) {
         next(err)
     }
@@ -118,7 +113,8 @@ exports.patchResult = async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         const error = errors.array()[0]
-        const err = new Error(`validation failed at ${error.param} : ${error.msg}`)
+        const err = new Error(error.msg)
+
         err.statusCode = 422
         throw err
     }
@@ -168,8 +164,6 @@ exports.patchResult = async (req, res, next) => {
             results: updatedResults,
             paginatedResults: paginatedResults
         })
-
-        console.log('updated')
 
     } catch (err) {
         next(err)

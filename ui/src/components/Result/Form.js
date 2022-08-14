@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { setResult, toggleModalAdd, toggleModalUpdate, addResult, updateResult, setValidation } from '../../flux/slices/resultsSlice';
 import Messenger from '../Messenger'
+import { prizesArr, titles } from '../../util/data';
 
 export const ResultForm = props => {
 
@@ -137,6 +138,8 @@ export const ResultForm = props => {
         }
     }
 
+    console.log(props.result?.prizesAmount, 555);
+
     return (
         <>
             <Messenger />
@@ -149,7 +152,7 @@ export const ResultForm = props => {
 
                 {(todayResult && !isUpdating) ? (
                     <Alert color="danger">
-                        ! already have report for today
+                        ! Already have report for today
                     </Alert>
                 ) : (
                     <>
@@ -159,32 +162,39 @@ export const ResultForm = props => {
                                 <FormText>
                                     <p className="mb-3">
                                         {/* hardcoded here */}
-                                        * each prize has <strong>x</strong> ticket(s) <br />
-                                        * each ticket has <strong>y</strong> NUMBERS and be seperated by a COMMA
+                                        * Each prize has <strong>x</strong> ticket(s) <br />
+                                        * Each ticket has <strong>y</strong> NUMBERS and be seperated by a COMMA
                                     </p>
                                 </FormText>
 
-                                {/* later : input for gening date & game & prizesAmount*/}
                                 {/* {prizesArr.map((item, index) => (
                                     <FormGroup
                                         floating
-                                        disabled={(item[index] <= prizesAmount)}
+                                        key={index}
+                                        disabled={index <= props.result?.prizesAmount}
                                     >
+                                        {console.log(validation[item], 1212)}
                                         <Input
                                             name={item}
                                             type="text"
                                             id={item}
                                             placeholder={titles[index]}
-                                            value={isUpdating || error ? results[index][`${item}`] : ''}
+                                            // value={isUpdating ? results[index][`${item}`] : ''}
+                                            value={pickedResult[item]?.winningValues?.length > 0 ? pickedResult.jackpot.winningValues : ''}
+                                            onChange={handleChange}
+                                            valid={validation[item]?.isValid}
+                                            invalid={!validation[item]?.isValid}
                                         />
                                         <Label for={item}>
                                             {titles[index]}
                                         </Label>
+                                        <FormFeedback invalid className="mx-3" >
+                                            notice the note
+                                        </FormFeedback>
                                     </FormGroup>
                                 ))} */}
 
 
-                                {/* hardcoded here */}
                                 <FormGroup floating >
                                     <Input
                                         name='jackpot'
@@ -198,7 +208,7 @@ export const ResultForm = props => {
                                         invalid={!validation.jackpot.isValid}
                                     />
                                     <Label for='jackpot'>
-                                        jackpot
+                                        Jackpot
                                     </Label>
                                     <FormFeedback invalid className="mx-3" >
                                         x=1,y=6
@@ -217,7 +227,7 @@ export const ResultForm = props => {
                                         invalid={!validation.firstPrizes.isValid}
                                     />
                                     <Label for='firstPrizes'>
-                                        firstPrizes
+                                        First Prizes
                                     </Label>
                                     <FormFeedback invalid className="mx-3" >
                                         x=3,y=6
@@ -236,7 +246,7 @@ export const ResultForm = props => {
                                         invalid={!validation.secondPrizes.isValid}
                                     />
                                     <Label for='secondPrizes'>
-                                        secondPrizes
+                                        Second Prizes
                                     </Label>
                                     <FormFeedback invalid className="mx-3" >
                                         x=3,y=5
@@ -255,7 +265,7 @@ export const ResultForm = props => {
                                         invalid={!validation.thirdPrizes.isValid}
                                     />
                                     <Label for='thirdPrizes'>
-                                        thirdPrizes
+                                        Third Prizes
                                     </Label>
                                     <FormFeedback invalid className="mx-3" >
                                         x=3,y=4
@@ -274,7 +284,7 @@ export const ResultForm = props => {
                                         invalid={!validation.fourthPrizes.isValid}
                                     />
                                     <Label for='fourthPrizes'>
-                                        fourthPrizes
+                                        Fourth Prizes
                                     </Label>
                                     <FormFeedback invalid className="mx-3" >
                                         x=3,y=3
@@ -293,7 +303,7 @@ export const ResultForm = props => {
                                         invalid={!validation.fifthPrizes.isValid}
                                     />
                                     <Label for='fifthPrizes'>
-                                        fifthPrizes
+                                        Fifth Prizes
                                     </Label>
                                     <FormFeedback invalid className="mx-3" >
                                         x=3,y=2

@@ -26,7 +26,8 @@ app.use('/users', UserRoutes)
 app.use('/tickets', TicketRoutes)
 
 app.use((err, req, res, next) => {
-    console.log(err);
+    console.log(145314);
+    console.log(err, 1491734);
     const status = err.statusCode || 500
     const message = err.message
     res.status(status).json({ message: message })

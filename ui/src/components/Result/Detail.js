@@ -20,9 +20,9 @@ export const ResultDetail = props => {
         >
             <thead>
                 <tr className={props.text ? `text-${props.text}` : "text-secondary"}>
-                    <th> prize </th>
-                    <th> winning values </th>
-                    <th> reward ($) </th>
+                    <th> Prize </th>
+                    <th> Winning values </th>
+                    <th> Reward ($) </th>
                 </tr>
             </thead>
             <tbody>
@@ -30,7 +30,7 @@ export const ResultDetail = props => {
 
                 {result.jackpot.winningValues.length > 0 && (
                     <tr>
-                        <th scope="row"> jackpot</th>
+                        <th scope="row"> Jackpot</th>
                         <td >
                             {result.jackpot.winningValues.map((value, index) => (
                                 <span
@@ -44,7 +44,7 @@ export const ResultDetail = props => {
 
                 {result.firstPrizes.winningValues.length > 0 && (
                     <tr>
-                        <th scope="row"> firstPrizes</th>
+                        <th scope="row"> First Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.firstPrizes.winningValues.map((value, index) => (
                                 <span
@@ -58,7 +58,7 @@ export const ResultDetail = props => {
 
                 {result.secondPrizes.winningValues.length > 0 && (
                     <tr>
-                        <th scope="row"> secondPrizes</th>
+                        <th scope="row"> Second Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.secondPrizes.winningValues.map((value, index) => (
                                 <span
@@ -72,7 +72,7 @@ export const ResultDetail = props => {
 
                 {result.thirdPrizes.winningValues.length > 0 && (
                     <tr>
-                        <th scope="row"> thirdPrizes</th>
+                        <th scope="row"> Third Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.thirdPrizes.winningValues.map((value, index) => (
                                 <span
@@ -86,7 +86,7 @@ export const ResultDetail = props => {
 
                 {result.fourthPrizes.winningValues.length > 0 && (
                     <tr>
-                        <th scope="row"> fourthPrizes</th>
+                        <th scope="row"> Fourth Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.fourthPrizes.winningValues.map((value, index) => (
                                 <span
@@ -100,7 +100,7 @@ export const ResultDetail = props => {
 
                 {result.fifthPrizes.winningValues.length > 0 && (
                     <tr>
-                        <th scope="row"> fifthPrizes</th>
+                        <th scope="row"> Fifth Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.fifthPrizes.winningValues.map((value, index) => (
                                 <span
@@ -113,39 +113,39 @@ export const ResultDetail = props => {
                 )}
 
                 {
-                    // result.sixthPrizes.winningValues.length > 0 && (
-                    //     <tr>
-                    //         <th scope="row"> sixthPrizes</th>
-                    //         <td className="d-flex flex-wrap justify-content-evenly">
-                    //             {result.sixthPrizes.winningValues.map(value => <span>{value}</span>)}
-                    //         </td>
-                    //         <td>{result.sixthPrizes.reward}</td>
-                    //     </tr>
-                    // )
+                    result?.sixthPrizes.winningValues.length > 0 && (
+                        <tr>
+                            <th scope="row"> Sixth Prizes</th>
+                            <td className="d-flex flex-wrap justify-content-evenly">
+                                {result?.sixthPrizes.winningValues.map(value => <span>{value}</span>)}
+                            </td>
+                            <td>{result?.sixthPrizes.reward}</td>
+                        </tr>
+                    )
                 }
 
                 {
-                    // result.seventhPrizes.winningValues.length > 0 && (
-                    //     <tr>
-                    //         <th scope="row"> seventhPrizes</th>
-                    //         <td className="d-flex flex-wrap justify-content-evenly">
-                    //             {result.seventhPrizes.winningValues.map(value => <span>{value}</span>)}
-                    //         </td>
-                    //         <td>{result.seventhPrizes.reward}</td>
-                    //     </tr>
-                    // )
+                    result?.seventhPrizes.winningValues.length > 0 && (
+                        <tr>
+                            <th scope="row"> Seventh Prizes</th>
+                            <td className="d-flex flex-wrap justify-content-evenly">
+                                {result.seventhPrizes.winningValues.map(value => <span>{value}</span>)}
+                            </td>
+                            <td>{result.seventhPrizes.reward}</td>
+                        </tr>
+                    )
                 }
 
                 {
-                    // result.eighthPrizes.winningValues.length > 0 && (
-                    //     <tr>
-                    //         <th scope="row"> eighthPrizes</th>
-                    //         <td className="d-flex flex-wrap justify-content-evenly">
-                    //             {result.eighthPrizes.winningValues.map(value => <span>{value}</span>)}
-                    //         </td>
-                    //         <td>{result.eighthPrizes.reward}</td>
-                    //     </tr>
-                    // )
+                    result?.eighthPrizes.winningValues.length > 0 && (
+                        <tr>
+                            <th scope="row"> Eighth Prizes</th>
+                            <td className="d-flex flex-wrap justify-content-evenly">
+                                {result.eighthPrizes.winningValues.map(value => <span>{value}</span>)}
+                            </td>
+                            <td>{result.eighthPrizes.reward}</td>
+                        </tr>
+                    )
                 }
 
             </tbody>

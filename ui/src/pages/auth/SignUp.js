@@ -4,15 +4,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import { isEmail, length, isMatch } from '../../util/validators'
-import { handleSingup } from '../../flux/slices/authSlice';
-import { fetchAllUsers } from '../../flux/slices/usersSlice';
+import { handleSingup, setError } from '../../flux/slices/authSlice';
 
 const SignUp = () => {
+
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const token = useSelector(state => state.auth.token)
-    const users = useSelector(state => state.users.users)
+    const error = useSelector(state => state.auth.error)
+    useEffect(() => {
+        dispatch(setError(error))
+    }, [error, dispatch])
 
     // later : sap xep vao store
     const [email, setEmail] = useState('') // use to get value to validate and change input
@@ -30,95 +32,110 @@ const SignUp = () => {
         const value = e.target.value
 
         if (name === 'email') {
-            const isValidated = isEmail(value) && length({ min: 6, max: 30 })(value)
-            if (isValidated) {
-                setEmailErr("")
-                setValidated('')
-            } else {
-                setEmailErr('incorrect email')
-            }
+            //     const isValidated = isEmail(value) && length({ min: 6, max: 30 })(value)
+            //     if (isValidated) {
+            //         setEmailErr("")
+            //         setValidated('')
+            //     } else {
+            //         setEmailErr('Incorrect email')
+            //     }
             setEmail(value)
         }
 
         if (name === 'password') {
-            const isValidated = length({ min: 6, max: 30 })(value)
-            if (isValidated) {
-                setPasswordErr("")
-                setValidated('')
-            } else {
-                setPasswordErr("6 characters minimum")
-            }
+            //     const isValidated = length({ min: 6, max: 30 })(value)
+            //     if (isValidated) {
+            //         setPasswordErr("")
+            //         setValidated('')
+            //     } else {
+            //         setPasswordErr("6 characters minimum")
+            //     }
             setPassword(value)
         }
 
         if (name === 'confirmPassword') {
-            const isValidated = isMatch(password)(value) && length({ min: 6, max: 30 })(value)
-            if (isValidated) {
-                setConfirmErr("")
-                setValidated('')
-            } else {
-                setConfirmErr("passwords did not match")
-            }
+            //     const isValidated = isMatch(password)(value) && length({ min: 6, max: 30 })(value)
+            //     if (isValidated) {
+            //         setConfirmErr("")
+            //         setValidated('')
+            //     } else {
+            //         setConfirmErr("Passwords did not match")
+            //     }
             setConfirmPassword(value)
         }
     }
 
 
 
-    const HandleSubmit = () => {
+    const HandleSubmit = async () => {
         const authData = {
             email: email,
             password: password,
             confirmPassword: confirmPassword
         }
 
-        const filledAll = email !== '' && password !== '' && confirmPassword !== ''
-        if (filledAll) {
-            setValidated('')
-        } else {
-            return setValidated('fill all input')
-        }
-
-        const validatedAll = emailErr === '' && passwordErr === '' && confirmErr === ''
-        if (validatedAll) {
-            setValidated('')
-        } else if (emailErr !== '') {
-            return setValidated(emailErr)
-        } else if (passwordErr !== '') {
-            return setValidated(passwordErr)
-        } else if (confirmErr !== '') {
-            return setValidated(confirmErr)
-        }
-
-        // const isValidEmail = users.find(user => user.email === email)
-        // if (isValidEmail) {
+        // const filledAll = email !== '' && password !== '' && confirmPassword !== ''
+        // if (filledAll) {
         //     setValidated('')
         // } else {
-        //     return setValidated('valid email')
+        //     return setValidated('Fill all input')
         // }
-        // console.log(isValidEmail) // dang loi fetch
 
+        // const validatedAll = emailErr === '' && passwordErr === '' && confirmErr === ''
+        // if (validatedAll) {
+        //     setValidated('')
+        // } else if (emailErr !== '') {
+        //     return setValidated(emailErr)
+        // } else if (passwordErr !== '') {
+        //     return setValidated(passwordErr)
+        // } else if (confirmErr !== '') {
+        //     return setValidated(confirmErr)
+        // }
 
-        // if (filledAll && validated === '' && !isValidEmail) {
-        dispatch(handleSingup(authData))
-        navigate('/Login')
-        // } else {
-        // navigate(-1)
+        // const test = await dispatch(handleSingup(authData))
+        // console.log(test)
+        // console.log(error === '', 14214)
+
+        dispatch(handleSingup(authData)).then((data) => {
+            console.log(data, 'data 1')
+            console.log(data.error?.message, 'data.error.message')
+            // return dispatch(setError(data.error.message))
+            // console.log(error, 'later 1')
+            if (!data.error?.message) {
+                dispatch(setError())
+                navigate('/login')
+            }
+        })
+            .then((data) => {
+                console.log(data, 'data 2')
+                console.log(error, 'later 2')
+            })
+
+        // dispatch(handleSingup(authData))
+        // dispatch(setError(error))
+        console.log(error, 'later 3')
+        // if (error === '') {
+        //     navigate('/login')
+        // }
+        // else {
+        //     navigate(-1)
         // }
 
     }
+    console.log(error, 'out')
 
     return (
         <div className="container pt-5 mw-100 d-flex justify-content-center">
             <Col xs="12" sm="11" md="9" lg="4">
                 <Form>
-                    <h1>SignUp</h1>
-                    {emailErr !== '' && <Alert color="danger">{emailErr}</Alert>}
+                    <h1>Sign Up</h1>
+                    {/* {emailErr !== '' && <Alert color="danger">{emailErr}</Alert>}
                     {passwordErr !== '' && <Alert color="danger">{passwordErr}</Alert>}
                     {confirmErr !== '' && <Alert color="danger">{confirmErr}</Alert>}
-                    {validated !== '' && <Alert color="danger">{validated}</Alert>}
+                    {validated !== '' && <Alert color="danger">{validated}</Alert>} */}
+                    {error !== '' && <Alert color="danger">{error}</Alert>}
                     <FormGroup className="mt-3">
-                        <Label>email</Label>
+                        <Label>Email</Label>
                         <Input
                             name="email"
                             type="email"
@@ -128,7 +145,7 @@ const SignUp = () => {
                         />
                     </FormGroup>
                     <FormGroup className="mt-3">
-                        <Label>password</Label>
+                        <Label>Password</Label>
                         <Input
                             name="password"
                             type="password"
@@ -138,7 +155,7 @@ const SignUp = () => {
                         />
                     </FormGroup>
                     <FormGroup className="mt-3">
-                        <Label>confirm password</Label>
+                        <Label>Confirm password</Label>
                         <Input
                             name="confirmPassword"
                             type="password"
@@ -154,11 +171,11 @@ const SignUp = () => {
                         disabled={validated !== ''}
                         onClick={HandleSubmit}
                     >
-                        SignUp
+                        Sign Up
                     </Button>
                     <div className="text-center mt-4">
-                        <FormText>already have an account ?</FormText>
-                        <span> <Link to="/login"> login</Link></span>
+                        <FormText>Already have an account ?</FormText>
+                        <span> <Link to="/login"> Login</Link></span>
                     </div>
                 </Form>
             </Col>

@@ -2,21 +2,15 @@
 export const prizesArr = [
     'jackpot', 'firstPrizes', 'secondPrizes', 
     'thirdPrizes', 'fourthPrizes', 'fifthPrizes', 
-    // 'sixthPrizes', 'sevenPrizes', 'eightPrizes'
+    'sixthPrizes', 'sevenPrizes', 'eightPrizes'
 ]
-
-// const test = [
-//     'jackpot', 'firstPrizes', 'secondPrizes', 
-//     'thirdPrizes', 'fourthPrizes', 'fifthPrizes', 
-//     'sixthPrizes', 'sevenPrizes', 'eightPrizes'
-// ]
-
 
 export const titles = [
-    'jackpot', '1st prizes', '2nd prizes', 
+    'Jackpot', '1st prizes', '2nd prizes', 
     '3rd prizes', '4th prizes', '5th prizes', 
-    // '6th prizes', '7th prizes', '8th prizes'
+    '6th prizes', '7th prizes', '8th prizes'
 ]
+
 
 export const games = [
     {
@@ -487,18 +481,6 @@ export const results = [
     },
 ]
 
-// export const testF = () => {
-//     return results.map((result, index) => {
-//         if (+result[index] <= +result.prizesAmount) {
-//             console.log(result[index], 123)
-//             console.log(result.prizesAmount, 456)
-//             console.log(test[index], test[index].toString(), 789)
-//             return prizesArr.push(test[index].toString())
-//         } else {
-//             return null
-//         }
-//     })
-// }
 
 export const users =
     [

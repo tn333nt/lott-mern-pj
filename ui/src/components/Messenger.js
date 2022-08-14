@@ -80,7 +80,7 @@ const Messenger = props => {
                             outline
                             className="mx-3 py-1 px-3"
                             onClick={toggle}
-                        > ok </Button>
+                        > OK </Button>
                     </ModalFooter>
 
                 </Modal>
@@ -99,14 +99,14 @@ const Messenger = props => {
                             outline
                             className="mx-3 py-1 px-3"
                             onClick={handleAccept}
-                        > accept
+                        > Accept
                         </Button>
                         <Button
                             color="dark"
                             outline
                             className="mx-3 py-1 px-3"
                             onClick={handleCancel}
-                        > cancel
+                        > Cancel
                         </Button>
                     </ModalFooter>
 

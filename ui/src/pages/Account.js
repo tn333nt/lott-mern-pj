@@ -59,7 +59,7 @@ const Account = () => {
                 setConfirmErr("")
                 setValidated('')
             } else {
-                setConfirmErr("passwords did not match")
+                setConfirmErr("Passwords did not match")
                 setSuccessText('')
             }
             setConfirmPassword(value)
@@ -79,7 +79,7 @@ const Account = () => {
         if (filledAll) {
             setValidated('')
         } else {
-            return setValidated('fill all input')
+            return setValidated('Fill all input')
         }
 
         const validatedAll = oldErr === '' && newErr === '' && confirmErr === ''
@@ -97,7 +97,7 @@ const Account = () => {
         setOldPassword('')
         setNewPassword('')
         setConfirmPassword('')
-        setSuccessText('changed')
+        setSuccessText('Your password has been changed successfully')
 
     }
 
@@ -106,7 +106,7 @@ const Account = () => {
             <Row>
                 <Col xs="12" md="6" className="d-flex justify-content-center">
                     <Form inline className="w-75">
-                        <h1 className="mb-5 text-dark text-center"><mark>personal information</mark></h1>
+                        <h1 className="mb-5 text-dark text-center"><mark>Personal Information</mark></h1>
                         <h3 className="mb-5 text-danger text-center">{user.email}</h3>
                         <FormGroup floating className="mt-3">
                             <Input
@@ -116,7 +116,7 @@ const Account = () => {
                                 value={user.fullName}
                                 disabled
                             />
-                            <Label>username</Label>
+                            <Label>Username</Label>
                         </FormGroup>
                         <FormGroup floating className="mt-3">
                             <Input
@@ -126,7 +126,7 @@ const Account = () => {
                                 value={user.mobile}
                                 disabled
                             />
-                            <Label>mobile</Label>
+                            <Label>Mobile</Label>
                         </FormGroup>
                         <FormGroup floating className="mt-3">
                             <Input
@@ -136,7 +136,7 @@ const Account = () => {
                                 value={user.country}
                                 disabled
                             />
-                            <Label>country</Label>
+                            <Label>Country</Label>
                         </FormGroup>
                         <FormGroup floating className="mt-3">
                             <Input
@@ -146,7 +146,7 @@ const Account = () => {
                                 value={user.city}
                                 disabled
                             />
-                            <Label>city</Label>
+                            <Label>City</Label>
                         </FormGroup>
                         <FormGroup floating className="mt-3">
                             <Input
@@ -156,26 +156,26 @@ const Account = () => {
                                 value={user.address}
                                 disabled
                             />
-                            <Label>address</Label>
+                            <Label>Address</Label>
                         </FormGroup>
                         <Button block
                             color="danger"
                             size="lg"
                             className="mt-4"
                             disabled
-                        >update</Button>
+                        >Update</Button>
                     </Form>
                 </Col>
                 <Col xs="12" md="6" className="d-flex justify-content-center">
                     <Form inline>
-                        <h1 className="mb-5 text-danger text-center">change password</h1>
+                        <h1 className="mb-5 text-danger text-center">Change Password</h1>
 
                         {oldErr !== '' && <Alert color="danger">{oldErr}</Alert>}
                         {newErr !== '' && <Alert color="danger">{newErr}</Alert>}
                         {confirmErr !== '' && <Alert color="danger">{confirmErr}</Alert>}
                         {validated !== '' && <Alert color="danger">{validated}</Alert>}
                         {validated === '' && successText !== '' && <Alert color="success">{successText}</Alert>}
-                        
+
                         <FormGroup floating className="mt-3">
                             <Input
                                 name="oldPassword"
@@ -183,7 +183,7 @@ const Account = () => {
                                 bsSize="lg"
                                 onChange={handleChange}
                             />
-                            <Label> old password</Label>
+                            <Label>Old password</Label>
                         </FormGroup>
                         <FormGroup floating className="mt-3">
                             <Input
@@ -192,7 +192,7 @@ const Account = () => {
                                 bsSize="lg"
                                 onChange={handleChange}
                             />
-                            <Label>new password</Label>
+                            <Label>New password</Label>
                         </FormGroup>
                         <FormGroup floating className="mt-3">
                             <Input
@@ -201,7 +201,7 @@ const Account = () => {
                                 bsSize="lg"
                                 onChange={handleChange}
                             />
-                            <Label>confirm new password</Label>
+                            <Label>Confirm new password</Label>
                         </FormGroup>
                         <Button block
                             color="dark"
@@ -210,7 +210,7 @@ const Account = () => {
                             disabled={validated !== ''}
                             onClick={HandleSubmit}
                         >
-                            change
+                            Change
                         </Button>
                     </Form>
                 </Col>

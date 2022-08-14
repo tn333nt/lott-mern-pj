@@ -119,33 +119,29 @@ exports.changePassword = async (req, res, next) => {
     const newPassword = req.body.newPassword.trim().toString()
     const confirmPassword = req.body.confirmPassword.trim().toString()
 
-    console.log(oldPassword, newPassword, confirmPassword, 123)
-
     try {
         const user = await User.findById(userId)
         if (!user) {
-            const err = new Error('no found user')
+            const err = new Error('Not found user')
             err.statusCode = 404
             throw err
         }
-        
+
         // compare old pw with data in db
         const isValid = await bcrypt.compare(oldPassword, user.password) || oldPassword === 'unhasedPassForTempData'
         if (!isValid) {
-            const err = new Error('wrong password')
+            const err = new Error('Wrong password')
             err.statusCode = 401
             throw err
         }
-        
+
         // compare new pw with confirm
         const isMatched = newPassword === confirmPassword
         if (!isMatched) {
-            const err = new Error('passwords did not match')
+            const err = new Error('Passwords did not match')
             err.statusCode = 422
             throw err
         }
-
-        console.log(isValid, isMatched)
 
         const hashedPassword = await bcrypt.hash(newPassword, 12)
         user.password = hashedPassword
