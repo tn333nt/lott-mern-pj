@@ -27,12 +27,11 @@ export const Header = props => {
     const [isOpen, setIsOpen] = useState(false)
     const toggle = () => setIsOpen(!isOpen)
 
-    const isAuth = useSelector(state => state.auth.isAuth)
-    const user = useSelector(state => state.auth.user)
+    const { isAuth, user } = useSelector(state => state.auth)
 
     const handleLogOut = () => {
         dispatch(handleLogout())
-        navigate('/Login')
+        navigate('/login')
     }
 
 
@@ -61,7 +60,7 @@ export const Header = props => {
                                             <Link className="nav-link fs-3 px-5" to="/account">Account</Link>
                                         </NavItem>
                                         <NavItem>
-                                            <Button className="nav-link fs-3 btn-light" onClick={handleLogOut}>Logout</Button>
+                                            <Button className="nav-link fs-3 px-5 btn-light" onClick={handleLogOut}>Logout</Button>
                                         </NavItem>
                                     </>
                                 )}
@@ -73,22 +72,23 @@ export const Header = props => {
                                     Management
                                 </DropdownToggle>
                                 <DropdownMenu right>
-                                    {((user && !user.isAdmin) || !isAuth) && (
+                                    {/* vi htai co them case !isAuth && user */}
+                                    {((isAuth && user && !user.isAdmin) || !isAuth) && (
                                         <DropdownItem>
                                             <Link className="nav-link fs-3" to="/">Check the ticket</Link>
                                         </DropdownItem>
                                     )}
-                                    {user && user.isAdmin && (
+                                    {isAuth && user && user.isAdmin && (
                                         <DropdownItem>
                                             <Link className="nav-link fs-3" to="/results">Results</Link>
                                         </DropdownItem>
                                     )}
-                                    {user && user.isAdmin && (
+                                    {isAuth && user && user.isAdmin && (
                                         <DropdownItem>
                                             <Link className="nav-link fs-3" to="/users">Users</Link>
                                         </DropdownItem>
                                     )}
-                                    {user && user.isAdmin && (
+                                    {isAuth && user && user.isAdmin && (
                                         <DropdownItem>
                                             <Link className="nav-link fs-3" to="/switch">Switch</Link>
                                         </DropdownItem>

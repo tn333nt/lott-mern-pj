@@ -9,13 +9,13 @@ const HistoryCheck = () => {
 
     const dispatch = useDispatch()
 
-    const token = useSelector(state => state.auth.token)
-    const user = useSelector(state => state.auth.user)
+    const { token, user } = useSelector(state => state.auth)
 
     const handleDeleteAll = () => {
         dispatch(deleteAllTickets(token))
     }
 
+    console.log(typeof token, 124917294719)
 
     return (
         <>
@@ -52,7 +52,7 @@ const HistoryCheck = () => {
                     <tbody>
                         {user && user?.historyCheck?.length > 0 && user?.historyCheck.map((check, index) => (
                             <tr key={check}>
-                                <th scope="row">{+index+1}</th>
+                                <th scope="row">{+index + 1}</th>
                                 <td>{check.date}</td>
                                 <td>{check.value}</td>
                                 <td>{check.wonPrize}</td>

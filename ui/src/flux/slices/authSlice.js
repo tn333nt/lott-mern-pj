@@ -1,4 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+// not functional comp
+import { useDispatch } from 'react-redux'
+import usersSlice, { test } from './usersSlice'
+// loi vong lap
+// import store from '../store'
+
+console.log(usersSlice)
+console.log(usersSlice.actions)
 
 
 export const resetPassword = createAsyncThunk('resetPassword', async (email) => {
@@ -11,13 +19,16 @@ export const resetPassword = createAsyncThunk('resetPassword', async (email) => 
         }
     })
 
+    const data = await res.json()
+
     if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to reset')
+        throw new Error(data.message)
     }
+
+    return data
 })
 
 export const handleSingup = createAsyncThunk('handleSingup', async (authData) => {
-
     const url = "http://localhost:8080/auth/signup"
 
     const res = await fetch(url, {
@@ -27,10 +38,8 @@ export const handleSingup = createAsyncThunk('handleSingup', async (authData) =>
     })
 
     const data = await res.json()
-    console.log(data, 909090)
 
     if (res.status !== 200 && res.status !== 201) {
-        console.log(data, 909090)
         throw new Error(data.message)
     }
 
@@ -106,104 +115,193 @@ export const changePassword = createAsyncThunk('changePassword', async (authData
 })
 
 
+const loginInput = {
+    email: '',
+    password: '',
+}
+
+
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
         isAuth: false,
         token: null,
         user: null,
-        isLoading: false,
-        error: ''
+        isAuthLoading: false,
+        error: '',
+        loginInput,
     },
     reducers: {
-        // setAutoLogout: (state, action) => {
-        //     // later : set expiredate
-        // },
+//         setAutoLogout: (state, action) => {
+//             // set expiredate
+//             console.log(+action.payload, 2164821)
+// // sao 0 roi ma no ko chay ham ?
+//             setTimeout(() => {
+//                 // handleLogout()
+
+//                 console.log(681648236428)
+//                 // https://stackoverflow.com/a/53448635
+//                 state.isAuth = false
+//                 state.token = null
+//                 state.user = null
+
+//                 // localStorage.clear()
+//                 localStorage.removeItem('user')
+//                 // authSlice.actions.handleLogout()
+
+//             }, +action.payload);
+
+//         },
         handleLogout: (state, action) => {
             state.isAuth = false
             state.token = null
             state.user = null
+            state.error = ''
+
+            localStorage.clear()
         },
-        setError: (state, action) => {
+        setAuthError: (state, action) => {
             state.error = action.payload ? action.payload : ''
         },
+        setLoginInput: (state, action) => {
+            state.loginInput = action.payload ? action.payload : loginInput
+        },
         setUser: (state, action) => {
+            console.log(action.payload, 94808429084092)
             state.user = action.payload
         },
+        setToken: (state, action) => {
+            state.token = action.payload
+        },
+        setIsAuth: (state, action) => {
+            state.isAuth = action.payload
+        },
+        setAuthLoading: (state, action) => {
+            state.isAuthLoading = action.payload
+        },
     },
+
     extraReducers: builder => {
         builder
             .addCase(handleSingup.pending, (state, action) => {
-                state.isLoading = true
+                state.isAuthLoading = true
+                state.error = ''
             })
             .addCase(handleSingup.fulfilled, (state, action) => {
                 state.isAuth = false
-                state.isLoading = false
-                state.user = action.payload.user
+                state.isAuthLoading = false
+                state.error = ''
+                state.loginInput = action.payload
+                // state.user = action.payload.user
+                // maybe cuz of using user to check isAuth T sometimes => crash with isAuth F
+                // => fix : check token , not user
+                // or : diff state to save input
 
             })
             .addCase(handleSingup.rejected, (state, action) => {
-                console.log(action.error.message)
                 state.isAuth = false
-                state.isLoading = false
+                state.isAuthLoading = false
                 state.error = action.error.message
             })
 
             .addCase(handleLogin.pending, (state, action) => {
-                state.isLoading = true
+                state.isAuthLoading = true
+                state.error = ''
             })
             .addCase(handleLogin.fulfilled, (state, action) => {
                 state.isAuth = true
-                state.isLoading = false
+                state.isAuthLoading = false
+                state.error = ''
+
+                console.log(action.payload, 'action.payload')
+
+                // save to local memory (state)
                 state.token = action.payload.token
                 state.user = action.payload.user
+
+                const remainingMilliseconds = 60 * 60 * 1000
+                const expiryDate = new Date(
+                    new Date().getTime() + remainingMilliseconds
+                );
+                // expiryDate.setHours(expiryDate.getHours() + 7)
+
+                console.log(expiryDate.toISOString(), 52759)
+
+                // save to browser's memory (LS)
+                localStorage.setItem('token', action.payload.token)
+                localStorage.setItem('user', JSON.stringify(action.payload.user))
+                localStorage.setItem('expiryDate', expiryDate.toISOString())
+                // setAutoLogout(remainingMilliseconds)
+                // test()
+                // authSlice.actions.setAutoLogout(remainingMilliseconds)
+
+                // const dispatch = useDispatch()
+                // dispatch(test())
+
+                console.log(authSlice)
+                // console.log(store.getState())
 
             })
             .addCase(handleLogin.rejected, (state, action) => {
                 console.log(action.error.message)
                 state.isAuth = false
-                state.isLoading = false
-                state.error = action.error
+                state.isAuthLoading = false
+                state.error = action.error.message
+            })
+
+            .addCase(resetPassword.pending, (state, action) => {
+                state.isAuthLoading = true
+            })
+            .addCase(resetPassword.fulfilled, (state, action) => {
+                state.error = ''
+            })
+            .addCase(resetPassword.rejected, (state, action) => {
+                state.isAuthLoading = false
+                state.error = action.error.message
             })
 
             .addCase(changePassword.pending, (state, action) => {
-                state.isLoading = true
+                state.isAuthLoading = true
             })
             .addCase(changePassword.fulfilled, (state, action) => {
                 state.user = action.payload.user
+                localStorage.setItem('user', JSON.stringify(action.payload.user))
             })
             .addCase(changePassword.rejected, (state, action) => {
-                state.isLoading = false
-                state.error = action.error
+                state.isAuthLoading = false
+                state.error = action.error.message
             })
 
             .addCase(postTicket.pending, (state, action) => {
-                state.isLoading = true
+                state.isAuthLoading = true
             })
             .addCase(postTicket.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isAuthLoading = false
+                // update ui immediately
                 state.user = action.payload.user
+                // update after refresh page
+                localStorage.setItem('user', JSON.stringify(action.payload.user))
+
             })
             .addCase(postTicket.rejected, (state, action) => {
-                state.isLoading = false
+                state.isAuthLoading = false
                 state.message = action.error.message
             })
+
             .addCase(deleteAllTickets.pending, (state, action) => {
-                state.isLoading = true
+                state.isAuthLoading = true
             })
             .addCase(deleteAllTickets.fulfilled, (state, action) => {
-                console.log(action.payload, 'action.payload')
-                console.log(action.payload.user, 'action.payload')
-                state.isLoading = false
-                state.user = action.payload.user
+                state.isAuthLoading = false
                 state.message = "deleted all"
+                state.user = action.payload.user
+                localStorage.setItem('user', JSON.stringify(action.payload.user))
 
             })
             .addCase(deleteAllTickets.rejected, (state, action) => {
-                state.isLoading = false
+                state.isAuthLoading = false
                 state.message = action.error.message
             })
-
 
     }
 })
@@ -211,8 +309,12 @@ const authSlice = createSlice({
 export const {
     handleLogout,
     setAutoLogout,
-    setError,
-    setUser
+    setAuthError,
+    setLoginInput,
+    setUser,
+    setToken,
+    setIsAuth,
+    setAuthLoading
 } = authSlice.actions
 
 export default authSlice.reducer

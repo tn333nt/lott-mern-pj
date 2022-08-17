@@ -3,40 +3,31 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
-import { isEmail, length } from '../../util/validators'
-import { resetPassword } from '../../flux/slices/authSlice';
+import { resetPassword, setAuthError } from '../../flux/slices/authSlice';
 
 const ResetPassword = () => {
 
     const dispatch = useDispatch()
 
-    const [email, setEmail] = useState('')
+    const { error } = useSelector(state => state.auth)
 
-    const [validated, setValidated] = useState('')
+    const [email, setEmail] = useState('')
     const [successText, setSuccessText] = useState('')
 
     const handleChange = e => {
         const value = e.target.value
         setEmail(value)
-
-        const isValidated = isEmail(value) && length({ min: 6, max: 30 })(value)
-        !isValidated && setValidated('Incorrect email')
-        isValidated && setValidated('')
     }
 
-    const HandleResetPassword = () => {
-        if (email === '') {
-            return setValidated('Fill your email')
+    const HandleSubmit = async () => {
+        const data = await dispatch(resetPassword(email))
+        if (data.payload) {
+            dispatch(setAuthError())
+            setSuccessText('Reset password was sent successfully to your e-mail')
         }
-
-        // const isValid = users.find(user => user.email === email)
-        // if (!isValid) {
-        //     return setValidated('Not found email')
-        // }
-
-        dispatch(resetPassword(email))
-        setSuccessText('The new password has been sent to your email')
-
+        if (data.error) {
+            setSuccessText('')
+        }
     }
 
     return (
@@ -45,8 +36,8 @@ const ResetPassword = () => {
                 <Form>
                     <h1>Reset Password</h1>
                     <FormText>We'll email you the new password to login</FormText>
-                    {validated !== '' && <Alert color="danger">{validated}</Alert>}
-                    {validated === '' && successText !== '' && <Alert color="success">{successText}</Alert>}
+                    {error !== '' && <Alert color="danger">{error}</Alert>}
+                    {successText !== '' && <Alert color="success">{successText}</Alert>}
                     <FormGroup className="mt-3">
                         <Label>Email</Label>
                         <Input
@@ -57,9 +48,9 @@ const ResetPassword = () => {
                             onChange={handleChange}
                         />
                     </FormGroup>
-                    <Button block color="dark" size="lg" onClick={HandleResetPassword} className="mt-4">Reset</Button>
+                    <Button block color="dark" size="lg" onClick={HandleSubmit} className="mt-4">Reset</Button>
                     <div className="text-center mt-3">
-                        <Link to="/login">Back to login</Link>
+                        <Link to="/login">Back to ogin</Link>
                     </div>
                 </Form>
             </Col>

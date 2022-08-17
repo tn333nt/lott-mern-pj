@@ -18,30 +18,23 @@ exports.signup = async (req, res, next) => {
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        const error = errors.array()
-        // let msg = []
-        // error.forEach(e => msg.push(e.msg))
-        // const err = new Error(msg)
-        const err = new Error(error[0].msg)
+        const error = errors.array()[0]
+        const err = new Error(error.msg)
         err.statusCode = 422
-        // throw err
-        // const err = {message: msg, statusCode: 422}
         next(err)
     }
 
-    const email = req.body.email
-    const password = req.body.password
-    const confirmPassword = req.body.confirmPassword
+    const { email, password } = req.body
 
     try {
-        // const isMatched = password === confirmPassword
-        // if (!isMatched) {
-        //     const err = new Error('Passwords did not match')
-        //     err.statusCode = 422
-        //     throw err
-        // }
 
         if (errors.isEmpty()) {
+            const validUser = await User.findOne({ email: email })
+            if (validUser) {
+                const err = new Error('Email already exists')
+                err.statusCode = 409 // conflict with the current state
+                throw err
+            }
 
             const hashedPassword = await bcrypt.hash(password, 12)
             const user = new User({
@@ -49,8 +42,8 @@ exports.signup = async (req, res, next) => {
                 password: hashedPassword
             })
             await user.save()
-    
-            res.status(201).json({ user: user })
+
+            res.status(201).json({ email: email, password: password })
         }
 
     } catch (err) {
@@ -62,8 +55,15 @@ exports.signup = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
 
-    const email = req.body.email
-    const password = req.body.password
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        const error = errors.array()[0]
+        const err = new Error(error.msg)
+        err.statusCode = 422
+        next(err)
+    }
+
+    const { email, password } = req.body
 
     try {
         const user = await User.findOne({ email: email })
@@ -95,6 +95,15 @@ exports.login = async (req, res, next) => {
 }
 
 exports.resetPassword = async (req, res, next) => {
+
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        const error = errors.array()[0]
+        const err = new Error(error.msg)
+        err.statusCode = 422
+        next(err)
+    }
+
     const email = req.body.email
 
     try {
@@ -124,6 +133,8 @@ exports.resetPassword = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(newPassword, 12)
         user.password = hashedPassword
         await user.save()
+
+        res.status(201).json({})
 
     } catch (err) {
         next(err)

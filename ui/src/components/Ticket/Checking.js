@@ -4,7 +4,7 @@ import { Input, Button, Form, Alert, FormGroup, Label } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
 import { isNumber, length } from '../../util/validators';
-import { setError, setIndexes, setMessage, setSuccess, setTicket } from '../../flux/slices/ticketsSlice';
+import { setCheckingError, setIndexes, setCheckingMessage, setCheckingSuccess, setTicket } from '../../flux/slices/ticketsSlice';
 import { setResult } from '../../flux/slices/resultsSlice';
 import { postTicket } from '../../flux/slices/authSlice';
 
@@ -104,10 +104,10 @@ const CheckTicket = () => {
                     },
                     token: token
                 }))
-                dispatch(setSuccess('you have won the jackpot'))
+                dispatch(setCheckingSuccess('you have won the jackpot'))
                 // clear old state
-                dispatch(setMessage())
-                dispatch(setError())
+                dispatch(setCheckingMessage())
+                dispatch(setCheckingError())
             } else if (indexChecking1P !== -1) {
                 isAuth && dispatch(postTicket({
                     ticket: {
@@ -116,9 +116,9 @@ const CheckTicket = () => {
                     },
                     token: token
                 }))
-                dispatch(setSuccess('you have won the first prize'))
-                dispatch(setMessage())
-                dispatch(setError())
+                dispatch(setCheckingSuccess('you have won the first prize'))
+                dispatch(setCheckingMessage())
+                dispatch(setCheckingError())
             } else if (indexChecking2P !== -1) {
                 isAuth && dispatch(postTicket({
                     ticket: {
@@ -127,9 +127,9 @@ const CheckTicket = () => {
                     },
                     token: token
                 }))
-                dispatch(setSuccess('you have won the second prize'))
-                dispatch(setMessage())
-                dispatch(setError())
+                dispatch(setCheckingSuccess('you have won the second prize'))
+                dispatch(setCheckingMessage())
+                dispatch(setCheckingError())
             } else if (indexChecking3P !== -1) {
                 isAuth && dispatch(postTicket({
                     ticket: {
@@ -138,9 +138,9 @@ const CheckTicket = () => {
                     },
                     token: token
                 }))
-                dispatch(setSuccess('you have won the third prize'))
-                dispatch(setMessage())
-                dispatch(setError())
+                dispatch(setCheckingSuccess('you have won the third prize'))
+                dispatch(setCheckingMessage())
+                dispatch(setCheckingError())
             } else if (indexChecking4P !== -1) {
                 isAuth && dispatch(postTicket({
                     ticket: {
@@ -149,9 +149,9 @@ const CheckTicket = () => {
                     },
                     token: token
                 }))
-                dispatch(setSuccess('you have won the fourth prize'))
-                dispatch(setMessage())
-                dispatch(setError())
+                dispatch(setCheckingSuccess('you have won the fourth prize'))
+                dispatch(setCheckingMessage())
+                dispatch(setCheckingError())
             } else if (indexChecking5P !== -1) {
                 isAuth && dispatch(postTicket({
                     ticket: {
@@ -160,9 +160,9 @@ const CheckTicket = () => {
                     },
                     token: token
                 }))
-                dispatch(setSuccess('you have won the fifth prize'))
-                dispatch(setMessage())
-                dispatch(setError())
+                dispatch(setCheckingSuccess('you have won the fifth prize'))
+                dispatch(setCheckingMessage())
+                dispatch(setCheckingError())
             } else {
                 // neu ko trung
                 const ticket = {
@@ -170,9 +170,9 @@ const CheckTicket = () => {
                     token: token
                 }
                 isAuth && dispatch(postTicket(ticket))
-                dispatch(setMessage('no won any prize'))
-                dispatch(setSuccess())
-                dispatch(setError())
+                dispatch(setCheckingMessage('no won any prize'))
+                dispatch(setCheckingSuccess())
+                dispatch(setCheckingError())
 
                 // clear input
                 dispatch(setTicket())
@@ -183,9 +183,9 @@ const CheckTicket = () => {
 
         } else {
             // neu ko co result cua ngay dc tim
-            dispatch(setError('Not found result'))
-            dispatch(setSuccess())
-            dispatch(setMessage())
+            dispatch(setCheckingError('Not found result'))
+            dispatch(setCheckingSuccess())
+            dispatch(setCheckingMessage())
 
             // still pass date in to render
             dispatch(setResult({

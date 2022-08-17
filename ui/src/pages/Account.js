@@ -10,8 +10,7 @@ const Account = () => {
 
     const dispatch = useDispatch()
 
-    const user = useSelector(state => state.auth.user)
-    const token = useSelector(state => state.auth.token)
+    const { user, token } = useSelector(state => state.auth)
 
     const [oldPassword, setOldPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
@@ -26,8 +25,7 @@ const Account = () => {
 
 
     const handleChange = e => {
-        const name = e.target.name
-        const value = e.target.value
+        const { name, value } = e.target
 
         if (name === 'oldPassword') {
             const isValidated = length({ min: 6, max: 30 })(value)
@@ -97,7 +95,7 @@ const Account = () => {
         setOldPassword('')
         setNewPassword('')
         setConfirmPassword('')
-        setSuccessText('Your password has been changed successfully')
+        setSuccessText('Password changed successfully')
 
     }
 

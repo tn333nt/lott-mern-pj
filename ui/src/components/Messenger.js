@@ -5,7 +5,7 @@ import { Button } from 'reactstrap';
 import { useLocation } from 'react-router-dom';
 
 import {
-    deleteAllUsers, deleteUser, setUser,
+    deleteAllUsers, deleteUser, setPickedUser,
     toggleModalMessage as toggleUserMessage
 } from '../flux/slices/usersSlice';
 
@@ -53,13 +53,13 @@ const Messenger = props => {
         }
 
         dispatch(toggleUserMessage())
-        dispatch(setUser())
+        dispatch(setPickedUser())
 
     }
 
     const handleCancel = () => {
         dispatch(toggleUserMessage())
-        dispatch(setUser())
+        dispatch(setPickedUser())
         dispatch(toggleResultMessage())
         dispatch(setResult())
     }

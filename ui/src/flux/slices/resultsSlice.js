@@ -114,7 +114,7 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
     name: 'results',
 
     initialState: {
-        isLoading: false,
+        isResultsLoading: false,
         results: [], // save all results
         searchedResults: [],
         paginatedResults: [], // results r rendered in each page
@@ -210,10 +210,10 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
     extraReducers: builder => {
         builder
             .addCase(fetchAllResults.pending, (state, action) => {
-                state.isLoading = true
+                state.isResultsLoading = true
             })
             .addCase(fetchAllResults.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isResultsLoading = false
                 state.results = action.payload.results
 
                 state.searchedResults = action.payload.searchedResults
@@ -221,36 +221,36 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
 
             })
             .addCase(fetchAllResults.rejected, (state, action) => {
-                state.isLoading = false
+                state.isResultsLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
             // C
             .addCase(addResult.pending, (state, action) => {
-                state.isLoading = true
+                state.isResultsLoading = true
             })
             .addCase(addResult.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isResultsLoading = false
                 state.results = action.payload.results
                 state.paginatedResults = action.payload.paginatedResults
             })
             .addCase(addResult.rejected, (state, action) => {
                 console.log(action.error.message, 'action.error.message2')
-                state.isLoading = false
+                state.isResultsLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
             // U
             .addCase(updateResult.pending, (state, action) => {
-                state.isLoading = true
+                state.isResultsLoading = true
             })
             .addCase(updateResult.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isResultsLoading = false
                 state.results = action.payload.results
                 state.paginatedResults = action.payload.paginatedResults
             })
             .addCase(updateResult.rejected, (state, action) => {
-                state.isLoading = false
+                state.isResultsLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })

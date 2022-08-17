@@ -91,7 +91,7 @@ export const deleteAllUsers = createAsyncThunk('deleteAllUsers', async () => {
 
 
 
-const initialUser = {
+const pickedUser = {
     email: '',
     password: '',
     isAdmin: false,
@@ -104,11 +104,11 @@ const usersSlice = createSlice({
     name: 'users',
 
     initialState: {
-        isLoading: false,
+        isUsersLoading: false,
         users: [],
         searchedUsers: [],
         paginatedUsers: [],
-        pickedUser: initialUser,
+        pickedUser,
         currentPage: 1,
         isOpen: {
             updateModal: false,
@@ -135,8 +135,8 @@ const usersSlice = createSlice({
         setSearchText: (state, action) => {
             state.searchText = action.payload
         },
-        setUser: (state, action) => {
-            state.pickedUser = action.payload ? action.payload : initialUser
+        setPickedUser: (state, action) => {
+            state.pickedUser = action.payload ? action.payload : pickedUser
         },
 
         fetchPreviousPage: (state) => {
@@ -147,16 +147,20 @@ const usersSlice = createSlice({
         },
         fetchExactPage: (state, action) => {
             state.currentPage = action.payload
-        }
+        },
+        test: (state, action) => {
+            alert('alo')
+            console.log(235619256295629)
+        },
     },
 
     extraReducers: builder => {
         builder
             .addCase(fetchAllUsers.pending, (state, action) => {
-                state.isLoading = true
+                state.isUsersLoading = true
             })
             .addCase(fetchAllUsers.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.users = action.payload.users
 
                 state.searchedUsers = action.payload.searchedUsers
@@ -164,44 +168,44 @@ const usersSlice = createSlice({
 
             })
             .addCase(fetchAllUsers.rejected, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
            
             .addCase(addUser.pending, (state, action) => {
-                state.isLoading = true
+                state.isUsersLoading = true
             })
             .addCase(addUser.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.users = action.payload.users
                 state.paginatedUsers = action.payload.paginatedUsers
             })
             .addCase(addUser.rejected, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
            
             .addCase(setAdmin.pending, (state, action) => {
-                state.isLoading = true
+                state.isUsersLoading = true
             })
             .addCase(setAdmin.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.users = action.payload.users
                 state.paginatedUsers = action.payload.paginatedUsers
             })
             .addCase(setAdmin.rejected, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
            
             .addCase(deleteUser.pending, (state, action) => {
-                state.isLoading = true
+                state.isUsersLoading = true
             })
             .addCase(deleteUser.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.isOpen.messageModal = true
                 state.message = "delete successfully"
 
@@ -210,15 +214,15 @@ const usersSlice = createSlice({
 
             })
             .addCase(deleteUser.rejected, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
             .addCase(deleteAllUsers.pending, (state, action) => {
-                state.isLoading = true
+                state.isUsersLoading = true
             })
             .addCase(deleteAllUsers.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.isOpen.messageModal = true
                 state.message = "deleted all"
 
@@ -227,7 +231,7 @@ const usersSlice = createSlice({
 
             })
             .addCase(deleteAllUsers.rejected, (state, action) => {
-                state.isLoading = false
+                state.isUsersLoading = false
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
@@ -244,8 +248,9 @@ export const {
     setSearchText,
     fetchPreviousPage,
     fetchNextPage,
-    setUser,
-    setValidation
+    setPickedUser,
+    setValidation,
+    test
 } = usersSlice.actions
 
 

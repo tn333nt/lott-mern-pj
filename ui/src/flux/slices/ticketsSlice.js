@@ -39,13 +39,13 @@ const ticketsSlice = createSlice({
             state.checkingTicket = action.payload ? ticket : initialTicket
 
         },
-        setMessage: (state, action) => {
+        setCheckingMessage: (state, action) => {
             state.message = action.payload ? action.payload : ''
         },
-        setError: (state, action) => {
+        setCheckingError: (state, action) => {
             state.error = action.payload ? action.payload : ''
         },
-        setSuccess: (state, action) => {
+        setCheckingSuccess: (state, action) => {
             state.success = action.payload ? action.payload : ''
         },
         setIndexes: (state, action) => {
@@ -73,9 +73,9 @@ const ticketsSlice = createSlice({
 
 export const {
     setTicket,
-    setMessage,
-    setError,
-    setSuccess,
+    setCheckingMessage,
+    setCheckingError,
+    setCheckingSuccess,
     setIndexes
 } = ticketsSlice.actions
 

@@ -3,76 +3,53 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
-import { isEmail, length } from '../../util/validators'
-import { handleLogin } from '../../flux/slices/authSlice';
+import { setLoginInput, handleLogin, setAuthError } from '../../flux/slices/authSlice';
+import { setCheckingError, setCheckingMessage, setCheckingSuccess } from '../../flux/slices/ticketsSlice';
 
 const Login = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const token = useSelector(state => state.auth.token)
+    const { token, loginInput, error } = useSelector(state => state.auth)
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-
-    const [emailErr, setEmailErr] = useState('')
-    const [passwordErr, setPasswordErr] = useState('')
-
-    const [validated, setValidated] = useState('')
+    // set valid input's value without changing text
+    const [email, setEmail] = useState(loginInput.email)
+    const [password, setPassword] = useState(loginInput.password)
 
     const handleChange = e => {
-        const name = e.target.name
-        const value = e.target.value
+        console.log(e)
+        const { name, value } = e.target
 
         if (name === 'email') {
-            const isValidated = isEmail(value) && length({ min: 6, max: 30 })(value)
-            if (isValidated) {
-                setEmailErr("")
-                setValidated('')
-            } else {
-                setEmailErr('Incorrect email')
-            }
             setEmail(value)
         }
 
         if (name === 'password') {
-            const isValidated = length({ min: 6, max: 30 })(value)
-            if (isValidated) {
-                setPasswordErr("")
-                setValidated('')
-            } else {
-                setPasswordErr("6 characters minimum")
-            }
             setPassword(value)
         }
+
+        dispatch(setLoginInput({
+            [name]: value
+        }))
     }
 
-    const HandleLogin = () => {
+
+    const HandleSubmit = async () => {
         const authData = {
             email: email,
             password: password,
             token: token
         }
 
-        const filledAll = email !== '' && password !== ''
-        if (filledAll) {
-            setValidated('')
-        } else {
-            return setValidated('Fill all input')
-        }
+        const data = await dispatch(handleLogin(authData))
+        if (!data.error) {
+            dispatch(setAuthError())
+            dispatch(setLoginInput())
 
-        const validatedAll = emailErr === '' && passwordErr === ''
-        if (validatedAll) {
-            setValidated('')
-        } else if (emailErr !== '') {
-            return setValidated(emailErr)
-        } else if (passwordErr !== '') {
-            return setValidated(passwordErr)
-        }
-
-
-        if (validated === '') {
-            dispatch(handleLogin(authData))
+            dispatch(setCheckingMessage())
+            dispatch(setCheckingSuccess())
+            dispatch(setCheckingError())
+            
             navigate('/')
         }
     }
@@ -82,8 +59,7 @@ const Login = () => {
             <Col xs="12" sm="11" md="9" lg="4">
                 <Form>
                     <h1>Login</h1>
-                    {emailErr !== '' && <Alert color="danger">{emailErr}</Alert>}
-                    {passwordErr !== '' && <Alert color="danger">{passwordErr}</Alert>}
+                    {error !== '' && <Alert color="danger">{error}</Alert>}
                     <FormGroup className="mt-3">
                         <Label>Email</Label>
                         <Input
@@ -91,7 +67,9 @@ const Login = () => {
                             type="email"
                             placeholder="email"
                             bsSize="lg"
-                            onChange={handleChange}
+                            value={loginInput.email} // keep user after signup
+                            // onChange={handleChange}
+                            onInput={handleChange}
                         />
                     </FormGroup>
                     <FormGroup className="mt-3">
@@ -101,15 +79,16 @@ const Login = () => {
                             type="password"
                             placeholder="password"
                             bsSize="lg"
-                            onChange={handleChange}
+                            value={loginInput.password}
+                            // onChange={handleChange}
+                            onInput={handleChange}
                         />
                     </FormGroup>
                     <Button block
                         color="dark"
                         size="lg"
                         className="mt-4"
-                        disabled={validated !== ''}
-                        onClick={HandleLogin}
+                        onClick={HandleSubmit}
                     >
                         Login
                     </Button>

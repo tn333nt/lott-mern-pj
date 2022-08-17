@@ -8,25 +8,14 @@ const router = express.Router()
 
 router.put('/signup', [
     body('email')
+        .trim()
         .notEmpty()
         .withMessage('Email is required')
         .isEmail()
         .withMessage('Incorrect email')
         .normalizeEmail()
-        .custom(async (value, { req }) => {
-            console.log(value, 'value')
-            const user = await User.findOne({ email: value })
-            console.log(user, 'user')
-            // user && Promise.reject('Email already exists')
-            if (!user) {
-                return true
-            } else {
-                throw new Error('Email already exists')
-            }
-        })
     , body('password')
         .trim()
-        .isAlphanumeric()
         .isLength({ min: 6 })
         .withMessage('6 characters minimum')
     , body('confirmPassword')
@@ -38,8 +27,30 @@ router.put('/signup', [
         })
 ], authController.signup)
 
-router.post('/login', authController.login)
 
-router.patch('/resetPassword', authController.resetPassword)
+router.post('/login', [
+    body('email')
+        .trim()
+        .notEmpty()
+        .withMessage('Email is required')
+        .isEmail()
+        .withMessage('Incorrect email')
+        .normalizeEmail()
+    , body('password')
+        .trim()
+        .isLength({ min: 6 })
+        .withMessage('6 characters minimum')
+], authController.login)
+
+
+router.patch('/resetPassword', [
+    body('email')
+        .trim()
+        .notEmpty()
+        .withMessage('Email is required')
+        .isEmail()
+        .withMessage('Incorrect email')
+        .normalizeEmail()
+], authController.resetPassword)
 
 module.exports = router
