@@ -26,11 +26,11 @@ app.use('/users', UserRoutes)
 app.use('/tickets', TicketRoutes)
 
 app.use((err, req, res, next) => {
-    console.log(145314);
-    console.log(err, 1491734);
+    console.log(err, 'err');
     const status = err.statusCode || 500
     const message = err.message
-    res.status(status).json({ message: message })
+    const param = err.param
+    res.status(status).json({ message: message, param: param })
 })
 
 mongoose

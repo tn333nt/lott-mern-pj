@@ -44,9 +44,8 @@ exports.postResult = async (req, res, next) => {
     if (!errors.isEmpty()) {
         const error = errors.array()[0]
         const err = new Error(error.msg)
-
         err.statusCode = 422
-        throw err
+        next(err)
     }
 
     const date = new Date()
@@ -54,19 +53,15 @@ exports.postResult = async (req, res, next) => {
     const todayResult = await Result.findOne({ date: today })
     if (todayResult) {
         const err = new Error("Already have report for today")
-        err.statusCode = 422
-        throw err
+        err.statusCode = 409
+        next(err)
     }
 
-    const jackpot = req.body.jackpot
-    const firstPrizes = req.body.firstPrizes
-    const secondPrizes = req.body.secondPrizes
-    const thirdPrizes = req.body.thirdPrizes
-    const fourthPrizes = req.body.fourthPrizes
-    const fifthPrizes = req.body.fifthPrizes
-    const sixthPrizes = req.body.sixthPrizes
-    const seventhPrizes = req.body.seventhPrizes
-    const eighthPrizes = req.body.eighthPrizes
+    const {
+        jackpot, firstPrizes, secondPrizes,
+        thirdPrizes, fourthPrizes, fifthPrizes,
+        sixthPrizes, seventhPrizes, eighthPrizes
+    } = req.body
 
     const currentPage = req.query.page
     const perPage = 9
@@ -74,23 +69,17 @@ exports.postResult = async (req, res, next) => {
     try {
 
         const result = new Result({
+            jackpot, firstPrizes, secondPrizes,
+            thirdPrizes, fourthPrizes, fifthPrizes,
+            sixthPrizes, seventhPrizes, eighthPrizes,
+            // hardcoded here
             date: today,
             game: 'abc',
-            jackpot: jackpot,
-            firstPrizes: firstPrizes,
-            secondPrizes: secondPrizes,
-            thirdPrizes: thirdPrizes,
-            fourthPrizes: fourthPrizes,
-            fifthPrizes: fifthPrizes,
-            sixthPrizes: sixthPrizes,
-            seventhPrizes: seventhPrizes,
-            eighthPrizes: eighthPrizes,
+            prizesAmount: 6,
         })
-
         await result.save()
 
         const updatedResults = await Result.find().sort({ date: 'desc' })
-
         const paginatedResults = await Result.find()
             .sort({ date: 'desc' })
             .skip((currentPage - 1) * perPage)
@@ -112,29 +101,28 @@ exports.patchResult = async (req, res, next) => {
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
+        console.log(errors, 'errors')
         const error = errors.array()[0]
         const err = new Error(error.msg)
-
         err.statusCode = 422
-        throw err
+        err.param = error.param
+        next(err)
     }
 
-    const jackpot = req.body.jackpot
-    const firstPrizes = req.body.firstPrizes
-    const secondPrizes = req.body.secondPrizes
-    const thirdPrizes = req.body.thirdPrizes
-    const fourthPrizes = req.body.fourthPrizes
-    const fifthPrizes = req.body.fifthPrizes
-    const sixthPrizes = req.body.sixthPrizes
-    const seventhPrizes = req.body.seventhPrizes
-    const eighthPrizes = req.body.eighthPrizes
+    let {
+        jackpot, firstPrizes, secondPrizes,
+        thirdPrizes, fourthPrizes, fifthPrizes,
+        sixthPrizes, seventhPrizes, eighthPrizes
+    } = req.body
+
+    console.log(req.body.jackpot, 8502520)
+    console.log(typeof req.body.jackpot, 235775)
 
     const currentPage = req.query.page
     const perPage = 9
 
     try {
-        const updatingResult = await Result.findById(resultId)
-
+        let updatingResult = await Result.findById(resultId)
         if (!updatingResult) {
             const err = new Error('No result found to update')
             err.statusCode = 404
@@ -151,10 +139,14 @@ exports.patchResult = async (req, res, next) => {
         updatingResult.seventhPrizes = seventhPrizes
         updatingResult.eighthPrizes = eighthPrizes
 
+        // https://stackoverflow.com/a/62495318
+        // updatingResult = { ...updatingResult, ...req.body }
+        // console.log(updatingResult, 'updatingResult')
+        // TypeError: updatingResult.save is not a function
+
         await updatingResult.save()
 
         const updatedResults = await Result.find().sort({ date: 'desc' })
-
         const paginatedResults = await Result.find()
             .sort({ date: 'desc' })
             .skip((currentPage - 1) * perPage)

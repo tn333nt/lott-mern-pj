@@ -25,7 +25,10 @@ export const Header = props => {
     const navigate = useNavigate()
 
     const [isOpen, setIsOpen] = useState(false)
-    const toggle = () => setIsOpen(!isOpen)
+    const toggle = () => {
+        setIsOpen(!isOpen)
+    }
+    // why does it toggle twice ?
 
     const { isAuth, user } = useSelector(state => state.auth)
 
@@ -37,41 +40,56 @@ export const Header = props => {
 
     return (
         <div >
-            <Navbar color="light" expand="md" className="py-3" >
-                {!user?.isAdmin && <NavbarBrand href="/" className="mx-5 fs-1"><SiRiotgames /></NavbarBrand>}
-                <NavbarToggler onClick={toggle} />
-                <Collapse isOpen={isOpen} navbar className="d-flex justify-content-between">
-                    {isAuth ? <NavbarText className="nav-link fs-3 mx-5"> Welcome <i className="text-dark fs-1 mx-1"> {user?.username} </i></NavbarText> : <div></div>}
+            <Navbar color="light" expand="md" className="py-3" inverse="true" toggleable="true" >
+                {!user?.isAdmin && (
+                    <NavbarBrand href="/" className="mx-md-5 fs-1">
+                        <SiRiotgames />
+                    </NavbarBrand>
+                )}
+                <NavbarToggler right onClick={toggle} />
+                <Collapse
+                    isOpen={isOpen}
+                    navbar
+                    className="d-flex justify-content-between flex-wrap-sm flex-wrap"
+                >
+                    {isAuth ? (
+                        <NavbarText className="nav-link fs-3 px-md-5">
+                            Welcome <i className="text-dark fs-1 mx-1"> {user?.username} </i>
+                        </NavbarText>
+                    ) : (
+                        <div></div>
+                    )}
+
                     <Nav navbar>
                         {!user?.isAdmin ? (
                             <>
                                 {!isAuth ? (
                                     <>
                                         <NavItem>
-                                            <Link className="nav-link fs-3 px-5" to="/signup">Signup</Link>
+                                            <Link className="nav-link fs-3 px-md-5" to="/signup">Signup</Link>
                                         </NavItem>
                                         <NavItem>
-                                            <Link className="nav-link fs-3 px-5" to="/login">Login</Link>
+                                            <Link className="nav-link fs-3 px-md-5" to="/login">Login</Link>
                                         </NavItem>
                                     </>
                                 ) : (
                                     <>
                                         <NavItem>
-                                            <Link className="nav-link fs-3 px-5" to="/account">Account</Link>
+                                            <Link className="nav-link fs-3 px-md-5" to="/account">Account</Link>
                                         </NavItem>
                                         <NavItem>
-                                            <Button className="nav-link fs-3 px-5 btn-light" onClick={handleLogOut}>Logout</Button>
+                                            <Button className="nav-link fs-3 px-md-5 btn-light" onClick={handleLogOut}>Logout</Button>
                                         </NavItem>
                                     </>
                                 )}
                             </>
                         ) : (
 
-                            <UncontrolledDropdown nav inNavbar direction="down">
-                                <DropdownToggle nav caret className="fs-3 px-5 mx-3">
+                            <UncontrolledDropdown nav inNavbar direction="down" >
+                                <DropdownToggle nav caret className="fs-3 px-md-5 mx-md-3">
                                     Management
                                 </DropdownToggle>
-                                <DropdownMenu right>
+                                <DropdownMenu >
                                     {/* vi htai co them case !isAuth && user */}
                                     {((isAuth && user && !user.isAdmin) || !isAuth) && (
                                         <DropdownItem>

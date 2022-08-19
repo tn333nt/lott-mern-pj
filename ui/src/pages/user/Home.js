@@ -2,18 +2,23 @@
 import { Col, Row } from 'reactstrap'
 import { useSelector } from 'react-redux';
 
-import Messenger from '../../components/Messenger';
 import CheckTicket from '../../components/Ticket/Checking';
 import HistoryCheck from '../../components/Ticket/History';
 import CheckedResult from '../../components/Result/Checked';
+import MessageHandler from '../../components/Handler/Message'
+import ConfirmHandler from '../../components/Handler/Confirm'
 
 const Home = () => {
 
     const isAuth = useSelector(state => state.auth.isAuth)
 
+    const {confirm} = useSelector(state => state.tickets)
+    const {message} = useSelector(state => state.users)
+
     return (
         <div className="container pt-5 mw-100">
-            <Messenger />
+            {message !== '' && <MessageHandler message={message} />}
+            {confirm !== '' && <ConfirmHandler confirm={confirm} />}
 
             <section>
                 <Row>

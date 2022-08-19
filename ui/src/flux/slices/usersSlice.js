@@ -9,11 +9,11 @@ export const fetchAllUsers = createAsyncThunk('fetchAllUsers', async (props) => 
         headers: { Authorization: props.token }
     })
 
-    if (res.status !== 200) {
-        throw new Error('Failed to fetch users');
-    }
-
     const data = await res.json()
+
+    if (res.status !== 200) {
+        throw new Error(data.message)
+    }
     return data
 })
 
@@ -31,11 +31,11 @@ export const addUser = createAsyncThunk('addUser', async (props) => {
         }
     })
 
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to create user');
-    }
-
     const data = await res.json()
+
+    if (res.status !== 200 && res.status !== 201) {
+        throw new Error(data.message)
+    }
     return data
 
 })
@@ -54,11 +54,11 @@ export const setAdmin = createAsyncThunk('setAdmin', async (props) => {
         }
     })
 
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to update user');
-    }
-
     const data = await res.json()
+
+    if (res.status !== 200 && res.status !== 201) {
+        throw new Error(data.message)
+    }
     return data
 })
 
@@ -72,10 +72,11 @@ export const deleteUser = createAsyncThunk('deleteUser', async (props) => {
         headers: { Authorization: props.token }
     })
 
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to delete user');
-    }
     const data = await res.json()
+
+    if (res.status !== 200 && res.status !== 201) {
+        throw new Error(data.message)
+    }
     return data
 })
 
@@ -116,20 +117,12 @@ const usersSlice = createSlice({
         },
         searchText: '',
         message: '',
-        confirm: ''
+        confirm: '',
     },
 
     reducers: {
-        toggleModalUpdate: (state, action) => {
-            state.isOpen.updateModal = !state.isOpen.updateModal
-        },
-        toggleModalMessage: (state, action) => {
-            if (state.isOpen.messageModal) {
-                state.message = ''
-                state.confirm = ''
-            }
+        toggleUsersMessage: (state, action) => {
             state.isOpen.messageModal = !state.isOpen.messageModal
-            state.confirm = action.payload
         },
 
         setSearchText: (state, action) => {
@@ -137,6 +130,17 @@ const usersSlice = createSlice({
         },
         setPickedUser: (state, action) => {
             state.pickedUser = action.payload ? action.payload : pickedUser
+        },
+
+        setUsersError: (state, action) => {
+            state.error = action.payload ? action.payload : ''
+        },
+        setUsersConfirm: (state, action) => {
+            state.confirm = action.payload ? action.payload : ''
+        },
+        setUsersMessage: (state, action) => {
+            console.log(action.payload, 9006787576)
+            state.message = action.payload ? action.payload : ''
         },
 
         fetchPreviousPage: (state) => {
@@ -147,11 +151,7 @@ const usersSlice = createSlice({
         },
         fetchExactPage: (state, action) => {
             state.currentPage = action.payload
-        },
-        test: (state, action) => {
-            alert('alo')
-            console.log(235619256295629)
-        },
+        }
     },
 
     extraReducers: builder => {
@@ -172,7 +172,7 @@ const usersSlice = createSlice({
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
-           
+
             .addCase(addUser.pending, (state, action) => {
                 state.isUsersLoading = true
             })
@@ -186,7 +186,7 @@ const usersSlice = createSlice({
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
-           
+
             .addCase(setAdmin.pending, (state, action) => {
                 state.isUsersLoading = true
             })
@@ -200,14 +200,14 @@ const usersSlice = createSlice({
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
-           
+
             .addCase(deleteUser.pending, (state, action) => {
                 state.isUsersLoading = true
             })
             .addCase(deleteUser.fulfilled, (state, action) => {
                 state.isUsersLoading = false
-                state.isOpen.messageModal = true
-                state.message = "delete successfully"
+                // state.isOpen.messageModal = true
+                // state.message = "Delete successfully"
 
                 state.users = action.payload.users
                 state.paginatedUsers = action.payload.paginatedUsers
@@ -233,24 +233,24 @@ const usersSlice = createSlice({
             .addCase(deleteAllUsers.rejected, (state, action) => {
                 state.isUsersLoading = false
                 state.isOpen.messageModal = true
-                state.message = action.error.message
+                state.error = action.error.message
             })
 
-            
+
     }
 })
 
 
 export const {
-    toggleModalAdd,
-    toggleModalUpdate,
-    toggleModalMessage,
+    toggleUsersMessage,
     setSearchText,
     fetchPreviousPage,
     fetchNextPage,
     setPickedUser,
     setValidation,
-    test
+    setUsersError,
+    setUsersConfirm,
+    setUsersMessage,
 } = usersSlice.actions
 
 

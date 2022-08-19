@@ -1,12 +1,14 @@
 
 import { useEffect } from 'react';
-import { Spinner, Button, Table } from 'reactstrap'
+import { Button, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllUsers, toggleModalMessage, setPickedUser, setAdmin } from '../../flux/slices/usersSlice';
+import { fetchAllUsers, toggleUsersMessage, setPickedUser, setAdmin, setUsersConfirm } from '../../flux/slices/usersSlice';
 import { Search } from '../../components/Search';
 import Paginator from '../../components/Paginator';
-import Messenger from '../../components/Messenger';
+import MessageHandler from '../../components/Handler/Message'
+import ConfirmHandler from '../../components/Handler/Confirm'
+import Loader from '../../components/Loader';
 
 
 const Users = () => {
@@ -15,28 +17,27 @@ const Users = () => {
 
     const { token, isAuthLoading } = useSelector(state => state.auth)
 
-    const { users, paginatedUsers, searchedUsers, pickedUser,
-        currentPage, searchText, isUsersLoading
+    const { users, paginatedUsers, searchedUsers,
+        currentPage, searchText, isUsersLoading,
+        message, confirm
     } = useSelector(state => state.users)
 
     const handleDelete = userId => {
         const deletingUser = users.find(user => user._id === userId)
-
         const email = deletingUser.email
-
         const confirm = `delete user ${email} ?`
 
-        dispatch(toggleModalMessage(confirm))
+        dispatch(toggleUsersMessage())
+        dispatch(setUsersConfirm(confirm))
         dispatch(setPickedUser(deletingUser))
 
     }
 
     const handleAdmin = userId => {
         const updatingUser = users.find(user => user._id === userId)
-        dispatch(setPickedUser(updatingUser))
 
         const updatedUser = {
-            ...pickedUser,
+            ...updatingUser,
             isAdmin: true
         }
 
@@ -59,16 +60,12 @@ const Users = () => {
 
     return (
         <div className="container pt-5 mw-100">
-            <Messenger />
+            {/* <MessageHandler />
+            <ConfirmHandler /> */}
+            {message !== '' && <MessageHandler message={message} />}
+            {confirm !== '' && <ConfirmHandler confirm={confirm} />}
             {isAuthLoading ? (
-                <div className="m-3 d-flex justify-content-center" >
-                    <Spinner
-                        className="m-3"
-                        color="danger"
-                    >
-                        Loading...
-                    </Spinner>
-                </div>
+                <Loader color="danger" />
             ) : (
                 <>
 
@@ -88,14 +85,7 @@ const Users = () => {
 
 
                     {isUsersLoading && (
-                        <div className="m-3 d-flex justify-content-center" >
-                            <Spinner
-                                className="m-3"
-                                color="danger"
-                            >
-                                Loading...
-                            </Spinner>
-                        </div>
+                        <Loader color="danger" />
                     )}
 
                     {users.length <= 0 && !isUsersLoading ? (

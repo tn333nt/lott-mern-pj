@@ -2,8 +2,7 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormText, FormFeedback, FormGroup, Input, Label, Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setResult, toggleModalAdd, toggleModalUpdate, addResult, updateResult, setValidation } from '../../flux/slices/resultsSlice';
-import Messenger from '../Messenger'
+import { setPickedResult, toggleModalAdd, toggleModalUpdate, addResult, updateResult, setValidation, setResultError } from '../../flux/slices/resultsSlice';
 import { prizesArr, titles } from '../../util/data';
 
 export const ResultForm = props => {
@@ -15,14 +14,11 @@ export const ResultForm = props => {
     const isOpenAddModal = useSelector(state => state.results.isOpen.addModal)
     const isOpenUpdateModal = useSelector(state => state.results.isOpen.updateModal)
 
-    const validation = useSelector(state => state.results.validation)
-    const isFormValid = useSelector(state => state.results.isFormValid)
-    const isUpdating = useSelector(state => state.results.isUpdating)
+    const { validation, isUpdating, error,
+        results, pickedResult, currentPage
+    } = useSelector(state => state.results)
 
-    const results = useSelector(state => state.results.results)
-    const pickedResult = useSelector(state => state.results.pickedResult)
-
-    const currentPage = useSelector(state => state.results.currentPage)
+    console.log(pickedResult, 'prizesAmount')
 
     const date = new Date()
     const today = date.toLocaleDateString("vi-VN")
@@ -31,17 +27,15 @@ export const ResultForm = props => {
     const toggleModal = () => {
         isOpenAddModal && dispatch(toggleModalAdd())
         isOpenUpdateModal && dispatch(toggleModalUpdate())
+        dispatch(setValidation())
+        dispatch(setPickedResult())
     }
 
     const handleChange = e => {
-        const name = e.target.name
+        const { name, value } = e.target
         const strValue = e.target.value.trim()
 
-        // trigger all validators -> compare with input
-        let isValid = true;
-        for (const validator of validation[name].validators) {
-            isValid = isValid && validator(strValue);
-        }
+        // fe validation for input's color
 
         // remove space from each item
         const values = strValue.split(',')
@@ -51,12 +45,15 @@ export const ResultForm = props => {
             arrValues.push(value)
         })
 
+        // trigger all validators -> compare with input
+        let isValid = true;
+        for (const validator of validation[name].validators) {
+            isValid = isValid && validator(strValue);
+        }
         // check amount of items
         if (name !== 'jackpot' && arrValues.length >= 0) {
             isValid = isValid && arrValues.length === 3
         }
-
-        // customize feedback later
 
         const updatedValidation = {
             ...validation,
@@ -66,30 +63,35 @@ export const ResultForm = props => {
             }
         }
 
-        // check xem valid all chua
-        let isFormValid = true;
-        for (const name in updatedValidation) {
-            isFormValid = isFormValid && updatedValidation[name].isValid;
-        }
+        // // check xem valid all chua
+        // let isFormValid = true;
+        // for (const name in updatedValidation) {
+        //     isFormValid = isFormValid && updatedValidation[name].isValid;
+        // }
+
 
         const result = {
             ...pickedResult,
             [name]: {
                 ...pickedResult[name],
                 winningValues: arrValues
+                // winningValues: value
             }
         }
 
-        dispatch(setValidation({
-            validation: updatedValidation,
-            isFormValid: isFormValid,
-            token: token
-        }))
-        dispatch(setResult(result))
+        // const updatedValidation = {
+        //     ...validation,
+        //     [name]: value
+        // }
+
+        dispatch(setValidation(updatedValidation))
+        dispatch(setPickedResult(result))
+
     }
 
-    const submitForm = () => {
+    const submitForm = async () => {
 
+        // later : bo het vao pickedResult => only need to pass to dispatch
         const result = {
             ...pickedResult,
             _id: pickedResult._id,
@@ -120,29 +122,46 @@ export const ResultForm = props => {
         }
 
         if (isOpenAddModal) {
-            dispatch(toggleModalAdd())
-            dispatch(addResult({
+            const data = await dispatch(addResult({
                 newResult: result,
                 currentPage: currentPage,
                 token: token
             }))
+            if (!data.error) {
+                dispatch(toggleModalAdd())
+                dispatch(setResultError())
+                dispatch(setValidation())
+                dispatch(setPickedResult())
+            }
         }
 
+
         if (isOpenUpdateModal) {
-            dispatch(toggleModalUpdate())
-            dispatch(updateResult({
+            // dispatch(toggleModalUpdate())
+            // dispatch(updateResult({
+            //     updatedResult: result,
+            //     currentPage: currentPage,
+            //     token: token
+            // }))
+
+            const data = await dispatch(updateResult({
                 updatedResult: result,
                 currentPage: currentPage,
                 token: token
             }))
+            if (!data.error) {
+                dispatch(toggleModalUpdate())
+                dispatch(setResultError())
+                dispatch(setValidation())
+                dispatch(setPickedResult())
+            }
         }
-    }
 
-    console.log(props.result?.prizesAmount, 555);
+
+    }
 
     return (
         <>
-            <Messenger />
             <Modal isOpen={isOpenAddModal ? isOpenAddModal : isOpenUpdateModal} toggle={toggleModal} >
 
                 <ModalHeader toggle={toggleModal}>
@@ -150,7 +169,8 @@ export const ResultForm = props => {
                     {isOpenUpdateModal && 'Update Result'}
                 </ModalHeader>
 
-                {(todayResult && !isUpdating) ? (
+                {/* {(todayResult && !isUpdating) ? ( */}
+                {(false) ? (
                     <Alert color="danger">
                         ! Already have report for today
                     </Alert>
@@ -161,154 +181,46 @@ export const ResultForm = props => {
 
                                 <FormText>
                                     <p className="mb-3">
-                                        {/* hardcoded here */}
-                                        * Each prize has <strong>x</strong> ticket(s) <br />
-                                        * Each ticket has <strong>y</strong> NUMBERS and be seperated by a COMMA
+                                        * Fill in the right amount of winning values for each prize of <strong>{pickedResult.game}</strong> game
                                     </p>
                                 </FormText>
+                                {/* later : add dropdown => "pick the game" => custom prize amount */}
 
-                                {/* {prizesArr.map((item, index) => (
+                                {error && (
+                                    <Alert color="danger">
+                                        {error}
+                                    </Alert>
+                                )}
+
+                                {prizesArr.map((item, index) => (
                                     <FormGroup
                                         floating
                                         key={index}
-                                        disabled={index <= props.result?.prizesAmount}
+                                    // disabled={index <= props.result?.prizesAmount}
+                                    // disabled={index <= 5}
                                     >
-                                        {console.log(validation[item], 1212)}
+                                        {console.log(pickedResult?.prizesAmount, 638162)}
                                         <Input
                                             name={item}
                                             type="text"
                                             id={item}
                                             placeholder={titles[index]}
-                                            // value={isUpdating ? results[index][`${item}`] : ''}
-                                            value={pickedResult[item]?.winningValues?.length > 0 ? pickedResult.jackpot.winningValues : ''}
+                                            value={pickedResult[item]?.winningValues?.length > 0 ? pickedResult[item].winningValues : ''}
                                             onChange={handleChange}
                                             valid={validation[item]?.isValid}
-                                            invalid={!validation[item]?.isValid}
+                                            invalid={validation[item]?.isValid === false}
+                                            disabled={index >= pickedResult.prizesAmount}
                                         />
                                         <Label for={item}>
                                             {titles[index]}
                                         </Label>
                                         <FormFeedback invalid className="mx-3" >
-                                            notice the note
+                                            Validation failed
                                         </FormFeedback>
                                     </FormGroup>
-                                ))} */}
+                                ))}
 
 
-                                <FormGroup floating >
-                                    <Input
-                                        name='jackpot'
-                                        type="text"
-                                        id='jackpot'
-                                        placeholder='jackpot'
-                                        value={pickedResult.jackpot.winningValues.length > 0 ? pickedResult.jackpot.winningValues : ''}
-                                        // later : if err -> keep value
-                                        onChange={handleChange}
-                                        valid={validation.jackpot.isValid}
-                                        invalid={!validation.jackpot.isValid}
-                                    />
-                                    <Label for='jackpot'>
-                                        Jackpot
-                                    </Label>
-                                    <FormFeedback invalid className="mx-3" >
-                                        x=1,y=6
-                                    </FormFeedback>
-                                </FormGroup>
-
-                                <FormGroup floating >
-                                    <Input
-                                        name='firstPrizes'
-                                        type="text"
-                                        id='firstPrizes'
-                                        placeholder='firstPrizes'
-                                        value={pickedResult.firstPrizes.winningValues.length > 0 ? pickedResult.firstPrizes.winningValues : ''}
-                                        onChange={handleChange}
-                                        valid={validation.firstPrizes.isValid}
-                                        invalid={!validation.firstPrizes.isValid}
-                                    />
-                                    <Label for='firstPrizes'>
-                                        First Prizes
-                                    </Label>
-                                    <FormFeedback invalid className="mx-3" >
-                                        x=3,y=6
-                                    </FormFeedback>
-                                </FormGroup>
-
-                                <FormGroup floating >
-                                    <Input
-                                        name='secondPrizes'
-                                        type="text"
-                                        id='secondPrizes'
-                                        placeholder='secondPrizes'
-                                        value={pickedResult.secondPrizes.winningValues.length > 0 ? pickedResult.secondPrizes.winningValues : ''}
-                                        onChange={handleChange}
-                                        valid={validation.secondPrizes.isValid}
-                                        invalid={!validation.secondPrizes.isValid}
-                                    />
-                                    <Label for='secondPrizes'>
-                                        Second Prizes
-                                    </Label>
-                                    <FormFeedback invalid className="mx-3" >
-                                        x=3,y=5
-                                    </FormFeedback>
-                                </FormGroup>
-
-                                <FormGroup floating >
-                                    <Input
-                                        name='thirdPrizes'
-                                        type="text"
-                                        id='thirdPrizes'
-                                        placeholder='thirdPrizes'
-                                        value={pickedResult.thirdPrizes.winningValues.length > 0 ? pickedResult.thirdPrizes.winningValues : ''}
-                                        onChange={handleChange}
-                                        valid={validation.thirdPrizes.isValid}
-                                        invalid={!validation.thirdPrizes.isValid}
-                                    />
-                                    <Label for='thirdPrizes'>
-                                        Third Prizes
-                                    </Label>
-                                    <FormFeedback invalid className="mx-3" >
-                                        x=3,y=4
-                                    </FormFeedback>
-                                </FormGroup>
-
-                                <FormGroup floating >
-                                    <Input
-                                        name='fourthPrizes'
-                                        type="text"
-                                        id='fourthPrizes'
-                                        placeholder='fourthPrizes'
-                                        value={pickedResult.fourthPrizes.winningValues.length > 0 ? pickedResult.fourthPrizes.winningValues : ''}
-                                        onChange={handleChange}
-                                        valid={validation.fourthPrizes.isValid}
-                                        invalid={!validation.fourthPrizes.isValid}
-                                    />
-                                    <Label for='fourthPrizes'>
-                                        Fourth Prizes
-                                    </Label>
-                                    <FormFeedback invalid className="mx-3" >
-                                        x=3,y=3
-                                    </FormFeedback>
-                                </FormGroup>
-
-                                <FormGroup floating >
-                                    <Input
-                                        name='fifthPrizes'
-                                        type="text"
-                                        id='fifthPrizes'
-                                        placeholder='fifthPrizes'
-                                        value={pickedResult.fifthPrizes.winningValues.length > 0 ? pickedResult.fifthPrizes.winningValues : ''}
-                                        onChange={handleChange}
-                                        valid={validation.fifthPrizes.isValid}
-                                        invalid={!validation.fifthPrizes.isValid}
-                                    />
-                                    <Label for='fifthPrizes'>
-                                        Fifth Prizes
-                                    </Label>
-                                    <FormFeedback invalid className="mx-3" >
-                                        x=3,y=2
-                                    </FormFeedback>
-                                </FormGroup>
 
                             </Form >
                         </ModalBody>
@@ -319,7 +231,6 @@ export const ResultForm = props => {
                                 className="me-5 px-3 "
                                 color="primary"
                                 onClick={submitForm}
-                                disabled={!isFormValid}
                             >
                                 Submit
                             </Button>

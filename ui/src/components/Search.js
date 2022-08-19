@@ -9,7 +9,6 @@ import { setSearchText as setSearchTextForUsers } from "../flux/slices/usersSlic
 
 export const Search = props => {
     const location = useLocation();
-    // https://reactrouter.com/docs/en/v6/hooks/use-location
 
     const dispatch = useDispatch()
 
@@ -22,9 +21,6 @@ export const Search = props => {
         if (location.pathname === "/users") {
             dispatch(setSearchTextForUsers(search))
         }
-        // or : window.location.pathname
-        // or : document.URL.includes("users")
-        // https://stackoverflow.com/questions/39823681/read-the-current-full-url-with-react
     }
 
 

@@ -1,7 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
+const checkingTicket = {
+    value: '',
+    date: '',
+    wonPrize: ''
+}
 
-const initialIndexes = { // index of won value
+const indexes = { // index of won value
     JP: -1,
     P1: -1,
     P2: -1,
@@ -10,21 +15,17 @@ const initialIndexes = { // index of won value
     P5: -1
 }
 
-const initialTicket = {
-    value: '',
-    date: '',
-    wonPrize: ''
-}
-
 const ticketsSlice = createSlice({
     name: 'tickets',
     initialState: {
-        checkingTicket: initialTicket,
-        message: '',
-        error: '',
-        success: '',
+        checkingTicket,
+        confirm: '',
+        message: '', // modal
+        error: '', // red
+        successText: '', //green
+        failText: '', // yellow
         isLoading: false,
-        indexes: initialIndexes
+        indexes,
     },
     reducers: {
         setTicket: (state, action) => {
@@ -36,20 +37,31 @@ const ticketsSlice = createSlice({
                 date: updatedDate
             }
 
-            state.checkingTicket = action.payload ? ticket : initialTicket
+            state.checkingTicket = action.payload ? ticket : checkingTicket
 
         },
+        setTicketsConfirm: (state, action) => {
+            state.confirm = action.payload ? action.payload : ''
+        },
+
+
         setCheckingMessage: (state, action) => {
             state.message = action.payload ? action.payload : ''
         },
         setCheckingError: (state, action) => {
             state.error = action.payload ? action.payload : ''
         },
+
         setCheckingSuccess: (state, action) => {
-            state.success = action.payload ? action.payload : ''
+            console.log(action.payload, 'action.payload')
+            state.successText = action.payload ? action.payload : ''
         },
+        setCheckingFail: (state, action) => {
+            state.failText = action.payload ? action.payload : ''
+        },
+
         setIndexes: (state, action) => {
-            state.indexes = action.payload ? action.payload : initialIndexes
+            state.indexes = action.payload ? action.payload : indexes
         }
     },
     // extraReducers: builder => {
@@ -73,9 +85,11 @@ const ticketsSlice = createSlice({
 
 export const {
     setTicket,
+    setTicketsConfirm,
     setCheckingMessage,
     setCheckingError,
     setCheckingSuccess,
+    setCheckingFail,
     setIndexes
 } = ticketsSlice.actions
 

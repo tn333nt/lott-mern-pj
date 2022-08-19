@@ -1,18 +1,17 @@
 
-import { Alert, Spinner } from 'reactstrap'
+import { Alert } from 'reactstrap'
 import { useSelector } from 'react-redux';
 
 import { Link } from 'react-router-dom';
 import { ResultDetail } from './Detail';
+import Loader from './../Loader';
 
 const CheckedResult = () => {
 
-    const results = useSelector(state => state.results.results)
-    const pickedResult = useSelector(state => state.results.pickedResult)
+    const {results, pickedResult} = useSelector(state => state.results)
+    const {error, failText, successText} = useSelector(state => state.tickets)
 
-    const error = useSelector(state => state.tickets.error)
-    const message = useSelector(state => state.tickets.message)
-    const success = useSelector(state => state.tickets.success)
+    console.log(successText, 'successText')
 
     return (
         <>
@@ -23,8 +22,8 @@ const CheckedResult = () => {
                     {pickedResult.date === '' && results.length > 0 && `Latest result (${results[0].date})`}
                 </h1>
                 {error !== '' && <Alert color="danger">{error}</Alert>}
-                {message !== '' && <Alert color="warning">{message}</Alert>}
-                {success !== '' && <Alert color="success">{success}</Alert>}
+                {failText !== '' && <Alert color="warning">{failText}</Alert>}
+                {successText !== '' && <Alert color="success">{successText}</Alert>}
             </div>
             <div style={{ marginRight: 21 }}>
                 {/* vi initial state of date is '' */}
@@ -37,14 +36,7 @@ const CheckedResult = () => {
                 )}
 
                 {results.length < 0 && pickedResult.date === '' && (
-                    <div className="m-3 d-flex justify-content-center" >
-                        <Spinner
-                            className="m-3"
-                            color="secondary"
-                        >
-                            Loading...
-                        </Spinner>
-                    </div>
+                    <Loader color="successText" />
                 )}
             </div>
             <p>See all results <Link to="/results">results</Link></p>

@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs')
+const { validationResult } = require('express-validator')
 
 const User = require('../models/user')
 
@@ -9,7 +10,6 @@ exports.getAllUsers = async (req, res, next) => {
 
     try {
         const users = await User.find()
-
         const paginatedUsers = await User.find()
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
@@ -19,7 +19,9 @@ exports.getAllUsers = async (req, res, next) => {
                 const email = user.email.includes(search.trim())
                 return email
             } else {
-                return null
+                const err = new Error('Not found user')
+                err.statusCode = 404
+                next(err)
             }
         })
 
@@ -30,6 +32,7 @@ exports.getAllUsers = async (req, res, next) => {
         })
 
     } catch (err) {
+        err.message = 'Failed to fetch users'
         next(err);
     }
 
@@ -45,9 +48,8 @@ exports.setAdmin = async (req, res, next) => {
 
     try {
         const updatingUser = await User.findById(userId)
-
         if (!updatingUser) {
-            const err = new Error('Not found user')
+            const err = new Error('Not found user to update')
             err.statusCode = 404
             throw err
         }
@@ -66,6 +68,7 @@ exports.setAdmin = async (req, res, next) => {
         })
 
     } catch (err) {
+        err.message = 'Failed to fetch user to update'
         next(err)
     }
 
@@ -78,7 +81,6 @@ exports.deleteUser = async (req, res, next) => {
 
     try {
         const deletingResult = User.findById(userId)
-
         if (!deletingResult) {
             const err = new Error('No user found to delete')
             err.statusCode = 404
@@ -88,7 +90,6 @@ exports.deleteUser = async (req, res, next) => {
         await User.findByIdAndRemove(userId)
 
         const updatedUsers = await User.find()
-
         const paginatedUsers = await User.find()
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
@@ -99,6 +100,7 @@ exports.deleteUser = async (req, res, next) => {
         })
 
     } catch (err) {
+        err.message = 'Failed to fetch user to delete'
         next(err)
     }
 }
@@ -113,11 +115,17 @@ exports.deleteAllUsers = async (req, res, next) => {
 
 
 exports.changePassword = async (req, res, next) => {
-    const userId = req.user._id
 
-    const oldPassword = req.body.oldPassword.trim().toString()
-    const newPassword = req.body.newPassword.trim().toString()
-    const confirmPassword = req.body.confirmPassword.trim().toString()
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        const error = errors.array()[0]
+        const err = new Error(error.msg)
+        err.statusCode = 422
+        next(err) 
+    }
+
+    const userId = req.user._id
+    const { oldPassword, newPassword, confirmPassword } = req.body
 
     try {
         const user = await User.findById(userId)

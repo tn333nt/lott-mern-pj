@@ -11,11 +11,10 @@ export const fetchAllResults = createAsyncThunk('fetchAllResults', async (props)
         headers: { Authorization: props.token }
     }) // data get from the next then block
 
-    if (res.status !== 200) {
-        throw new Error('Failed to fetch results');
-    }
-
     const data = await res.json()
+    if (res.status !== 200) {
+        throw new Error(data.message)
+    }
     return data
 })
 
@@ -33,19 +32,18 @@ export const addResult = createAsyncThunk('addResult', async (props) => {
         }
     })
 
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to create result');
-    }
-
     const data = await res.json()
-    return data
 
+    if (res.status !== 200 && res.status !== 201) {
+        throw new Error(data.message)
+    }
+    return data
 })
 
 export const updateResult = createAsyncThunk('updateResult', async (props) => {
     const _id = props.updatedResult._id
     const updatedResult = props.updatedResult
-    console.log(props, props)
+    console.log(props, 'props')
 
     const url = `http://localhost:8080/results/result/${_id}?page=${props.currentPage}`
     const res = await fetch(url, {
@@ -57,22 +55,32 @@ export const updateResult = createAsyncThunk('updateResult', async (props) => {
         }
     })
 
-    console.log(res)
-
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to update result');
-    }
-
     const data = await res.json()
+    if (res.status === 422) {
+        console.log(data, 'data')
+        const err = new Error(data.message)
+        // it does not take => no way to distinguish 
+        // => going to convert all formfeedback -> alert 
+        // or keep fe validation to check onchange
+        // and be validation to replace isFormValid
+
+        // err.param = data.param
+        // err.validation = data.message
+        throw err
+    }
+    if (res.status !== 200 && res.status !== 201) {
+        throw new Error(data.message)
+    }
     return data
 })
 
 
-const initialResult = {
+const pickedResult = {
+    // later : de nguyen = coming data
     _id: '',
     date: '',
     jackpot: {
-        reward: 30000,
+        reward: 30000, // hardcoded here
         winningValues: [],
     },
     firstPrizes: {
@@ -109,6 +117,41 @@ const initialResult = {
     }
 }
 
+// const validation = {
+//     jackpot: '',
+//     firstPrizes: '',
+//     secondPrizes: '',
+//     thirdPrizes: '',
+//     fourthPrizes: '',
+//     fifthPrizes: '',
+// }
+const validation = {
+    jackpot: {
+        isValid: null,
+        validators: [required, length({ exact: 6 }), isNumberOrComma]
+    },
+    firstPrizes: {
+        isValid: null,
+        validators: [required, length({ exact: 20 }), isNumberOrComma]
+    },
+    secondPrizes: {
+        isValid: null,
+        validators: [required, length({ exact: 17 }), isNumberOrComma]
+    },
+    thirdPrizes: {
+        isValid: null,
+        validators: [required, length({ exact: 14 }), isNumberOrComma]
+    },
+    fourthPrizes: {
+        isValid: null,
+        validators: [required, length({ exact: 11 }), isNumberOrComma]
+    },
+    fifthPrizes: {
+        isValid: null,
+        validators: [required, length({ exact: 8 }), isNumberOrComma]
+    },
+}
+
 
 const resultsSlice = createSlice({ // auto gen action creators & action types that correspond to the reducers and state
     name: 'results',
@@ -118,7 +161,7 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
         results: [], // save all results
         searchedResults: [],
         paginatedResults: [], // results r rendered in each page
-        pickedResult: initialResult,
+        pickedResult,
         currentPage: 1,
         isUpdating: false,
         isOpen: {
@@ -127,48 +170,14 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
             messageModal: false
         },
         searchText: '', // final value to search
-        message: '',
+        message: '', // notification or sys err
         confirm: '',
-        validation: {
-            jackpot: {
-                isValid: false,
-                // feedback: '',
-                validators: [required, length({ exact: 6 }), isNumberOrComma]
-            },
-            firstPrizes: {
-                isValid: false,
-                // feedback: '',
-                validators: [required, length({ exact: 20 }), isNumberOrComma]
-            },
-            secondPrizes: {
-                isValid: false,
-                // feedback: '',
-                validators: [required, length({ exact: 17 }), isNumberOrComma]
-            },
-            thirdPrizes: {
-                isValid: false,
-                // feedback: '',
-                validators: [required, length({ exact: 14 }), isNumberOrComma]
-            },
-            fourthPrizes: {
-                isValid: false,
-                // feedback: '',
-                validators: [required, length({ exact: 11 }), isNumberOrComma]
-            },
-            fifthPrizes: {
-                isValid: false,
-                // feedback: '',
-                validators: [required, length({ exact: 8 }), isNumberOrComma]
-            },
-        },
-        isFormValid: false
+        error: '', // validation err
+        validation,
     },
 
     reducers: {
         toggleModalAdd: (state) => {
-            if (!state.isOpen.addModal) {
-                state.pickedResult = initialResult
-            }
             state.isOpen.addModal = !state.isOpen.addModal
             state.isUpdating = false
         },
@@ -176,24 +185,33 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
             state.isOpen.updateModal = !state.isOpen.updateModal
             state.isUpdating = !state.isUpdating
         },
-        toggleModalMessage: (state, action) => {
+        closeResultsMessage: (state, action) => {
+            // clear old data first
             if (state.isOpen.messageModal) {
                 state.message = ''
                 state.confirm = ''
             }
+            // close msg modal, clear conf & msg
+            // vi msg deu la tu he thong => only need to close
+            // va tach rieng set conf ra ==
             state.isOpen.messageModal = !state.isOpen.messageModal
-            state.confirm = action.payload
         },
 
         setSearchText: (state, action) => {
             state.searchText = action.payload
         },
-        setResult: (state, action) => {
-            state.pickedResult = action.payload ? action.payload : initialResult
+        setPickedResult: (state, action) => {
+            state.pickedResult = action.payload ? action.payload : pickedResult
         },
+
         setValidation: (state, action) => {
-            state.validation = action.payload.validation
-            state.isFormValid = action.payload.isFormValid
+            state.validation = action.payload ? action.payload : validation
+        },
+        setResultError: (state, action) => {
+            state.error = action.payload ? action.payload : ''
+        },
+        setResultsConfirm: (state, action) => {
+            state.confirm = action.payload ? action.payload : ''
         },
 
         fetchPreviousPage: (state) => {
@@ -213,46 +231,63 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
                 state.isResultsLoading = true
             })
             .addCase(fetchAllResults.fulfilled, (state, action) => {
-                state.isResultsLoading = false
-                state.results = action.payload.results
+                const { results, searchedResults, paginatedResults } = action.payload
 
-                state.searchedResults = action.payload.searchedResults
-                state.paginatedResults = action.payload.paginatedResults
+                state.isResultsLoading = false
+                state.results = results
+                state.searchedResults = searchedResults
+                state.paginatedResults = paginatedResults
 
             })
             .addCase(fetchAllResults.rejected, (state, action) => {
                 state.isResultsLoading = false
+                // loi he thong
                 state.isOpen.messageModal = true
                 state.message = action.error.message
             })
-            // C
+
             .addCase(addResult.pending, (state, action) => {
                 state.isResultsLoading = true
             })
             .addCase(addResult.fulfilled, (state, action) => {
+                const { results, paginatedResults } = action.payload
+
                 state.isResultsLoading = false
-                state.results = action.payload.results
-                state.paginatedResults = action.payload.paginatedResults
+                state.results = results
+                state.paginatedResults = paginatedResults
             })
             .addCase(addResult.rejected, (state, action) => {
-                console.log(action.error.message, 'action.error.message2')
                 state.isResultsLoading = false
-                state.isOpen.messageModal = true
-                state.message = action.error.message
+                state.error = action.error.message
             })
-            // U
+
             .addCase(updateResult.pending, (state, action) => {
                 state.isResultsLoading = true
             })
             .addCase(updateResult.fulfilled, (state, action) => {
+                const { results, paginatedResults } = action.payload
+
                 state.isResultsLoading = false
-                state.results = action.payload.results
-                state.paginatedResults = action.payload.paginatedResults
+                state.results = results
+                state.paginatedResults = paginatedResults
             })
             .addCase(updateResult.rejected, (state, action) => {
                 state.isResultsLoading = false
-                state.isOpen.messageModal = true
-                state.message = action.error.message
+
+                console.log(action.error, 'action.error')
+                // console.log(action.error.param, 'action.error.param')
+                // const message = action.error.message
+                // const param = action.error.param
+                // const validation = action.error.validation
+                // if (message==='') {
+                // loi update thi chac toan 422 thoi nen ko can modal
+                // state.isOpen.messageModal = true
+                state.error = action.error.message
+                // } else {
+                // console.log(state.validation[param], 'state.validation[param]')
+                // console.log(state.validation[`${param}`], 'state.validation[`{param}`]')
+                // state.validation[param] = validation
+                // }
             })
     }
 })
@@ -261,12 +296,14 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
 export const {
     toggleModalAdd,
     toggleModalUpdate,
-    toggleModalMessage,
+    closeResultsMessage,
     setSearchText,
     fetchPreviousPage,
     fetchNextPage,
-    setResult,
-    setValidation
+    setPickedResult,
+    setValidation,
+    setResultError,
+    setResultsConfirm
 } = resultsSlice.actions
 
 

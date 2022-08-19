@@ -1,13 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-// not functional comp
-import { useDispatch } from 'react-redux'
-import usersSlice, { test } from './usersSlice'
-// loi vong lap
-// import store from '../store'
-
-console.log(usersSlice)
-console.log(usersSlice.actions)
-
 
 export const resetPassword = createAsyncThunk('resetPassword', async (email) => {
     const url = "http://localhost:8080/auth/resetPassword"
@@ -77,6 +68,7 @@ export const postTicket = createAsyncThunk('postTicket', async (props) => {
     const data = await res.json()
 
     if (res.status !== 200 && res.status !== 201) {
+        console.log(data, 74161864198)
         throw new Error(data.message)
     }
     return data
@@ -88,10 +80,12 @@ export const deleteAllTickets = createAsyncThunk('deleteAllTickets', async (toke
         method: 'DELETE',
         headers: { Authorization: token }
     })
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to delete all users');
-    }
     const data = res.json()
+    if (res.status !== 200 && res.status !== 201) {
+        // loi -ing
+        console.log(data, 'data')
+        throw new Error(data.message)
+    }
     return data
 })
 
@@ -106,11 +100,10 @@ export const changePassword = createAsyncThunk('changePassword', async (authData
         }
     })
 
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed to reset')
-    }
-
     const data = await res.json()
+    if (res.status !== 200 && res.status !== 201) {
+        throw new Error(data.message)
+    }
     return data
 })
 
@@ -130,28 +123,13 @@ const authSlice = createSlice({
         isAuthLoading: false,
         error: '',
         loginInput,
+        isOpenModal: false // modal chung cho all confirm & msg
     },
     reducers: {
-//         setAutoLogout: (state, action) => {
-//             // set expiredate
-//             console.log(+action.payload, 2164821)
-// // sao 0 roi ma no ko chay ham ?
-//             setTimeout(() => {
-//                 // handleLogout()
+        toggleModal: (state, action) => {
+            state.isOpenModal = !state.isOpenModal
+        },
 
-//                 console.log(681648236428)
-//                 // https://stackoverflow.com/a/53448635
-//                 state.isAuth = false
-//                 state.token = null
-//                 state.user = null
-
-//                 // localStorage.clear()
-//                 localStorage.removeItem('user')
-//                 // authSlice.actions.handleLogout()
-
-//             }, +action.payload);
-
-//         },
         handleLogout: (state, action) => {
             state.isAuth = false
             state.token = null
@@ -167,7 +145,6 @@ const authSlice = createSlice({
             state.loginInput = action.payload ? action.payload : loginInput
         },
         setUser: (state, action) => {
-            console.log(action.payload, 94808429084092)
             state.user = action.payload
         },
         setToken: (state, action) => {
@@ -192,10 +169,6 @@ const authSlice = createSlice({
                 state.isAuthLoading = false
                 state.error = ''
                 state.loginInput = action.payload
-                // state.user = action.payload.user
-                // maybe cuz of using user to check isAuth T sometimes => crash with isAuth F
-                // => fix : check token , not user
-                // or : diff state to save input
 
             })
             .addCase(handleSingup.rejected, (state, action) => {
@@ -213,8 +186,6 @@ const authSlice = createSlice({
                 state.isAuthLoading = false
                 state.error = ''
 
-                console.log(action.payload, 'action.payload')
-
                 // save to local memory (state)
                 state.token = action.payload.token
                 state.user = action.payload.user
@@ -223,27 +194,14 @@ const authSlice = createSlice({
                 const expiryDate = new Date(
                     new Date().getTime() + remainingMilliseconds
                 );
-                // expiryDate.setHours(expiryDate.getHours() + 7)
-
-                console.log(expiryDate.toISOString(), 52759)
 
                 // save to browser's memory (LS)
                 localStorage.setItem('token', action.payload.token)
                 localStorage.setItem('user', JSON.stringify(action.payload.user))
                 localStorage.setItem('expiryDate', expiryDate.toISOString())
-                // setAutoLogout(remainingMilliseconds)
-                // test()
-                // authSlice.actions.setAutoLogout(remainingMilliseconds)
-
-                // const dispatch = useDispatch()
-                // dispatch(test())
-
-                console.log(authSlice)
-                // console.log(store.getState())
 
             })
             .addCase(handleLogin.rejected, (state, action) => {
-                console.log(action.error.message)
                 state.isAuth = false
                 state.isAuthLoading = false
                 state.error = action.error.message
@@ -272,6 +230,8 @@ const authSlice = createSlice({
                 state.error = action.error.message
             })
 
+
+
             .addCase(postTicket.pending, (state, action) => {
                 state.isAuthLoading = true
             })
@@ -285,7 +245,7 @@ const authSlice = createSlice({
             })
             .addCase(postTicket.rejected, (state, action) => {
                 state.isAuthLoading = false
-                state.message = action.error.message
+                state.error = action.error.message
             })
 
             .addCase(deleteAllTickets.pending, (state, action) => {
@@ -293,22 +253,27 @@ const authSlice = createSlice({
             })
             .addCase(deleteAllTickets.fulfilled, (state, action) => {
                 state.isAuthLoading = false
-                state.message = "deleted all"
+                // state.isOpenAuthModal = true
+                // state.message = "deleted all"
                 state.user = action.payload.user
                 localStorage.setItem('user', JSON.stringify(action.payload.user))
 
             })
             .addCase(deleteAllTickets.rejected, (state, action) => {
+                console.log(action.error)
                 state.isAuthLoading = false
-                state.message = action.error.message
+                // later : erturn case data.error
+                // state.isOpenAuthModal = true
+                // state.message = action.error.message
+                console.log(state.message)
             })
 
     }
 })
 
 export const {
+    toggleModal,
     handleLogout,
-    setAutoLogout,
     setAuthError,
     setLoginInput,
     setUser,

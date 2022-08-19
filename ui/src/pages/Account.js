@@ -10,7 +10,7 @@ const Account = () => {
 
     const dispatch = useDispatch()
 
-    const { user, token } = useSelector(state => state.auth)
+    const { user, token,error } = useSelector(state => state.auth)
 
     const [oldPassword, setOldPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
@@ -23,49 +23,25 @@ const Account = () => {
     const [validated, setValidated] = useState('')
     const [successText, setSuccessText] = useState('')
 
-
     const handleChange = e => {
         const { name, value } = e.target
 
         if (name === 'oldPassword') {
-            const isValidated = length({ min: 6, max: 30 })(value)
-            if (isValidated) {
-                setOldErr("")
-                setValidated('')
-            } else {
-                setOldErr("6 characters minimum")
-                setSuccessText('')
-            }
             setOldPassword(value)
         }
 
         if (name === 'newPassword') {
-            const isValidated = length({ min: 6, max: 30 })(value)
-            if (isValidated) {
-                setNewErr("")
-                setValidated('')
-            } else {
-                setNewErr("6 characters minimum")
-                setSuccessText('')
-            }
             setNewPassword(value)
         }
 
         if (name === 'confirmPassword') {
-            const isValidated = isMatch(newPassword)(value) && length({ min: 6, max: 30 })(value)
-            if (isValidated) {
-                setConfirmErr("")
-                setValidated('')
-            } else {
-                setConfirmErr("Passwords did not match")
-                setSuccessText('')
-            }
             setConfirmPassword(value)
         }
+
     }
 
 
-    const HandleSubmit = () => {
+    const HandleSubmit = async () => {
         const authData = {
             oldPassword: oldPassword,
             newPassword: newPassword,
@@ -73,36 +49,23 @@ const Account = () => {
             token: token
         }
 
-        const filledAll = oldPassword !== '' && newPassword !== '' && confirmPassword !== ''
-        if (filledAll) {
-            setValidated('')
-        } else {
-            return setValidated('Fill all input')
+        const data = await dispatch(changePassword(authData))
+        if (data.payload) {
+            setOldPassword('')
+            setNewPassword('')
+            setConfirmPassword('')
+            setSuccessText('Password changed successfully')
         }
-
-        const validatedAll = oldErr === '' && newErr === '' && confirmErr === ''
-        if (validatedAll) {
-            setValidated('')
-        } else if (oldErr !== '') {
-            return setValidated(oldErr)
-        } else if (newErr !== '') {
-            return setValidated(newErr)
-        } else if (confirmErr !== '') {
-            return setValidated(confirmErr)
+        if (data.error) {
+            setSuccessText('')
         }
-
-        dispatch(changePassword(authData))
-        setOldPassword('')
-        setNewPassword('')
-        setConfirmPassword('')
-        setSuccessText('Password changed successfully')
 
     }
 
     return (
-        <div className="container pt-5 my-5 mw-100">
+        <div className="container pt-5 mw-100">
             <Row>
-                <Col xs="12" md="6" className="d-flex justify-content-center">
+                <Col xs="12" md="6" className="my-5 d-flex justify-content-center">
                     <Form inline className="w-75">
                         <h1 className="mb-5 text-dark text-center"><mark>Personal Information</mark></h1>
                         <h3 className="mb-5 text-danger text-center">{user.email}</h3>
@@ -164,15 +127,12 @@ const Account = () => {
                         >Update</Button>
                     </Form>
                 </Col>
-                <Col xs="12" md="6" className="d-flex justify-content-center">
+                <Col xs="12" md="6" className="my-5 d-flex justify-content-center">
                     <Form inline>
                         <h1 className="mb-5 text-danger text-center">Change Password</h1>
 
-                        {oldErr !== '' && <Alert color="danger">{oldErr}</Alert>}
-                        {newErr !== '' && <Alert color="danger">{newErr}</Alert>}
-                        {confirmErr !== '' && <Alert color="danger">{confirmErr}</Alert>}
-                        {validated !== '' && <Alert color="danger">{validated}</Alert>}
-                        {validated === '' && successText !== '' && <Alert color="success">{successText}</Alert>}
+                        {error !== '' && <Alert color="danger">{error}</Alert>}
+                        {error === '' && successText !== '' && <Alert color="success">{successText}</Alert>}
 
                         <FormGroup floating className="mt-3">
                             <Input
@@ -205,7 +165,6 @@ const Account = () => {
                             color="dark"
                             size="lg"
                             className="mt-3 mb-5"
-                            disabled={validated !== ''}
                             onClick={HandleSubmit}
                         >
                             Change

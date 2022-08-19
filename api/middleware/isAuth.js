@@ -9,8 +9,6 @@ module.exports = (req, res, next) => {
         throw err
     }
 
-    console.log(token)
-
     const decodedToken = jwt.verify(token, 'privatekey') // decode & verify the token
     if (!decodedToken) {
         const err = new Error('unable to verify the token')

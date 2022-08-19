@@ -1,14 +1,16 @@
 
 import { useEffect } from 'react';
-import { UncontrolledAccordion, Spinner, Button, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap'
+import { UncontrolledAccordion, Button, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllResults, toggleModalAdd, setResult, toggleModalUpdate } from '../flux/slices/resultsSlice';
+import { fetchAllResults, toggleModalAdd, setPickedResult, toggleModalUpdate } from '../flux/slices/resultsSlice';
 import { Search } from '../components/Search';
 import { ResultForm } from '../components/Result/Form';
 import { ResultDetail } from '../components/Result/Detail';
 import Paginator from '../components/Paginator';
-import Messenger from '../components/Messenger';
+import MessageHandler from '../components/Handler/Message'
+import ConfirmHandler from '../components/Handler/Confirm'
+import Loader from './../components/Loader';
 
 
 const Results = () => {
@@ -28,7 +30,7 @@ const Results = () => {
         })
 
         dispatch(toggleModalUpdate())
-        dispatch(setResult(updatingResult))
+        dispatch(setPickedResult(updatingResult))
 
     }
 
@@ -44,17 +46,11 @@ const Results = () => {
 
     return (
         <div className="container pt-5 mw-100">
-            <Messenger />
+            <MessageHandler />
+            <ConfirmHandler />
             <ResultForm />
             {isAuthLoading ? (
-                <div className="m-3 d-flex justify-content-center" >
-                    <Spinner
-                        className="m-3"
-                        color="primary"
-                    >
-                        Loading...
-                    </Spinner>
-                </div>
+                <Loader color="primary" />
             ) : (
                 <>
 
@@ -68,6 +64,8 @@ const Results = () => {
                             <hr />
                         </div>
                     </title>
+
+                    {/* later : dropdown => "pick the game" => custom showing details */}
 
                     <div
                         className="m-3 d-flex justify-content-between flex-wrap"
@@ -88,14 +86,7 @@ const Results = () => {
 
 
                     {isResultsLoading && (
-                        <div className="m-3 d-flex justify-content-center" >
-                            <Spinner
-                                className="m-3"
-                                color="primary"
-                            >
-                                Loading...
-                            </Spinner>
-                        </div>
+                        <Loader color="primary" />
                     )}
 
                     {results.length <= 0 && !isResultsLoading ? (
@@ -136,7 +127,7 @@ const Results = () => {
                                 ))
                                 }
                             </UncontrolledAccordion>
-                            <p className="mx-5">Total <mark style={{ background: '#bcecf6' }}>{searchedResults.length}</mark> result(s) found</p>
+                            <p className="mx-md-5">Total <mark style={{ background: '#bcecf6' }}>{searchedResults.length}</mark> result(s) found</p>
                         </>
                     )}
 
@@ -145,7 +136,7 @@ const Results = () => {
                             <UncontrolledAccordion
                                 defaultOpen="0"
                                 stayOpen
-                                className="m-5 text-center"
+                                className="m-md-5 text-center"
                             >
                                 {paginatedResults.map((result, index) => (
                                     <AccordionItem
@@ -176,8 +167,8 @@ const Results = () => {
                                     </AccordionItem>
                                 ))}
                             </UncontrolledAccordion>
-                            <p className="mx-5">Total <mark style={{ background: '#bcecf6' }}>{results.length}</mark> results found</p>
-                            <p className="mx-5">Page : {currentPage}</p>
+                            <p className="mx-md-5">Total <mark style={{ background: '#bcecf6' }}>{results.length}</mark> results found</p>
+                            <p className="mx-md-5">Page : {currentPage}</p>
                             <Paginator />
                         </>
                     }

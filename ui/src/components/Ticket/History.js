@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // import { deleteAllTickets } from '../../flux/slices/ticketsSlice';
 import { deleteAllTickets } from '../../flux/slices/authSlice';
+import { setTicketsConfirm } from '../../flux/slices/ticketsSlice';
+import { toggleUsersMessage } from '../../flux/slices/usersSlice';
 
 const HistoryCheck = () => {
 
@@ -11,15 +13,17 @@ const HistoryCheck = () => {
 
     const { token, user } = useSelector(state => state.auth)
 
-    const handleDeleteAll = () => {
-        dispatch(deleteAllTickets(token))
-    }
+    const handleDeleteAll = async () => {
+        const confirm = "Delete all checking history ?"
 
-    console.log(typeof token, 124917294719)
+        dispatch(toggleUsersMessage())
+        dispatch(setTicketsConfirm(confirm))
+        // dispatch(deleteAllTickets(token))
+    }
 
     return (
         <>
-            <div className="row m-5">
+            <div className="row m-md-5">
                 <div className="col-12 text-center text-danger fs-1 fw-bolder my-5">
                     <div> Checking history</div>
                 </div>
@@ -30,7 +34,7 @@ const HistoryCheck = () => {
                         style={{ gap: '1rem' }}
                     >
                         <Button
-                            className="mx-3 px-3"
+                            className="mx-3 px-md-3"
                             color="dark"
                             onClick={handleDeleteAll}
                         >
@@ -39,7 +43,7 @@ const HistoryCheck = () => {
                     </div>
                 )}
 
-                < Table striped responsive className="text-center">
+                < Table striped responsive className="text-center ">
                     <thead>
                         <tr>
                             <th> # </th>

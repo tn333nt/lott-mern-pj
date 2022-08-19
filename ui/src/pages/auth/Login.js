@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 import { setLoginInput, handleLogin, setAuthError } from '../../flux/slices/authSlice';
-import { setCheckingError, setCheckingMessage, setCheckingSuccess } from '../../flux/slices/ticketsSlice';
+import { setCheckingError, setCheckingFail, setCheckingMessage, setCheckingSuccess, setIndexes, setTicket } from '../../flux/slices/ticketsSlice';
 
 const Login = () => {
     const dispatch = useDispatch()
@@ -17,7 +17,6 @@ const Login = () => {
     const [password, setPassword] = useState(loginInput.password)
 
     const handleChange = e => {
-        console.log(e)
         const { name, value } = e.target
 
         if (name === 'email') {
@@ -46,9 +45,11 @@ const Login = () => {
             dispatch(setAuthError())
             dispatch(setLoginInput())
 
-            dispatch(setCheckingMessage())
-            dispatch(setCheckingSuccess())
             dispatch(setCheckingError())
+            dispatch(setCheckingSuccess())
+            dispatch(setCheckingFail())
+            dispatch(setTicket())
+            dispatch(setIndexes())
             
             navigate('/')
         }
@@ -68,8 +69,7 @@ const Login = () => {
                             placeholder="email"
                             bsSize="lg"
                             value={loginInput.email} // keep user after signup
-                            // onChange={handleChange}
-                            onInput={handleChange}
+                            onChange={handleChange}
                         />
                     </FormGroup>
                     <FormGroup className="mt-3">
@@ -80,8 +80,7 @@ const Login = () => {
                             placeholder="password"
                             bsSize="lg"
                             value={loginInput.password}
-                            // onChange={handleChange}
-                            onInput={handleChange}
+                            onChange={handleChange}
                         />
                     </FormGroup>
                     <Button block
