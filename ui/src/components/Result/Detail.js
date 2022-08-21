@@ -33,7 +33,7 @@ export const ResultDetail = props => {
                         <th scope="row"> Jackpot</th>
                         <td >
                             {result.jackpot.winningValues.map((value, index) => (
-                                <span
+                                <span key={index}
                                     className={+indexJP === +index ? 'text-success fw-bold' : ''}
                                 >{value}</span>
                             ))}
@@ -47,7 +47,7 @@ export const ResultDetail = props => {
                         <th scope="row"> First Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.firstPrizes.winningValues.map((value, index) => (
-                                <td
+                                <td key={index}
                                     className={+indexP1 === +index ? 'text-success fw-bold' : ''}
                                 >{value}</td>
                             ))}
@@ -61,7 +61,7 @@ export const ResultDetail = props => {
                         <th scope="row"> Second Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.secondPrizes.winningValues.map((value, index) => (
-                                <td
+                                <td key={index}
                                     className={+indexP2 === +index ? 'text-success fw-bold' : ''}
                                 >{value}</td>
                             ))}
@@ -75,7 +75,7 @@ export const ResultDetail = props => {
                         <th scope="row"> Third Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.thirdPrizes.winningValues.map((value, index) => (
-                                <td
+                                <td key={index}
                                     className={+indexP3 === +index ? 'text-success fw-bold' : ''}
                                 >{value}</td>
                             ))}
@@ -89,7 +89,7 @@ export const ResultDetail = props => {
                         <th scope="row"> Fourth Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.fourthPrizes.winningValues.map((value, index) => (
-                                <td
+                                <td key={index}
                                     className={+indexP4 === +index ? 'text-success fw-bold' : ''}
                                 >{value}</td>
                             ))}
@@ -103,7 +103,7 @@ export const ResultDetail = props => {
                         <th scope="row"> Fifth Prizes</th>
                         <td className="d-flex flex-wrap justify-content-evenly">
                             {result.fifthPrizes.winningValues.map((value, index) => (
-                                <td
+                                <td key={index}
                                     className={+indexP5 === +index ? 'text-success fw-bold' : ''}
                                 >{value}</td>
                             ))}
@@ -117,7 +117,7 @@ export const ResultDetail = props => {
                         <tr>
                             <th scope="row"> Sixth Prizes</th>
                             <td className="d-flex flex-wrap justify-content-evenly">
-                                {result?.sixthPrizes.winningValues.map(value => <td>{value}</td>)}
+                                {result?.sixthPrizes.winningValues.map(value => <td key={value}>{value}</td>)}
                             </td>
                             <td>{result?.sixthPrizes.reward}</td>
                         </tr>
@@ -129,7 +129,7 @@ export const ResultDetail = props => {
                         <tr>
                             <th scope="row"> Seventh Prizes</th>
                             <td className="d-flex flex-wrap justify-content-evenly">
-                                {result.seventhPrizes.winningValues.map(value => <td>{value}</td>)}
+                                {result.seventhPrizes.winningValues.map(value => <td key={value}>{value}</td>)}
                             </td>
                             <td>{result.seventhPrizes.reward}</td>
                         </tr>
@@ -141,7 +141,7 @@ export const ResultDetail = props => {
                         <tr>
                             <th scope="row"> Eighth Prizes</th>
                             <td className="d-flex flex-wrap justify-content-evenly">
-                                {result.eighthPrizes.winningValues.map(value => <td>{value}</td>)}
+                                {result.eighthPrizes.winningValues.map(value => <td key={value}>{value}</td>)}
                             </td>
                             <td>{result.eighthPrizes.reward}</td>
                         </tr>

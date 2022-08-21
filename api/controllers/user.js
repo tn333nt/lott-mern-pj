@@ -121,7 +121,7 @@ exports.changePassword = async (req, res, next) => {
         const error = errors.array()[0]
         const err = new Error(error.msg)
         err.statusCode = 422
-        next(err) 
+        return next(err)
     }
 
     const userId = req.user._id

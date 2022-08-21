@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { UncontrolledAccordion, Button, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllResults, toggleModalAdd, setPickedResult, toggleModalUpdate } from '../flux/slices/resultsSlice';
+import { fetchAllResults, toggleModalAdd, setPickedResult, toggleModalUpdate, setResultsSearch, fetchPreviousResultsPage } from '../flux/slices/resultsSlice';
 import { Search } from '../components/Search';
 import { ResultForm } from '../components/Result/Form';
 import { ResultDetail } from '../components/Result/Detail';
@@ -11,6 +11,7 @@ import Paginator from '../components/Paginator';
 import MessageHandler from '../components/Handler/Message'
 import ConfirmHandler from '../components/Handler/Confirm'
 import Loader from './../components/Loader';
+import { clearCurrentPage, fetchNextPage, fetchPreviousPage } from '../flux/slices/sharedSlice';
 
 
 const Results = () => {
@@ -20,9 +21,16 @@ const Results = () => {
     const { token, user, isAuthLoading } = useSelector(state => state.auth)
 
     const { results, paginatedResults, searchedResults,
-        currentPage, searchText, isResultsLoading
+        resultsSearch, isResultsLoading
     } = useSelector(state => state.results)
 
+    const { searchText, currentPage } = useSelector(state => state.shared)
+    const totalResults = results.length
+    const lastPage = Math.ceil(totalResults / 9)
+
+    const handleSearch = () => {
+        dispatch(setResultsSearch(searchText))
+    }
 
     const handleUpdate = resultId => {
         const updatingResult = results.find(result => {
@@ -31,17 +39,30 @@ const Results = () => {
 
         dispatch(toggleModalUpdate())
         dispatch(setPickedResult(updatingResult))
-
     }
+
+    const handlePrevious = () => {
+        dispatch(fetchPreviousPage())
+    }
+
+    const handleNext = () => {
+        dispatch(fetchNextPage())
+    }
+
+    // clear shared data everytime reload page
+    useEffect(() => {
+        dispatch(clearCurrentPage())
+    }, [dispatch])
 
 
     useEffect(() => {
         dispatch(fetchAllResults({
-            currentPage: currentPage,
-            searchText: searchText,
+            currentPage,
+            searchText: resultsSearch,
             token: token
         }))
-    }, [currentPage, searchText, token, dispatch])
+    }, [currentPage, resultsSearch, token, dispatch])
+
 
 
     return (
@@ -80,7 +101,7 @@ const Results = () => {
                                 + New result
                             </Button>
                         )}
-                        <Search placeholder='Type date ...' color="primary" />
+                        <Search placeholder='Type date ...' color="primary" handleSearch={handleSearch} />
                         {/* later :  search by date OR and AND game */}
                     </div>
 
@@ -93,7 +114,7 @@ const Results = () => {
                         <p style={{ textAlign: 'center' }}> Not found result </p>
                     ) : null}
 
-                    {!isResultsLoading && searchText && searchedResults.length > 0 && (
+                    {!isResultsLoading && resultsSearch && searchedResults.length > 0 && (
                         <>
                             <UncontrolledAccordion
                                 defaultOpen="0"
@@ -131,7 +152,7 @@ const Results = () => {
                         </>
                     )}
 
-                    {!searchText && !isResultsLoading &&
+                    {!resultsSearch && !isResultsLoading &&
                         <>
                             <UncontrolledAccordion
                                 defaultOpen="0"
@@ -167,13 +188,20 @@ const Results = () => {
                                     </AccordionItem>
                                 ))}
                             </UncontrolledAccordion>
+
                             <p className="mx-md-5">Total <mark style={{ background: '#bcecf6' }}>{results.length}</mark> results found</p>
                             <p className="mx-md-5">Page : {currentPage}</p>
-                            <Paginator />
+
+                            <Paginator
+                                handlePrevious={handlePrevious}
+                                handleNext={handleNext}
+                                currentPage={currentPage}
+                                lastPage={lastPage}
+                            />
                         </>
                     }
 
-                    {!isResultsLoading && searchText && searchedResults.length <= 0 && (
+                    {!isResultsLoading && resultsSearch && searchedResults.length <= 0 && (
                         <p style={{ textAlign: 'center' }}> Not found result </p>
                     )}
                 </>

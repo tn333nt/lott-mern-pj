@@ -9,29 +9,27 @@ import Loader from './../Loader';
 const CheckedResult = () => {
 
     const {results, pickedResult} = useSelector(state => state.results)
-    const {error, failText, successText} = useSelector(state => state.tickets)
-
-    console.log(successText, 'successText')
+    const {message, failText, successText} = useSelector(state => state.tickets)
 
     return (
         <>
             <div style={{ marginRight: 21 }}>
                 <h1 className="text-center fs-1 fw-bolder" style={{ color: '#084298' }}>
-                    {!error && pickedResult.date !== '' && `Result of ${pickedResult.date}`}
-                    {error && pickedResult.date !== '' && `Result of ${pickedResult.date}`}
+                    {!message && pickedResult.date !== '' && `Result of ${pickedResult.date}`}
+                    {message && pickedResult.date !== '' && `Result of ${pickedResult.date}`}
                     {pickedResult.date === '' && results.length > 0 && `Latest result (${results[0].date})`}
                 </h1>
-                {error !== '' && <Alert color="danger">{error}</Alert>}
+                {message !== '' && <Alert color="danger">{message}</Alert>}
                 {failText !== '' && <Alert color="warning">{failText}</Alert>}
                 {successText !== '' && <Alert color="success">{successText}</Alert>}
             </div>
             <div style={{ marginRight: 21 }}>
                 {/* vi initial state of date is '' */}
-                {!error && pickedResult && pickedResult.date !== '' && (
+                {!message && pickedResult && pickedResult.date !== '' && (
                     <ResultDetail result={pickedResult} text="dark" />
                 )}
 
-                {!error && pickedResult.date === '' && results.length > 0 && (
+                {!message && pickedResult.date === '' && results.length > 0 && (
                     <ResultDetail result={results[0]} text="dark" />
                 )}
 

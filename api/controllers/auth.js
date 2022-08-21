@@ -21,7 +21,7 @@ exports.signup = async (req, res, next) => {
         const error = errors.array()[0]
         const err = new Error(error.msg)
         err.statusCode = 422
-        next(err)
+        return next(err)
     }
 
     const { email, password } = req.body
@@ -60,7 +60,7 @@ exports.login = async (req, res, next) => {
         const error = errors.array()[0]
         const err = new Error(error.msg)
         err.statusCode = 422
-        next(err)
+        return next(err)
     }
 
     const { email, password } = req.body
@@ -101,7 +101,7 @@ exports.resetPassword = async (req, res, next) => {
         const error = errors.array()[0]
         const err = new Error(error.msg)
         err.statusCode = 422
-        next(err)
+        return next(err)
     }
 
     const email = req.body.email

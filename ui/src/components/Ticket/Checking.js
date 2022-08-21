@@ -3,112 +3,107 @@ import { useState } from 'react';
 import { Input, Button, Form, Alert, FormGroup, Label } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { isNumber, length } from '../../util/validators';
-import { setCheckingError, setIndexes, setCheckingFail, setCheckingSuccess, setTicket } from '../../flux/slices/ticketsSlice';
+import { required, isNumber, length } from '../../util/validators';
+import {
+    setIndexes, postTicket, setTicket,
+    setCheckingSuccess, setCheckingMessage, setCheckingFail,
+    setCheckingError
+} from '../../flux/slices/ticketsSlice';
 import { setPickedResult } from '../../flux/slices/resultsSlice';
-import { postTicket } from '../../flux/slices/authSlice';
+import { setUser } from '../../flux/slices/authSlice';
 
 const CheckTicket = () => {
 
     const dispatch = useDispatch()
+
+    // const [date, setDate] = useState('') // loi cap nhat dong thoi
     const [validated, setValidated] = useState('')
 
     const results = useSelector(state => state.results.results)
-    const { checkingTicket, indexes } = useSelector(state => state.tickets)
-    const { isAuth, token, error } = useSelector(state => state.auth)
-    console.log(error, 28628768432)
+    const { checkingTicket, indexes, error } = useSelector(state => state.tickets)
+    const { isAuth, token } = useSelector(state => state.auth)
+
     const handleChange = e => {
         const { name, value } = e.target
 
-        // if (name === 'value') {
-        //     const isValidated = length({ exact: 6 })(value) && isNumber(value)
-        //     !isValidated && setValidated('SIX NUMBERS for each ticket')
-        //     isValidated && setValidated('')
-        // }
+        if (name === 'value') {
+            const isValidated = length({ exact: 6 })(value) && isNumber(value)
+            !isValidated && setValidated('Validation failed')
+            isValidated && setValidated('')
 
-        const ticket = {
-            ...checkingTicket,
-            [name]: value
+            dispatch(setTicket({
+                ...checkingTicket,
+                value,
+            }))
         }
 
-        dispatch(setTicket(ticket))
+        // hinh nhu date bi invalid la do sau khi blur => tinh changing value la rong
+        // nen neu fill date trc roi den value thi date se bi loi
+        // sao no van tinh onchange vay nhi ?
+
+        if (name === 'date' && value !== '') {
+            const newDate = new Date(value)
+            const updatedDate = newDate.toLocaleDateString("vi-VN")
+            console.log(updatedDate, 9687163)
+            if (updatedDate === 'Invalid Date') {
+                return setValidated('test')
+            }
+            
+            dispatch(setTicket({
+                ...checkingTicket,
+                date: updatedDate,
+            }))
+        }
+
+        // const ticket = {
+        //     ...checkingTicket,
+        //     [name]: value,
+        //     date,
+        // }
+        // dispatch(setTicket(ticket))
 
     }
+    console.log(checkingTicket, 9687163)
 
     // vi checking !isAuth ko luu data => only need fe validation
-    // later : shorten it
     const handleCheck = async () => {
 
-        if (checkingTicket.date === 'Invalid Date' || // loi validate thoi
-            checkingTicket.value === '' ||
-            checkingTicket.date === ''
-        ) {
-            dispatch(setTicket())
-            // return setValidated('Fill all input')
-            if (isAuth) {
-                dispatch(postTicket({
-                    ticket: checkingTicket,
-                    token
-                }))
-            }
-            return
-        }
-        console.log(checkingTicket, 'checkingTicket')
+        // // test be val
         // if (isAuth) {
         //     dispatch(postTicket({
         //         ticket: checkingTicket,
         //         token
         //     }))
-        //     // const data = await dispatch(postTicket({
-        //     //     ticket: checkingTicket,
-        //     //     token
-        //     // }))
-        //     // if (data.payload) {
-        //     //     // setValidated(error)
-        //     //     dispatch(setCheckingFail())
-        //     //     dispatch(setCheckingSuccess())
-        //     //     dispatch(setCheckingError())
-        //     // }
-        //     // return
         // }
+        // dispatch(setCheckingError())
 
-        // find checking date in Results
+
+        if (checkingTicket.date === 'Invalid Date' || // loi xac nhan gia tri sau khi bam ?
+            checkingTicket.value === '' ||
+            checkingTicket.date === ''
+        ) {
+            return setValidated('Fill all input')
+        }
+
+
+        // find result that have the checking date
         const checkingResult = results.find(result => result.date === checkingTicket.date)
-        console.log(checkingResult, 'checkingResult')
+
         // not found  
+        // later : thu de phan nay cho be only
         if (!checkingResult) {
-            // still pass date in to render
+            // still pass date to Checked
             dispatch(setPickedResult({
                 ...checkingResult,
-                date: checkingTicket.date
+                date: checkingTicket.date,
             }))
 
-            // if (isAuth) {
-            //     dispatch(postTicket({
-            //         ticket: checkingTicket,
-            //         token
-            //     }))
-            //     // const data = await dispatch(postTicket({
-            //     //     ticket: checkingTicket,
-            //     //     token
-            //     // }))
-            //     // if (data.payload) {
-            //     //     setValidated(error)
-            //     //     dispatch(setCheckingFail())
-            //     //     dispatch(setCheckingSuccess())
-            //     //     dispatch(setCheckingError())
-            //     // }
-            // } else {
-                // tach err vs msg ra, msg -> hthi ben checked & err -> validation err
-                // set msg & clear err in here
-            dispatch(setCheckingError('Not found result'))
+            dispatch(setCheckingMessage('Not found result'))
+            // dispatch(setCheckingError())
             dispatch(setCheckingSuccess())
             dispatch(setCheckingFail())
-            // }
-
-            return
         }
-        // if (error !== '') {
+
         const indexChecking1P = checkingResult.firstPrizes.winningValues.findIndex(value => checkingTicket.value === value)
         const indexCheckingJP = checkingResult.jackpot.winningValues.findIndex(value => checkingTicket.value === value)
 
@@ -143,170 +138,87 @@ const CheckTicket = () => {
 
         // 2. pass found out result to render
         dispatch(setPickedResult(checkingResult))
+        // dispatch(setPickedResult({
+        //     ...checkingResult,
+        //     date: checkingTicket.date,
+        // }))
 
         // 3. pass msg to show if found index (return !== -1) , i.e won a prize + add check if be user
-        // neu trung giai
-        let wonPrize = ''
-        if (indexCheckingJP !== -1) {
-            // // neu la user thi add check to his
-            // isAuth && dispatch(postTicket({
-            //     ticket: {
-            //         ...checkingTicket,
-            //         wonPrize: 'jackpot'
-            //     },
-            //     token: token
-            // }))
-            // dispatch(setCheckingSuccess('you have won the jackpot'))
-            // // clear old state
-            // dispatch(setCheckingFail())
-            // dispatch(setCheckingError())
-            wonPrize = 'Jackpot'
-        } else if (indexChecking1P !== -1) {
-            // isAuth && dispatch(postTicket({
-            //     ticket: {
-            //         ...checkingTicket,
-            //         wonPrize: 'firstPrize'
-            //     },
-            //     token: token
-            // }))
-            // dispatch(setCheckingSuccess('you have won the first prize'))
-            // dispatch(setCheckingFail())
-            // dispatch(setCheckingError())
-            wonPrize = 'First prize'
-        } else if (indexChecking2P !== -1) {
-            // isAuth && dispatch(postTicket({
-            //     ticket: {
-            //         ...checkingTicket,
-            //         wonPrize: 'secondPrize'
-            //     },
-            //     token: token
-            // }))
-            // dispatch(setCheckingSuccess('you have won the second prize'))
-            // dispatch(setCheckingFail())
-            // dispatch(setCheckingError())
-            wonPrize = 'Second prize'
-        } else if (indexChecking3P !== -1) {
-            // isAuth && dispatch(postTicket({
-            //     ticket: {
-            //         ...checkingTicket,
-            //         wonPrize: 'thirdPrize'
-            //     },
-            //     token: token
-            // }))
-            // dispatch(setCheckingSuccess('you have won the third prize'))
-            // dispatch(setCheckingFail())
-            // dispatch(setCheckingError())
-            wonPrize = '3rd prize'
-        } else if (indexChecking4P !== -1) {
-            // isAuth && dispatch(postTicket({
-            //     ticket: {
-            //         ...checkingTicket,
-            //         wonPrize: 'fourthPrize'
-            //     },
-            //     token: token
-            // }))
-            // dispatch(setCheckingSuccess('you have won the fourth prize'))
-            // dispatch(setCheckingFail())
-            // dispatch(setCheckingError())
-            wonPrize = 'Fourth prize'
-        } else if (indexChecking5P !== -1) {
-            // isAuth && dispatch(postTicket({
-            //     ticket: {
-            //         ...checkingTicket,
-            //         wonPrize: 'fifthPrize'
-            //     },
-            //     token: token
-            // }))
-            // dispatch(setCheckingSuccess('you have won the fifth prize'))
-            // dispatch(setCheckingFail())
-            // dispatch(setCheckingError())
-            wonPrize = 'Fifth prize'
-        }
+        const wonPrizes = []
+        indexCheckingJP !== -1 && wonPrizes.push('Jackpot')
+        indexChecking1P !== -1 && wonPrizes.push('1st Prize')
+        indexChecking2P !== -1 && wonPrizes.push('2nd Prize')
+        indexChecking3P !== -1 && wonPrizes.push('3rd Prize')
+        indexChecking4P !== -1 && wonPrizes.push('4th Prize')
+        indexChecking5P !== -1 && wonPrizes.push('5th Prize')
 
 
-        // else {
-        //     // neu ko trung
-        //     const ticket = {
-        //         ticket: checkingTicket,
-        //         token: token
-        //     }
-        //     isAuth && dispatch(postTicket(ticket))
-        //     dispatch(setCheckingFail('no won any prize'))
-        //     dispatch(setCheckingSuccess())
-        //     dispatch(setCheckingError())
-
-        //     // clear input
-        //     dispatch(setTicket())
-        // }
-
-
-
-        // } else {
-        //     // neu ko co result cua ngay dc tim
-        //     dispatch(setCheckingError('Not found result'))
-        //     dispatch(setCheckingSuccess())
-        //     dispatch(setCheckingFail())
-
-        //     // still pass date in to render
-        //     dispatch(setPickedResult({
-        //         ...checkingResult,
-        //         date: checkingTicket.date
-        //     }))
-        // }
-
-        const ticket = {
-            // ticket: checkingTicket,
+        const postData = {
             ticket: {
                 ...checkingTicket,
-                wonPrize: wonPrize,
+                // date,
+                wonPrizes,
             },
             token: token
         }
 
-        console.log(ticket)
-
+        // neu la user thi add check to his
         if (isAuth) {
-            const data = await dispatch(postTicket(ticket))
+            const data = await dispatch(postTicket(postData))
+
             if (data.payload) {
-                // dispatch(postTicket(ticket))
-                if (wonPrize !== '') {
-                    // is won
-                    dispatch(setCheckingSuccess(`You have won the ${wonPrize}`))
+                // if won
+                if (wonPrizes.length > 0) {
+                    dispatch(setCheckingSuccess(`You have won the ${wonPrizes.join(' and the ')}`))
+                    // clear old state
                     dispatch(setCheckingFail())
                     dispatch(setCheckingError())
-                    // // clear input
-                    // dispatch(setTicket())
+                    dispatch(setCheckingMessage())
+                    setValidated('')
 
-                } else {
-                    // if not won
-                    dispatch(setCheckingFail('no won any prize'))
+                } else { // if not won
+                    dispatch(setCheckingFail('Not won any prize'))
                     dispatch(setCheckingSuccess())
+                    dispatch(setCheckingMessage())
                     dispatch(setCheckingError())
+                    setValidated('')
+                    // clear inputs
                     // dispatch(setTicket())
                 }
 
+                // update user's hisCheck
+                dispatch(setUser(data.payload.user))
+                return
             }
             // clear checking result
-            // await dispatch(setPickedResult())
             // dispatch(setPickedResult())
-            // if (data.error) {
-            //     setCheckingSuccess()
-            // }
-        } else {
-            if (wonPrize !== '') {
-                dispatch(setCheckingSuccess(`You have won the ${<strong>wonPrize</strong>}`))
+
+            // // if validation failed // not necessary
+            if (data.error) {
+                dispatch(setCheckingSuccess())
                 dispatch(setCheckingFail())
+                dispatch(setCheckingMessage())
+                // dispatch(setPickedResult())
+                setValidated('')
+            }
+
+        } else { // not auth => not update his
+            if (wonPrizes.length > 0) {
+                dispatch(setCheckingSuccess(`You have won the ${wonPrizes.join(' and the ')}`))
+                dispatch(setCheckingFail())
+                dispatch(setCheckingMessage())
                 dispatch(setCheckingError())
-                dispatch(setTicket())
+                setValidated('')
 
             } else {
-                dispatch(setCheckingFail('no won any prize'))
+                dispatch(setCheckingFail('Not won any prize'))
                 dispatch(setCheckingSuccess())
+                dispatch(setCheckingMessage())
                 dispatch(setCheckingError())
-                dispatch(setTicket())
+                setValidated('')
+
             }
         }
-
 
     }
 
@@ -316,13 +228,14 @@ const CheckTicket = () => {
             <div className="text-center text-success fs-1 fw-bolder">
                 Check the ticket
             </div>
+            {validated !== '' && <Alert color="warning">{validated}</Alert>}
             {error !== '' && <Alert color="danger">{error}</Alert>}
-            {validated !== '' && <Alert color="danger">{validated}</Alert>}
             <FormGroup floating className="mt-3">
                 <Input
                     name="value"
                     type="text"
                     bsSize="lg"
+                    // value={value}
                     value={checkingTicket.value}
                     onChange={handleChange}
                 />

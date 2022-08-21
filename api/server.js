@@ -29,8 +29,7 @@ app.use((err, req, res, next) => {
     console.log(err, 'err');
     const status = err.statusCode || 500
     const message = err.message
-    const param = err.param
-    res.status(status).json({ message: message, param: param })
+    res.status(status).json({ message: message })
 })
 
 mongoose

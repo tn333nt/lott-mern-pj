@@ -56,39 +56,6 @@ export const handleLogin = createAsyncThunk('handleLogin', async (authData) => {
     return data
 })
 
-// tam de ben nay de tien cap nhat user
-export const postTicket = createAsyncThunk('postTicket', async (props) => {
-    const url = 'http://localhost:8080/tickets/ticket'
-    const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', Authorization: props.token },
-        body: JSON.stringify(props.ticket)
-    })
-
-    const data = await res.json()
-
-    if (res.status !== 200 && res.status !== 201) {
-        console.log(data, 74161864198)
-        throw new Error(data.message)
-    }
-    return data
-})
-
-export const deleteAllTickets = createAsyncThunk('deleteAllTickets', async (token) => {
-    const url = 'http://localhost:8080/tickets/tickets'
-    const res = await fetch(url, {
-        method: 'DELETE',
-        headers: { Authorization: token }
-    })
-    const data = res.json()
-    if (res.status !== 200 && res.status !== 201) {
-        // loi -ing
-        console.log(data, 'data')
-        throw new Error(data.message)
-    }
-    return data
-})
-
 export const changePassword = createAsyncThunk('changePassword', async (authData) => {
     const url = "http://localhost:8080/users/changePassword"
     const res = await fetch(url, {
@@ -230,43 +197,6 @@ const authSlice = createSlice({
                 state.error = action.error.message
             })
 
-
-
-            .addCase(postTicket.pending, (state, action) => {
-                state.isAuthLoading = true
-            })
-            .addCase(postTicket.fulfilled, (state, action) => {
-                state.isAuthLoading = false
-                // update ui immediately
-                state.user = action.payload.user
-                // update after refresh page
-                localStorage.setItem('user', JSON.stringify(action.payload.user))
-
-            })
-            .addCase(postTicket.rejected, (state, action) => {
-                state.isAuthLoading = false
-                state.error = action.error.message
-            })
-
-            .addCase(deleteAllTickets.pending, (state, action) => {
-                state.isAuthLoading = true
-            })
-            .addCase(deleteAllTickets.fulfilled, (state, action) => {
-                state.isAuthLoading = false
-                // state.isOpenAuthModal = true
-                // state.message = "deleted all"
-                state.user = action.payload.user
-                localStorage.setItem('user', JSON.stringify(action.payload.user))
-
-            })
-            .addCase(deleteAllTickets.rejected, (state, action) => {
-                console.log(action.error)
-                state.isAuthLoading = false
-                // later : erturn case data.error
-                // state.isOpenAuthModal = true
-                // state.message = action.error.message
-                console.log(state.message)
-            })
 
     }
 })

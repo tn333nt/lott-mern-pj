@@ -3,12 +3,13 @@ import { useEffect } from 'react';
 import { Button, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllUsers, toggleUsersMessage, setPickedUser, setAdmin, setUsersConfirm } from '../../flux/slices/usersSlice';
+import { fetchAllUsers, toggleUsersMessage, setPickedUser, setAdmin, setUsersConfirm, setUsersSearch } from '../../flux/slices/usersSlice';
 import { Search } from '../../components/Search';
 import Paginator from '../../components/Paginator';
 import MessageHandler from '../../components/Handler/Message'
 import ConfirmHandler from '../../components/Handler/Confirm'
 import Loader from '../../components/Loader';
+import { clearCurrentPage, fetchNextPage, fetchPreviousPage } from '../../flux/slices/sharedSlice';
 
 
 const Users = () => {
@@ -18,9 +19,17 @@ const Users = () => {
     const { token, isAuthLoading } = useSelector(state => state.auth)
 
     const { users, paginatedUsers, searchedUsers,
-        currentPage, searchText, isUsersLoading,
+        currentUsersPage, usersSearch, isUsersLoading,
         message, confirm
     } = useSelector(state => state.users)
+
+    const { searchText, currentPage } = useSelector(state => state.shared)
+    const totalUsers = users.length
+    const lastPage = Math.ceil(totalUsers / 9)
+
+    const handleSearch = () => {
+        dispatch(setUsersSearch(searchText))
+    }
 
     const handleDelete = userId => {
         const deletingUser = users.find(user => user._id === userId)
@@ -43,25 +52,35 @@ const Users = () => {
 
         dispatch(setAdmin({
             updatedUser: updatedUser,
-            currentPage: currentPage,
+            currentPage: currentUsersPage,
             token: token
         }))
     }
 
+    const handlePrevious = () => {
+        dispatch(fetchPreviousPage())
+    }
+
+    const handleNext = () => {
+        dispatch(fetchNextPage())
+    }
+    
+    useEffect(() => {
+        dispatch(clearCurrentPage())
+    }, [dispatch])
+
 
     useEffect(() => {
         dispatch(fetchAllUsers({
-            currentPage: currentPage,
-            searchText: searchText,
+            currentPage,
+            searchText: usersSearch,
             token: token
         }))
-    }, [currentPage, searchText, token, dispatch])
-
+    }, [currentPage, usersSearch, token, dispatch])
+    
 
     return (
         <div className="container pt-5 mw-100">
-            {/* <MessageHandler />
-            <ConfirmHandler /> */}
             {message !== '' && <MessageHandler message={message} />}
             {confirm !== '' && <ConfirmHandler confirm={confirm} />}
             {isAuthLoading ? (
@@ -80,7 +99,7 @@ const Users = () => {
                         className="m-3 d-flex justify-content-end flex-wrap"
                         style={{ gap: '1rem' }}
                     >
-                        <Search placeholder='Type email' />
+                        <Search placeholder='Type email' handleSearch={handleSearch} />
                     </div>
 
 
@@ -92,7 +111,7 @@ const Users = () => {
                         <p style={{ textAlign: 'center' }}> Not found user </p>
                     ) : null}
 
-                    {!isUsersLoading && searchText && searchedUsers.length > 0 && (
+                    {!isUsersLoading && usersSearch && searchedUsers.length > 0 && (
                         <>
                             < Table striped responsive className="text-center">
                                 <thead>
@@ -135,7 +154,7 @@ const Users = () => {
                     }
 
                     {
-                        users.length > 0 && !searchText && !isUsersLoading &&
+                        users.length > 0 && !usersSearch && !isUsersLoading &&
                         <>
                             < Table striped responsive className="text-center" >
                                 <thead>
@@ -175,12 +194,17 @@ const Users = () => {
                             </Table>
                             <p>Total <mark style={{ background: '#eeb69b' }}>{users.length}</mark> users found</p>
                             <p>Page : {currentPage}</p>
-                            <Paginator />
+                            <Paginator
+                                handlePrevious={handlePrevious}
+                                handleNext={handleNext}
+                                currentPage={currentPage}
+                                lastPage={lastPage}
+                            />
                         </>
                     }
 
                     {
-                        !isUsersLoading && searchText && searchedUsers.length <= 0 && (
+                        !isUsersLoading && usersSearch && searchedUsers.length <= 0 && (
                             <p style={{ textAlign: 'center' }}> Not found user </p>
                         )
                     }

@@ -110,12 +110,11 @@ const usersSlice = createSlice({
         searchedUsers: [],
         paginatedUsers: [],
         pickedUser,
-        currentPage: 1,
         isOpen: {
             updateModal: false,
             messageModal: false
         },
-        searchText: '',
+        usersSearch: '',
         message: '',
         confirm: '',
     },
@@ -125,8 +124,8 @@ const usersSlice = createSlice({
             state.isOpen.messageModal = !state.isOpen.messageModal
         },
 
-        setSearchText: (state, action) => {
-            state.searchText = action.payload
+        setUsersSearch: (state, action) => {
+            state.usersSearch = action.payload
         },
         setPickedUser: (state, action) => {
             state.pickedUser = action.payload ? action.payload : pickedUser
@@ -143,15 +142,6 @@ const usersSlice = createSlice({
             state.message = action.payload ? action.payload : ''
         },
 
-        fetchPreviousPage: (state) => {
-            state.currentPage--
-        },
-        fetchNextPage: state => {
-            state.currentPage++;
-        },
-        fetchExactPage: (state, action) => {
-            state.currentPage = action.payload
-        }
     },
 
     extraReducers: builder => {
@@ -243,9 +233,7 @@ const usersSlice = createSlice({
 
 export const {
     toggleUsersMessage,
-    setSearchText,
-    fetchPreviousPage,
-    fetchNextPage,
+    setUsersSearch,
     setPickedUser,
     setValidation,
     setUsersError,

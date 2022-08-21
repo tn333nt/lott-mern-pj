@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { setLoginInput, handleLogin, setAuthError } from '../../flux/slices/authSlice';
 import { setCheckingError, setCheckingFail, setCheckingMessage, setCheckingSuccess, setIndexes, setTicket } from '../../flux/slices/ticketsSlice';
+import { setPickedResult } from '../../flux/slices/resultsSlice';
 
 const Login = () => {
     const dispatch = useDispatch()
@@ -46,8 +47,10 @@ const Login = () => {
             dispatch(setLoginInput())
 
             dispatch(setCheckingError())
+            dispatch(setCheckingMessage())
             dispatch(setCheckingSuccess())
             dispatch(setCheckingFail())
+            dispatch(setPickedResult())
             dispatch(setTicket())
             dispatch(setIndexes())
             

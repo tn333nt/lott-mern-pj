@@ -45,8 +45,12 @@ exports.postResult = async (req, res, next) => {
         const error = errors.array()[0]
         const err = new Error(error.msg)
         err.statusCode = 422
-        next(err)
+        return next(err)
     }
+    // vay sao o day ko return ma ko bi 2 headers ?
+    // a co
+    // con kq ko bi ahg la do thuc chat data dc update lien tuc cho den luc success ? 
+    // covevay
 
     const date = new Date()
     const today = date.toLocaleDateString("vi-VN")
@@ -54,7 +58,7 @@ exports.postResult = async (req, res, next) => {
     if (todayResult) {
         const err = new Error("Already have report for today")
         err.statusCode = 409
-        next(err)
+        return next(err)
     }
 
     const {
@@ -101,12 +105,10 @@ exports.patchResult = async (req, res, next) => {
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        console.log(errors, 'errors')
         const error = errors.array()[0]
         const err = new Error(error.msg)
         err.statusCode = 422
-        err.param = error.param
-        next(err)
+        return next(err)
     }
 
     let {
@@ -114,9 +116,6 @@ exports.patchResult = async (req, res, next) => {
         thirdPrizes, fourthPrizes, fifthPrizes,
         sixthPrizes, seventhPrizes, eighthPrizes
     } = req.body
-
-    console.log(req.body.jackpot, 8502520)
-    console.log(typeof req.body.jackpot, 235775)
 
     const currentPage = req.query.page
     const perPage = 9
@@ -138,11 +137,6 @@ exports.patchResult = async (req, res, next) => {
         updatingResult.sixthPrizes = sixthPrizes
         updatingResult.seventhPrizes = seventhPrizes
         updatingResult.eighthPrizes = eighthPrizes
-
-        // https://stackoverflow.com/a/62495318
-        // updatingResult = { ...updatingResult, ...req.body }
-        // console.log(updatingResult, 'updatingResult')
-        // TypeError: updatingResult.save is not a function
 
         await updatingResult.save()
 

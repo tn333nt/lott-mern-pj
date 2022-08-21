@@ -4,49 +4,56 @@ const User = require('../models/user')
 const Result = require('../models/result')
 
 exports.postTicket = async (req, res, next) => {
-    const { date, value, wonPrize } = req.body
+    const { date, value, wonPrizes } = req.body
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        console.log(errors, 86896)
+        console.log(errors.array(), 87686)
         const error = errors.array()[0]
         const err = new Error(error.msg)
         err.statusCode = 422
-        next(err)
+        return next(err)
     }
-console.log(date, 'date')
+
     if (date === '' || date === 'Invalid Date' || !date) {
         const err = new Error('Checking date is required')
         err.statusCode = 422
-        next(err)
+        return next(err)
     }
-
 
     try {
 
         const checkingResult = await Result.find({ date: date })
-        if (!checkingResult) {
+        // findAll return arr 
+        if (checkingResult.length <= 0) {
             const err = new Error('Not found result of that date')
             err.statusCode = 404
             throw err
         }
 
         const user = await User.findById(req.user._id)
+        // findOne return 1 obj (doc) or null
         if (!user) {
             const err = new Error('Not authenticated you')
             err.statusCode = 401
             throw err
         }
 
-        const check = { date, value, wonPrize }
+        const check = { date, value, wonPrizes }
         user.historyCheck.push(check)
         await user.save()
+
+        console.log(user.historyCheck.length, 9090)
 
         res.status(201).json({ user: user })
 
     } catch (err) {
+        console.log(err, 909099)
         next(err)
     }
+
+    // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    // ra nay ko return no ko vao catch ngay + co err => 2 res => still validate still update his
 }
 
 exports.deleteAllTickets = async (req, res, next) => {

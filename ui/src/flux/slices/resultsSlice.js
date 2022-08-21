@@ -43,7 +43,6 @@ export const addResult = createAsyncThunk('addResult', async (props) => {
 export const updateResult = createAsyncThunk('updateResult', async (props) => {
     const _id = props.updatedResult._id
     const updatedResult = props.updatedResult
-    console.log(props, 'props')
 
     const url = `http://localhost:8080/results/result/${_id}?page=${props.currentPage}`
     const res = await fetch(url, {
@@ -117,14 +116,6 @@ const pickedResult = {
     }
 }
 
-// const validation = {
-//     jackpot: '',
-//     firstPrizes: '',
-//     secondPrizes: '',
-//     thirdPrizes: '',
-//     fourthPrizes: '',
-//     fifthPrizes: '',
-// }
 const validation = {
     jackpot: {
         isValid: null,
@@ -162,14 +153,13 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
         searchedResults: [],
         paginatedResults: [], // results r rendered in each page
         pickedResult,
-        currentPage: 1,
         isUpdating: false,
         isOpen: {
             addModal: false,
             updateModal: false,
             messageModal: false
         },
-        searchText: '', // final value to search
+        resultsSearch: '', // final value to search
         message: '', // notification or sys err
         confirm: '',
         error: '', // validation err
@@ -197,8 +187,8 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
             state.isOpen.messageModal = !state.isOpen.messageModal
         },
 
-        setSearchText: (state, action) => {
-            state.searchText = action.payload
+        setResultsSearch: (state, action) => {
+            state.resultsSearch = action.payload
         },
         setPickedResult: (state, action) => {
             state.pickedResult = action.payload ? action.payload : pickedResult
@@ -214,15 +204,6 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
             state.confirm = action.payload ? action.payload : ''
         },
 
-        fetchPreviousPage: (state) => {
-            state.currentPage--
-        },
-        fetchNextPage: state => {
-            state.currentPage++;
-        },
-        fetchExactPage: (state, action) => {
-            state.currentPage = action.payload
-        }
     },
 
     extraReducers: builder => {
@@ -297,9 +278,7 @@ export const {
     toggleModalAdd,
     toggleModalUpdate,
     closeResultsMessage,
-    setSearchText,
-    fetchPreviousPage,
-    fetchNextPage,
+    setResultsSearch,
     setPickedResult,
     setValidation,
     setResultError,

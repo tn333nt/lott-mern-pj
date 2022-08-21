@@ -15,10 +15,10 @@ export const ResultForm = props => {
     const isOpenUpdateModal = useSelector(state => state.results.isOpen.updateModal)
 
     const { validation, isUpdating, error,
-        results, pickedResult, currentPage
+        results, pickedResult
     } = useSelector(state => state.results)
 
-    console.log(pickedResult, 'prizesAmount')
+    const {currentPage} = useSelector(state => state.shared)
 
     const date = new Date()
     const today = date.toLocaleDateString("vi-VN")
@@ -27,12 +27,15 @@ export const ResultForm = props => {
     const toggleModal = () => {
         isOpenAddModal && dispatch(toggleModalAdd())
         isOpenUpdateModal && dispatch(toggleModalUpdate())
+
         dispatch(setValidation())
         dispatch(setPickedResult())
+        dispatch(setResultError())
     }
 
+    
     const handleChange = e => {
-        const { name, value } = e.target
+        const { name } = e.target
         const strValue = e.target.value.trim()
 
         // fe validation for input's color
@@ -63,26 +66,13 @@ export const ResultForm = props => {
             }
         }
 
-        // // check xem valid all chua
-        // let isFormValid = true;
-        // for (const name in updatedValidation) {
-        //     isFormValid = isFormValid && updatedValidation[name].isValid;
-        // }
-
-
         const result = {
             ...pickedResult,
             [name]: {
                 ...pickedResult[name],
                 winningValues: arrValues
-                // winningValues: value
             }
         }
-
-        // const updatedValidation = {
-        //     ...validation,
-        //     [name]: value
-        // }
 
         dispatch(setValidation(updatedValidation))
         dispatch(setPickedResult(result))
@@ -90,7 +80,6 @@ export const ResultForm = props => {
     }
 
     const submitForm = async () => {
-
         // later : bo het vao pickedResult => only need to pass to dispatch
         const result = {
             ...pickedResult,
@@ -124,8 +113,8 @@ export const ResultForm = props => {
         if (isOpenAddModal) {
             const data = await dispatch(addResult({
                 newResult: result,
-                currentPage: currentPage,
-                token: token
+                currentPage,
+                token
             }))
             if (!data.error) {
                 dispatch(toggleModalAdd())
@@ -135,19 +124,11 @@ export const ResultForm = props => {
             }
         }
 
-
         if (isOpenUpdateModal) {
-            // dispatch(toggleModalUpdate())
-            // dispatch(updateResult({
-            //     updatedResult: result,
-            //     currentPage: currentPage,
-            //     token: token
-            // }))
-
             const data = await dispatch(updateResult({
                 updatedResult: result,
-                currentPage: currentPage,
-                token: token
+                currentPage,
+                token
             }))
             if (!data.error) {
                 dispatch(toggleModalUpdate())
@@ -169,8 +150,7 @@ export const ResultForm = props => {
                     {isOpenUpdateModal && 'Update Result'}
                 </ModalHeader>
 
-                {/* {(todayResult && !isUpdating) ? ( */}
-                {(false) ? (
+                {(todayResult && !isUpdating) ? (
                     <Alert color="danger">
                         ! Already have report for today
                     </Alert>
@@ -196,10 +176,7 @@ export const ResultForm = props => {
                                     <FormGroup
                                         floating
                                         key={index}
-                                    // disabled={index <= props.result?.prizesAmount}
-                                    // disabled={index <= 5}
                                     >
-                                        {console.log(pickedResult?.prizesAmount, 638162)}
                                         <Input
                                             name={item}
                                             type="text"
