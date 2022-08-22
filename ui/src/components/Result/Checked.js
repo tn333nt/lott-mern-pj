@@ -37,7 +37,7 @@ const CheckedResult = () => {
                     <Loader color="successText" />
                 )}
             </div>
-            <p>See all results <Link to="/results">results</Link></p>
+            {/* <p>See all results <Link to="/results">results</Link></p> */}
         </ >
     )
 

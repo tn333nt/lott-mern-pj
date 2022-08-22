@@ -13,14 +13,14 @@ import ResetPassword from './pages/auth/ResetPassword.js'
 import SignUp from './pages/auth/SignUp.js'
 import Home from './pages/user/Home.js'
 import Account from './pages/Account.js'
-import { handleLogout, setIsAuth, setAuthLoading, setToken, setUser } from './flux/slices/authSlice.js';
+import { handleLogout, setIsAuth, setAuthLoading, setToken, setUser, toggleIsAdmin } from './flux/slices/authSlice.js';
 
 
 const App = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const { isAuth,
+    const { isAuth, isAdmin,
         token, user
     } = useSelector(state => state.auth)
 
@@ -54,9 +54,19 @@ const App = () => {
     }, [dispatch, isAuth])
 
 
+    // useEffect(() => {
+    //     if (!isAdmin && user?.isAdmin !== '') {
+    //         return dispatch(toggleIsAdmin(user?.isAdmin))
+    //     }
+    //     dispatch(toggleIsAdmin(isAdmin))
+    // }, [dispatch, user, isAdmin])
+
+
+    // later : tach rieng case results vs resultsManagement ra
     return (
         <div>
             <Header />
+            {/* not user */}
             {!isAuth && !user && (
                 <Routes>
                     <Route>
@@ -74,8 +84,15 @@ const App = () => {
                     />
                 </Routes>
             )}
+            {/* admin */}
+            {/* vde la vua reload thi moi chi kip load state ban dau */}
             {isAuth && user && user.isAdmin && (
                 <Routes>
+                    {/* neu can ro rang once switch nua thi tach them 1 case cho */}
+                    {/* {isAdmin && <Route path="/" element={<ResetPassword />} />} */}
+                    {/* {!isAdmin && <Route path="/" element={<Home />} />} */}
+                    {/* <Route path="/" element={<ResetPassword />} /> */}
+                    <Route path="/" element={<Home />} />
                     <Route path="/results" element={<Results />} />
                     <Route path="/users" element={<Users />} />
                     <Route path="/account" element={<Account />} />
@@ -85,11 +102,12 @@ const App = () => {
                     />
                 </Routes>
             )}
-            {isAuth && user && !user.isAdmin && (
+            {/* user */}
+            {((isAuth && user && !user.isAdmin) || (user && user.isAdmin && !isAdmin)) && (
                 <Routes>
                     <Route>
                         <Route path="/" element={<Home />} />
-                        <Route path="/results" element={<Results />} />
+                        {/* <Route path="/results" element={<Results />} /> */}
                     </Route>
                     <Route path="/account" element={<Account />} />
                     <Route

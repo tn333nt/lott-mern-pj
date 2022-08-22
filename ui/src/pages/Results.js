@@ -12,14 +12,14 @@ import MessageHandler from '../components/Handler/Message'
 import ConfirmHandler from '../components/Handler/Confirm'
 import Loader from './../components/Loader';
 import { clearCurrentPage, fetchNextPage, fetchPreviousPage } from '../flux/slices/sharedSlice';
+import { toggleIsAdmin } from '../flux/slices/authSlice';
 
 
 const Results = () => {
 
     const dispatch = useDispatch()
 
-    const { token, user, isAuthLoading } = useSelector(state => state.auth)
-
+    const { token, user, isAuthLoading, isAdmin } = useSelector(state => state.auth)
     const { results, paginatedResults, searchedResults,
         resultsSearch, isResultsLoading
     } = useSelector(state => state.results)
@@ -64,6 +64,24 @@ const Results = () => {
     }, [currentPage, resultsSearch, token, dispatch])
 
 
+    // update temp state to fit with real role 
+    useEffect(() => {
+        // giai quyet triet de van de nay tot nhat la tach rieng results cho 2 role
+        // va tach rieng ham switch cho both 2 case de ko bi loi navigate
+        if (!isAdmin && user?.isAdmin!=='') {
+            dispatch(toggleIsAdmin(user?.isAdmin))
+            // -> auto true if reload
+        } else {
+            dispatch(toggleIsAdmin(isAdmin))
+            // -> auto isAdmin ve F r
+        }
+        // isAdmin && dispatch(toggleIsAdmin(false))
+        // !isAdmin && user?.isAdmin!==undefined && dispatch(toggleIsAdmin(user?.isAdmin))
+    }, [dispatch, user, isAdmin])
+
+
+    console.log(isAdmin, 89898)
+    console.log(user?.isAdmin, 89898)
 
     return (
         <div className="container pt-5 mw-100">
@@ -77,8 +95,25 @@ const Results = () => {
 
                     <title className="row">
                         <div className="col-12 text-center text-primary fs-1 fw-bolder">
-                            {user && user.isAdmin ? (
+                            {/* {(user && isAdmin) ? (
                                 <div> Results Management</div>
+                            ) : (
+                                <div className='text-uppercase'> lottery results </div>
+                            )} */}
+                            {user ? (
+                                <>
+                                    {user.isAdmin ? (
+                                        <>
+                                            {isAdmin ? (
+                                                <div> Results Management</div>
+                                            ) : (
+                                                <div className='text-uppercase'> lottery results </div>
+                                            ) }
+                                        </>
+                                    ) : (
+                                        <div className='text-uppercase'> lottery results </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className='text-uppercase'> lottery results </div>
                             )}
@@ -92,7 +127,7 @@ const Results = () => {
                         className="m-3 d-flex justify-content-between flex-wrap"
                         style={{ gap: '1rem' }}
                     >
-                        {user && user.isAdmin && (
+                        {user && user.isAdmin && isAdmin && (
                             <Button
                                 className="me-5 px-3 fs-6"
                                 color="primary"
@@ -129,7 +164,7 @@ const Results = () => {
                                         <AccordionHeader targetId={result._id}  >
                                             <div className="d-flex flex-wrap justify-content-between w-100 px-5">
                                                 <p className="fs-5"> Date : {result.date}</p>
-                                                {user && user.isAdmin && (
+                                                {user && user.isAdmin && isAdmin && (
                                                     <Button
                                                         className="px-3"
                                                         color="dark"
@@ -174,7 +209,7 @@ const Results = () => {
                                         <AccordionBody accordionId={result._id}>
                                             <ResultDetail result={result} color="light" />
                                             <div className="d-flex flex-wrap justify-content-end align-items-center w-100 px-5 ">
-                                                {user && user.isAdmin && (
+                                                {user && user.isAdmin && isAdmin && (
                                                     <Button
                                                         className="px-3"
                                                         color="primary"

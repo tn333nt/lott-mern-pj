@@ -90,13 +90,10 @@ const authSlice = createSlice({
         isAuthLoading: false,
         error: '',
         loginInput,
-        isOpenModal: false // modal chung cho all confirm & msg
+        isAdmin: false, // save temporary role 
+        isSwitched: false, // (or) save switching state
     },
     reducers: {
-        toggleModal: (state, action) => {
-            state.isOpenModal = !state.isOpenModal
-        },
-
         handleLogout: (state, action) => {
             state.isAuth = false
             state.token = null
@@ -122,6 +119,11 @@ const authSlice = createSlice({
         },
         setAuthLoading: (state, action) => {
             state.isAuthLoading = action.payload
+        },
+        toggleIsAdmin: (state, action) => {
+            console.log(action.payload, 888)
+            state.isAdmin = action.payload!==undefined ? action.payload : !state.isAdmin
+            console.log(action.payload, 888)
         },
     },
 
@@ -156,6 +158,10 @@ const authSlice = createSlice({
                 // save to local memory (state)
                 state.token = action.payload.token
                 state.user = action.payload.user
+                state.isAdmin = action.payload.user.isAdmin
+
+                console.log(action.payload.user, 999)
+                console.log(state.isAdmin, 999)
 
                 const remainingMilliseconds = 60 * 60 * 1000
                 const expiryDate = new Date(
@@ -202,14 +208,14 @@ const authSlice = createSlice({
 })
 
 export const {
-    toggleModal,
     handleLogout,
     setAuthError,
     setLoginInput,
     setUser,
     setToken,
     setIsAuth,
-    setAuthLoading
+    setAuthLoading,
+    toggleIsAdmin,
 } = authSlice.actions
 
 export default authSlice.reducer
