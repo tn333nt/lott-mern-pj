@@ -26,4 +26,4 @@ export const isNonAlphabetic = value => /^[0-9()-\s]*$/.test(value)
 export const isEmail = value =>
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
     .test(value)
-
+// https://regex101.com/r/BuRbsR/1

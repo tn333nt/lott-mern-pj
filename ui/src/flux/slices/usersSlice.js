@@ -93,11 +93,17 @@ export const deleteAllUsers = createAsyncThunk('deleteAllUsers', async () => {
 
 
 const pickedUser = {
+    _id: '',
     email: '',
     password: '',
     isAdmin: false,
-    name: '',
-    mobile: '',
+    // username: '',
+    // age: '',
+    // mobile: '',
+    // country: '',
+    // city: '',
+    // address: '',
+    // postalCode: '',
 }
 
 
@@ -109,17 +115,22 @@ const usersSlice = createSlice({
         users: [],
         searchedUsers: [],
         paginatedUsers: [],
-        pickedUser,
+        pickedUser, // pass user data
         isOpen: {
             updateModal: false,
             messageModal: false
         },
+        isOpenUpdateModal: false,
         usersSearch: '',
         message: '',
         confirm: '',
     },
 
     reducers: {
+        toggleUserUpdate: (state, action) => {
+            state.isOpenUpdateModal = !state.isOpenUpdateModal
+            console.log(action.payload, state.isOpenUpdateModal , 999000)
+        },
         toggleUsersMessage: (state, action) => {
             state.isOpen.messageModal = !state.isOpen.messageModal
         },
@@ -138,7 +149,6 @@ const usersSlice = createSlice({
             state.confirm = action.payload ? action.payload : ''
         },
         setUsersMessage: (state, action) => {
-            console.log(action.payload, 9006787576)
             state.message = action.payload ? action.payload : ''
         },
 
@@ -196,8 +206,6 @@ const usersSlice = createSlice({
             })
             .addCase(deleteUser.fulfilled, (state, action) => {
                 state.isUsersLoading = false
-                // state.isOpen.messageModal = true
-                // state.message = "Delete successfully"
 
                 state.users = action.payload.users
                 state.paginatedUsers = action.payload.paginatedUsers
@@ -232,6 +240,7 @@ const usersSlice = createSlice({
 
 
 export const {
+    toggleUserUpdate,
     toggleUsersMessage,
     setUsersSearch,
     setPickedUser,

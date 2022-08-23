@@ -74,6 +74,26 @@ export const changePassword = createAsyncThunk('changePassword', async (authData
     return data
 })
 
+export const updateUser = createAsyncThunk('updateUser', async (props) => {
+    const url = "http://localhost:8080/users/user"
+    const res = await fetch(url, {
+        // method: 'PATCH',
+        method: 'PUT',
+        body: JSON.stringify(props.user),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: props.token
+        }
+    })
+
+    const data = await res.json()
+
+    if (res.status !== 200 && res.status !== 201) {
+        throw new Error(data.message)
+    }
+    return data
+})
+
 
 const loginInput = {
     email: '',
@@ -86,9 +106,10 @@ const authSlice = createSlice({
     initialState: {
         isAuth: false,
         token: null,
-        user: null,
+        user: null, // check user
         isAuthLoading: false,
         error: '',
+        updateError: '',
         loginInput,
         isAdmin: false, // save temporary role 
         isSwitched: false, // (or) save switching state
@@ -102,12 +123,17 @@ const authSlice = createSlice({
 
             localStorage.clear()
         },
-        setAuthError: (state, action) => {
-            state.error = action.payload ? action.payload : ''
-        },
         setLoginInput: (state, action) => {
             state.loginInput = action.payload ? action.payload : loginInput
         },
+
+        setAuthError: (state, action) => {
+            state.error = action.payload ? action.payload : ''
+        },
+        setAuthLoading: (state, action) => {
+            state.isAuthLoading = action.payload
+        },
+
         setUser: (state, action) => {
             state.user = action.payload
         },
@@ -117,14 +143,14 @@ const authSlice = createSlice({
         setIsAuth: (state, action) => {
             state.isAuth = action.payload
         },
-        setAuthLoading: (state, action) => {
-            state.isAuthLoading = action.payload
-        },
+
         toggleIsAdmin: (state, action) => {
-            console.log(action.payload, 888)
             state.isAdmin = action.payload!==undefined ? action.payload : !state.isAdmin
-            console.log(action.payload, 888)
         },
+        setUpdateError: (state, action) => {
+            state.updateError = action.payload ? action.payload : ''
+        },
+
     },
 
     extraReducers: builder => {
@@ -160,9 +186,6 @@ const authSlice = createSlice({
                 state.user = action.payload.user
                 state.isAdmin = action.payload.user.isAdmin
 
-                console.log(action.payload.user, 999)
-                console.log(state.isAdmin, 999)
-
                 const remainingMilliseconds = 60 * 60 * 1000
                 const expiryDate = new Date(
                     new Date().getTime() + remainingMilliseconds
@@ -184,23 +207,38 @@ const authSlice = createSlice({
                 state.isAuthLoading = true
             })
             .addCase(resetPassword.fulfilled, (state, action) => {
+                state.isAuthLoading = false
                 state.error = ''
             })
             .addCase(resetPassword.rejected, (state, action) => {
                 state.isAuthLoading = false
                 state.error = action.error.message
             })
-
             .addCase(changePassword.pending, (state, action) => {
                 state.isAuthLoading = true
             })
             .addCase(changePassword.fulfilled, (state, action) => {
+                state.isAuthLoading = false
                 state.user = action.payload.user
                 localStorage.setItem('user', JSON.stringify(action.payload.user))
             })
             .addCase(changePassword.rejected, (state, action) => {
                 state.isAuthLoading = false
                 state.error = action.error.message
+            })
+
+            .addCase(updateUser.pending, (state, action) => {
+                state.isAuthLoading = true
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.isAuthLoading = false
+                state.user = action.payload.user
+                state.error = ''
+                localStorage.setItem('user', JSON.stringify(action.payload.user))
+            })
+            .addCase(updateUser.rejected, (state, action) => {
+                state.isAuthLoading = false
+                state.updateError = action.error.message
             })
 
 
@@ -210,6 +248,7 @@ const authSlice = createSlice({
 export const {
     handleLogout,
     setAuthError,
+    setUpdateError,
     setLoginInput,
     setUser,
     setToken,

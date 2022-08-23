@@ -17,7 +17,7 @@ router.put('/signup', [
     , body('password')
         .trim()
         .isLength({ min: 6 })
-        .withMessage('6 characters minimum')
+        .withMessage('Password must have at least 6 characters')
     , body('confirmPassword')
         .custom((value, { req }) => {
             if (value === req.body.password) {
@@ -25,6 +25,13 @@ router.put('/signup', [
             }
             throw new Error('Passwords did not match')
         })
+    , body('username')
+        .trim()
+        .matches(/[^d]/)
+        .withMessage('Username must include at least 1 letter')
+        .isLength({ min: 3 })
+        .withMessage('Username must have at least 3 characters')
+
 ], authController.signup)
 
 

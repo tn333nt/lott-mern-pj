@@ -24,26 +24,34 @@ exports.signup = async (req, res, next) => {
         return next(err)
     }
 
-    const { email, password } = req.body
+    const { email, password, username } = req.body
 
     try {
 
         if (errors.isEmpty()) {
-            const validUser = await User.findOne({ email: email })
-            if (validUser) {
+            const validEmail = await User.findOne({ email })
+            if (validEmail) {
                 const err = new Error('Email already exists')
                 err.statusCode = 409 // conflict with the current state
+                throw err
+            }
+            
+            const validUsername = await User.findOne({ username })
+            if (validUsername) {
+                const err = new Error('That username is taken. Please try another')
+                err.statusCode = 409 
                 throw err
             }
 
             const hashedPassword = await bcrypt.hash(password, 12)
             const user = new User({
-                email: email,
-                password: hashedPassword
+                email,
+                password: hashedPassword,
+                username,
             })
             await user.save()
 
-            res.status(201).json({ email: email, password: password })
+            res.status(201).json({ email, password })
         }
 
     } catch (err) {

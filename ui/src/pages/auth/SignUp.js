@@ -15,8 +15,10 @@ const SignUp = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [username, setUserName] = useState('')
 
     const handleChange = e => {
+        e.preventDefault()
         const { name, value } = e.target
 
         if (name === 'email') {
@@ -30,14 +32,19 @@ const SignUp = () => {
         if (name === 'confirmPassword') {
             setConfirmPassword(value)
         }
+
+        if (name === 'username') {
+            setUserName(value)
+        }
     }
 
 
     const HandleSubmit = async () => {
         const authData = {
-            email: email,
-            password: password,
-            confirmPassword: confirmPassword
+            email,
+            password,
+            confirmPassword,
+            username
         }
 
         const data = await dispatch(handleSingup(authData))
@@ -51,9 +58,19 @@ const SignUp = () => {
     return (
         <div className="container pt-5 mw-100 d-flex justify-content-center">
             <Col xs="12" sm="11" md="9" lg="4">
-                <Form>
+                <Form >
                     <h1>Sign Up</h1>
                     {error !== '' && <Alert color="danger">{error}</Alert>}
+                    <FormGroup className="mt-3">
+                        <Label>Username</Label>
+                        <Input
+                            name="username"
+                            type="text"
+                            placeholder="username"
+                            bsSize="lg"
+                            onChange={handleChange}
+                        />
+                    </FormGroup>
                     <FormGroup className="mt-3">
                         <Label>Email</Label>
                         <Input
@@ -64,6 +81,8 @@ const SignUp = () => {
                             onChange={handleChange}
                         />
                     </FormGroup>
+                    {/* later : option 'use email as username */}
+
                     <FormGroup className="mt-3">
                         <Label>Password</Label>
                         <Input
@@ -79,7 +98,7 @@ const SignUp = () => {
                         <Input
                             name="confirmPassword"
                             type="password"
-                            placeholder="confirmPassword"
+                            placeholder="password"
                             bsSize="lg"
                             onChange={handleChange}
                         />

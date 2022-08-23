@@ -113,9 +113,9 @@ exports.deleteAllUsers = async (req, res, next) => {
     }
 }
 
+// personal
 
 exports.changePassword = async (req, res, next) => {
-
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         const error = errors.array()[0]
@@ -130,8 +130,8 @@ exports.changePassword = async (req, res, next) => {
     try {
         const user = await User.findById(userId)
         if (!user) {
-            const err = new Error('Not found user')
-            err.statusCode = 404
+            const err = new Error('Not authenticated you')
+            err.statusCode = 401
             throw err
         }
 
@@ -156,6 +156,50 @@ exports.changePassword = async (req, res, next) => {
         await user.save()
 
         res.status(201).json({ user: user })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
+
+exports.updateUser = async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        const error = errors.array()[0]
+        const err = new Error(error.msg)
+        err.statusCode = 422
+        return next(err)
+    }
+    // later : pass errors & custom msg for each field (use beV for ffb)
+
+    const userId = req.user._id
+    const {
+        username, age, fullName,
+        country, city, address,
+        mobile, postalCode
+    } = req.body
+
+    try {
+        const user = await User.findById(userId)
+        if (!user) {
+            const err = new Error('Not authenticated you')
+            err.statusCode = 401
+            throw err
+        }
+
+        user.username = username
+        user.age = age && +age
+        user.fullName = fullName
+        user.mobile = mobile
+        user.country = country
+        user.city = city
+        user.address = address
+        user.postalCode = postalCode
+
+        await user.save()
+
+        res.status(200).json({ user: user })
 
     } catch (err) {
         next(err)
