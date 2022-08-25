@@ -9,10 +9,8 @@ export const postTicket = createAsyncThunk('postTicket', async (props) => {
         body: JSON.stringify(props.ticket)
     })
 
-    console.log(res, 52806525369)
     const data = await res.json()
     if (res.status !== 200 && res.status !== 201) {
-        console.log(data, 74161864198)
         throw new Error(data.message)
     }
     return data
@@ -24,10 +22,10 @@ export const deleteAllTickets = createAsyncThunk('deleteAllTickets', async (toke
         method: 'DELETE',
         headers: { Authorization: token }
     })
+    
     const data = res.json()
+    console.log(data, 999)
     if (res.status !== 200 && res.status !== 201) {
-        // loi -ing
-        console.log(data, 'data')
         throw new Error(data.message)
     }
     return data
@@ -49,7 +47,6 @@ const ticketsSlice = createSlice({
     name: 'tickets',
     initialState: {
         checkingTicket,
-        confirm: '',
         message: '', // Checked msg
         error: '', // Checking validation
         successText: '',
@@ -61,19 +58,12 @@ const ticketsSlice = createSlice({
     },
     reducers: {
         setTicket: (state, action) => {
-            console.log(action.payload, 990985473)
-
             state.checkingTicket = action.payload ? action.payload : checkingTicket
-
         },
 
-        setTicketsConfirm: (state, action) => {
-            state.confirm = action.payload ? action.payload : ''
-        },
         setCheckingError: (state, action) => {
             state.error = action.payload ? action.payload : ''
         },
-
 
         setCheckingMessage: (state, action) => {
             state.message = action.payload ? action.payload : ''
@@ -100,31 +90,30 @@ const ticketsSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-
             .addCase(postTicket.pending, (state, action) => {
-                state.isAuthLoading = true
+                state.isLoading = true
             })
             .addCase(postTicket.fulfilled, (state, action) => {
-                state.isAuthLoading = false
+                state.isLoading = false
                 // update after refresh page
                 localStorage.setItem('user', JSON.stringify(action.payload.user))
 
             })
             .addCase(postTicket.rejected, (state, action) => {
-                state.isAuthLoading = false
+                state.isLoading = false
                 state.error = action.error.message
             })
 
             .addCase(deleteAllTickets.pending, (state, action) => {
-                state.isAuthLoading = true
+                state.isLoading = true
             })
             .addCase(deleteAllTickets.fulfilled, (state, action) => {
-                state.isAuthLoading = false
+                state.isLoading = false
                 localStorage.setItem('user', JSON.stringify(action.payload.user))
 
             })
             .addCase(deleteAllTickets.rejected, (state, action) => {
-                state.isAuthLoading = false
+                state.isLoading = false
             })
 
 
@@ -133,7 +122,6 @@ const ticketsSlice = createSlice({
 
 export const {
     setTicket,
-    setTicketsConfirm,
     setCheckingMessage,
     setCheckingError,
     setCheckingSuccess,

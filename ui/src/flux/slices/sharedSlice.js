@@ -3,17 +3,30 @@ import { createSlice } from '@reduxjs/toolkit'
 const sharedSlice = createSlice({
     name: 'shared',
     initialState: {
-        searchText: '', // luu chung changing search text
         isOpenModal: false, // luu chung modal to show up
         currentPage: 1, // luu chung page ban dau
+        searchText: '', // luu chung changing search text
+        message: '', // thong bao 
+        confirm: '', // text xac nhan req
     },
     reducers: {
+        toggleModal: (state, action) => {
+            state.isOpenModal = !state.isOpenModal
+        },
+        setMessage: (state, action) => {
+            state.message = action.payload ? action.payload : '' 
+        },
+        setConfirm: (state, action) => {
+            // nay bi do la do ko dong nhat kieu clear => conf undefined nen clash vs '' mb
+            state.confirm = action.payload ? action.payload : '' 
+        },
+
 
         setSearchText: (state, action) => {
             state.searchText = action.payload
         },
-        toggleModal: (state, action) => {
-            state.isOpenModal = !state.isOpenModal
+        clearSearchText: (state) => {
+            state.searchText = ''
         },
         
 
@@ -28,14 +41,18 @@ const sharedSlice = createSlice({
         },
         fetchExactPage: (state, action) => {
             state.currentPage = action.payload
-        }
+        },
+
 
     }
 })
 
 export const {
-    setSearchText,
     toggleModal,
+    setMessage,
+    setConfirm,
+    setSearchText,
+    clearSearchText,
     clearCurrentPage,
     fetchPreviousPage,
     fetchNextPage,

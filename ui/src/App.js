@@ -6,28 +6,44 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Header } from './components/Header.js'
 import { fetchAllResults } from './flux/slices/resultsSlice';
 
-import Results from './pages/Results.js'
+import Results from './pages/user/Results.js'
 import Users from './pages/admin/Users.js'
 import Login from './pages/auth/Login.js'
 import ResetPassword from './pages/auth/ResetPassword.js'
 import SignUp from './pages/auth/SignUp.js'
 import Home from './pages/user/Home.js'
 import Account from './pages/Account.js'
-import { handleLogout, setIsAuth, setAuthLoading, setToken, setUser, toggleIsAdmin } from './flux/slices/authSlice.js';
+import { handleLogout, setIsAuth, setAuthLoading, setToken, setUser } from './flux/slices/authSlice.js';
+import ResultsManagement from './pages/admin/ResultsManagement.js';
+import { setMessage, toggleModal } from './flux/slices/sharedSlice.js';
 
 
 const App = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const { isAuth, isAdmin,
+    const { isAuth, isSwitched,
         token, user
     } = useSelector(state => state.auth)
 
+    const { searchText, currentPage } = useSelector(state => state.shared)
+
+    // vi dung chung data => gui data 1 the o day
+    useEffect(() => {
+        dispatch(fetchAllResults({ searchText, currentPage, token }))
+    }, [dispatch, token, searchText, currentPage])
 
     useEffect(() => {
-        dispatch(fetchAllResults({ token: token }))
-    }, [dispatch, token])
+        async function fetchData() {
+            const data = await dispatch(fetchAllResults({ searchText, currentPage, token }))
+            if (data.error) {
+                dispatch(toggleModal())
+                dispatch(setMessage(data.error.message))
+                return
+            }
+        }
+        fetchData()
+    }, [currentPage, searchText, token, dispatch])
 
 
     // later : refresh -> stay on current page
@@ -54,15 +70,6 @@ const App = () => {
     }, [dispatch, isAuth])
 
 
-    // useEffect(() => {
-    //     if (!isAdmin && user?.isAdmin !== '') {
-    //         return dispatch(toggleIsAdmin(user?.isAdmin))
-    //     }
-    //     dispatch(toggleIsAdmin(isAdmin))
-    // }, [dispatch, user, isAdmin])
-
-
-    // later : tach rieng case results vs resultsManagement ra
     return (
         <div>
             <Header />
@@ -85,29 +92,23 @@ const App = () => {
                 </Routes>
             )}
             {/* admin */}
-            {/* vde la vua reload thi moi chi kip load state ban dau */}
-            {isAuth && user && user.isAdmin && (
+            {isAuth && user && user.isAdmin && !isSwitched && (
                 <Routes>
-                    {/* neu can ro rang once switch nua thi tach them 1 case cho */}
-                    {/* {isAdmin && <Route path="/" element={<ResetPassword />} />} */}
-                    {/* {!isAdmin && <Route path="/" element={<Home />} />} */}
-                    {/* <Route path="/" element={<ResetPassword />} /> */}
-                    <Route path="/" element={<Home />} />
-                    <Route path="/results" element={<Results />} />
+                    <Route path="/" element={<ResultsManagement />} />
                     <Route path="/users" element={<Users />} />
                     <Route path="/account" element={<Account />} />
                     <Route
                         path="*"
-                        element={<Navigate to="/results" replace />}
+                        element={<Navigate to="/" replace />}
                     />
                 </Routes>
             )}
             {/* user */}
-            {((isAuth && user && !user.isAdmin) || (user && user.isAdmin && !isAdmin)) && (
+            {((isAuth && user && !user.isAdmin) || (user && user.isAdmin && isSwitched)) && (
                 <Routes>
                     <Route>
                         <Route path="/" element={<Home />} />
-                        {/* <Route path="/results" element={<Results />} /> */}
+                        <Route path="/results" element={<Results />} />
                     </Route>
                     <Route path="/account" element={<Account />} />
                     <Route

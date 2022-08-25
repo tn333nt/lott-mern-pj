@@ -11,7 +11,6 @@ export const resetPassword = createAsyncThunk('resetPassword', async (email) => 
     })
 
     const data = await res.json()
-
     if (res.status !== 200 && res.status !== 201) {
         throw new Error(data.message)
     }
@@ -29,7 +28,6 @@ export const handleSingup = createAsyncThunk('handleSingup', async (authData) =>
     })
 
     const data = await res.json()
-
     if (res.status !== 200 && res.status !== 201) {
         throw new Error(data.message)
     }
@@ -48,7 +46,6 @@ export const handleLogin = createAsyncThunk('handleLogin', async (authData) => {
     })
 
     const data = await res.json()
-
     if (res.status !== 200) {
         throw new Error(data.message)
     }
@@ -77,7 +74,6 @@ export const changePassword = createAsyncThunk('changePassword', async (authData
 export const updateUser = createAsyncThunk('updateUser', async (props) => {
     const url = "http://localhost:8080/users/user"
     const res = await fetch(url, {
-        // method: 'PATCH',
         method: 'PUT',
         body: JSON.stringify(props.user),
         headers: {
@@ -87,7 +83,6 @@ export const updateUser = createAsyncThunk('updateUser', async (props) => {
     })
 
     const data = await res.json()
-
     if (res.status !== 200 && res.status !== 201) {
         throw new Error(data.message)
     }
@@ -109,7 +104,7 @@ const authSlice = createSlice({
         user: null, // check user
         isAuthLoading: false,
         error: '',
-        updateError: '',
+        updateError: '', // err form update
         loginInput,
         isAdmin: false, // save temporary role 
         isSwitched: false, // (or) save switching state
@@ -146,6 +141,9 @@ const authSlice = createSlice({
 
         toggleIsAdmin: (state, action) => {
             state.isAdmin = action.payload!==undefined ? action.payload : !state.isAdmin
+        },
+        toggleSwitching: (state, action) => {
+            state.isSwitched = action.payload!==undefined ? action.payload : !state.isSwitched
         },
         setUpdateError: (state, action) => {
             state.updateError = action.payload ? action.payload : ''
@@ -255,6 +253,7 @@ export const {
     setIsAuth,
     setAuthLoading,
     toggleIsAdmin,
+    toggleSwitching,
 } = authSlice.actions
 
 export default authSlice.reducer

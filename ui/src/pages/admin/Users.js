@@ -3,13 +3,18 @@ import { useEffect } from 'react';
 import { Button, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAllUsers, toggleUsersMessage, setPickedUser, setAdmin, setUsersConfirm, setUsersSearch } from '../../flux/slices/usersSlice';
+import { fetchAllUsers, setPickedUser, setAdmin } from '../../flux/slices/usersSlice';
 import { Search } from '../../components/Search';
 import Paginator from '../../components/Paginator';
 import MessageHandler from '../../components/Handler/Message'
 import ConfirmHandler from '../../components/Handler/Confirm'
 import Loader from '../../components/Loader';
-import { clearCurrentPage, fetchNextPage, fetchPreviousPage } from '../../flux/slices/sharedSlice';
+import { 
+    clearCurrentPage, clearSearchText, 
+    fetchNextPage, fetchPreviousPage, 
+    setConfirm, setMessage, 
+    setSearchText, toggleModal 
+} from '../../flux/slices/sharedSlice';
 
 
 const Users = () => {
@@ -18,17 +23,17 @@ const Users = () => {
 
     const { token, isAuthLoading } = useSelector(state => state.auth)
 
-    const { users, paginatedUsers, searchedUsers,
-        currentUsersPage, usersSearch, isUsersLoading,
-        message, confirm
+    const {
+        users, isUsersLoading,
+        paginatedUsers, searchedUsers,
     } = useSelector(state => state.users)
 
-    const { searchText, currentPage } = useSelector(state => state.shared)
+    const { searchText, currentPage, message, confirm } = useSelector(state => state.shared)
     const totalUsers = users.length
     const lastPage = Math.ceil(totalUsers / 9)
 
     const handleSearch = () => {
-        dispatch(setUsersSearch(searchText))
+        dispatch(setSearchText(searchText))
     }
 
     const handleDelete = userId => {
@@ -36,13 +41,13 @@ const Users = () => {
         const email = deletingUser.email
         const confirm = `delete user ${email} ?`
 
-        dispatch(toggleUsersMessage())
-        dispatch(setUsersConfirm(confirm))
+        dispatch(toggleModal())
+        dispatch(setConfirm(confirm))
         dispatch(setPickedUser(deletingUser))
 
     }
 
-    const handleAdmin = userId => {
+    const handleAdmin = async (userId) => {
         const updatingUser = users.find(user => user._id === userId)
 
         const updatedUser = {
@@ -50,11 +55,17 @@ const Users = () => {
             isAdmin: true
         }
 
-        dispatch(setAdmin({
-            updatedUser: updatedUser,
-            currentPage: currentUsersPage,
-            token: token
+        const data = await dispatch(setAdmin({
+            updatedUser,
+            currentPage,
+            token
         }))
+        if (data.error) {
+            dispatch(toggleModal())
+            dispatch(setMessage(data.error.message))
+            return
+        }
+
     }
 
     const handlePrevious = () => {
@@ -64,25 +75,41 @@ const Users = () => {
     const handleNext = () => {
         dispatch(fetchNextPage())
     }
-    
+
+
     useEffect(() => {
+        dispatch(clearSearchText())
         dispatch(clearCurrentPage())
     }, [dispatch])
 
 
+    // useEffect(() => {
+    //     dispatch(setMessage(message))
+    // }, [dispatch, message])
+
+
     useEffect(() => {
-        dispatch(fetchAllUsers({
-            currentPage,
-            searchText: usersSearch,
-            token: token
-        }))
-    }, [currentPage, usersSearch, token, dispatch])
-    
+        async function fetchData() {
+            const data = await dispatch(fetchAllUsers({
+                currentPage,
+                searchText,
+                token
+            }))
+            if (data.error) {
+                dispatch(toggleModal())
+                dispatch(setMessage(data.error.message))
+                return
+            }
+        }
+        fetchData()
+    }, [currentPage, searchText, token, dispatch])
+
 
     return (
         <div className="container pt-5 mw-100">
             {message !== '' && <MessageHandler message={message} />}
             {confirm !== '' && <ConfirmHandler confirm={confirm} />}
+
             {isAuthLoading ? (
                 <Loader color="danger" />
             ) : (
@@ -111,7 +138,7 @@ const Users = () => {
                         <p style={{ textAlign: 'center' }}> Not found user </p>
                     ) : null}
 
-                    {!isUsersLoading && usersSearch && searchedUsers.length > 0 && (
+                    {!isUsersLoading && searchText && searchedUsers.length > 0 && (
                         <>
                             < Table striped responsive className="text-center">
                                 <thead>
@@ -154,7 +181,7 @@ const Users = () => {
                     }
 
                     {
-                        users.length > 0 && !usersSearch && !isUsersLoading &&
+                        users.length > 0 && !searchText && !isUsersLoading &&
                         <>
                             < Table striped responsive className="text-center" >
                                 <thead>
@@ -204,7 +231,7 @@ const Users = () => {
                     }
 
                     {
-                        !isUsersLoading && usersSearch && searchedUsers.length <= 0 && (
+                        !isUsersLoading && searchText && searchedUsers.length <= 0 && (
                             <p style={{ textAlign: 'center' }}> Not found user </p>
                         )
                     }

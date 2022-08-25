@@ -9,10 +9,10 @@ exports.getAllResults = async (req, res, next) => {
     const perPage = 9
 
     try {
-        const sortedResults = await Result.find().sort({ date: 'desc' })
+        const sortedResults = await Result.find().sort({ createdAt: 'desc' })
 
         const paginatedResults = await Result.find()
-            .sort({ date: 'desc' })
+            .sort({ createdAt: 'desc' })
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
 
@@ -47,10 +47,6 @@ exports.postResult = async (req, res, next) => {
         err.statusCode = 422
         return next(err)
     }
-    // vay sao o day ko return ma ko bi 2 headers ?
-    // a co
-    // con kq ko bi ahg la do thuc chat data dc update lien tuc cho den luc success ? 
-    // covevay
 
     const date = new Date()
     const today = date.toLocaleDateString("vi-VN")
@@ -83,9 +79,9 @@ exports.postResult = async (req, res, next) => {
         })
         await result.save()
 
-        const updatedResults = await Result.find().sort({ date: 'desc' })
+        const updatedResults = await Result.find().sort({ createdAt: 'desc' })
         const paginatedResults = await Result.find()
-            .sort({ date: 'desc' })
+            .sort({ createdAt: 'desc' })
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
 
@@ -140,9 +136,9 @@ exports.patchResult = async (req, res, next) => {
 
         await updatingResult.save()
 
-        const updatedResults = await Result.find().sort({ date: 'desc' })
+        const updatedResults = await Result.find().sort({ createdAt: 'desc' })
         const paginatedResults = await Result.find()
-            .sort({ date: 'desc' })
+            .sort({ createdAt: 'desc' })
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
 

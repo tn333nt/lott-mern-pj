@@ -6,39 +6,39 @@ const resultSchema = new Schema(
         date: {type: String, required: true},
         game: {type: String, required: true}, // then neu can thi find game in Game wth the same name
         jackpot: {
-            reward: Number, // hardcoded here
+            reward: {type: Number, default: 30000}, // hardcoded here
             winningValues: [String]
         },
         firstPrizes: {
-            reward: Number,
+            reward: {type: Number, default: 3000},
             winningValues: [String]
         },
         secondPrizes: {
-            reward: Number,
+            reward: {type: Number, default: 1000},
             winningValues: [String]
         },
         thirdPrizes: {
-            reward: Number,
+            reward: {type: Number, default: 500},
             winningValues: [String]
         },
         fourthPrizes: {
-            reward: Number,
+            reward: {type: Number, default: 100},
             winningValues: [String]
         },
         fifthPrizes: {
-            reward: Number,
+            reward: {type: Number, default: 50},
             winningValues: [String]
         },
         sixthPrizes: {
-            reward: Number,
+            reward: {type: Number, default: 0},
             winningValues: [String]
         },
         seventhPrizes: {
-            reward: Number,
+            reward: {type: Number, default: 0},
             winningValues: [String]
         },
         eighthPrizes: {
-            reward: Number,
+            reward: {type: Number, default: 0},
             winningValues: [String]
         },
         countdown: {
@@ -47,7 +47,6 @@ const resultSchema = new Schema(
             minute: {type: Number, default: 0},
             second: {type: Number, default: 0}
         },
-        // can 'required' is customized in here ?
     },
     { timestamps: true }
 )

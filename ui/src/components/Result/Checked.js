@@ -34,10 +34,10 @@ const CheckedResult = () => {
                 )}
 
                 {results.length < 0 && pickedResult.date === '' && (
-                    <Loader color="successText" />
+                    <Loader color="success" />
                 )}
             </div>
-            {/* <p>See all results <Link to="/results">results</Link></p> */}
+            <p>See all results <Link to="/results">results</Link></p>
         </ >
     )
 

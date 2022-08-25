@@ -1,22 +1,33 @@
 
 import { Col, Row } from 'reactstrap'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import CheckTicket from '../../components/Ticket/Checking';
 import HistoryCheck from '../../components/Ticket/History';
 import CheckedResult from '../../components/Result/Checked';
 import MessageHandler from '../../components/Handler/Message'
 import ConfirmHandler from '../../components/Handler/Confirm'
+import Loader from '../../components/Loader';
+import { useEffect } from 'react';
+import { setConfirm, setMessage } from '../../flux/slices/sharedSlice';
 
 const Home = () => {
 
-    const isAuth = useSelector(state => state.auth.isAuth)
+    const dispatch = useDispatch()
+    const { isAuth } = useSelector(state => state.auth)
+    const { isLoading } = useSelector(state => state.tickets)
+    const { confirm, message } = useSelector(state => state.shared)
 
-    const {confirm} = useSelector(state => state.tickets)
-    const {message} = useSelector(state => state.users)
+    useEffect(() => {
+        dispatch(setConfirm(confirm))
+        dispatch(setMessage(message))
+    }, [dispatch, confirm, message])
+
 
     return (
         <div className="container pt-5 mw-100">
+            {isLoading && <Loader color="success"/>}
+
             {message !== '' && <MessageHandler message={message} />}
             {confirm !== '' && <ConfirmHandler confirm={confirm} />}
 
@@ -42,7 +53,6 @@ const Home = () => {
                     Login to save your checking history
                 </h3>
             )}
-
 
         </div >
     )

@@ -8,7 +8,6 @@ exports.postTicket = async (req, res, next) => {
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        console.log(errors.array(), 87686)
         const error = errors.array()[0]
         const err = new Error(error.msg)
         err.statusCode = 422
@@ -43,8 +42,6 @@ exports.postTicket = async (req, res, next) => {
         user.historyCheck.push(check)
         await user.save()
 
-        console.log(user.historyCheck.length, 9090)
-
         res.status(201).json({ user: user })
 
     } catch (err) {
@@ -52,8 +49,6 @@ exports.postTicket = async (req, res, next) => {
         next(err)
     }
 
-    // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
-    // ra nay ko return no ko vao catch ngay + co err => 2 res => still validate still update his
 }
 
 exports.deleteAllTickets = async (req, res, next) => {
@@ -74,24 +69,28 @@ exports.deleteAllTickets = async (req, res, next) => {
         user.historyCheck = []
         await user.save()
 
+        // later : send msg from here
         res.status(200).json({ user: user })
 
     } catch (err) {
+        // why does not pass msg to fe ???
+        console.log(err.message, 9090909090)
         next(err)
     }
 }
 
 // exports.deleteTicket = async (req, res, next) => {
-//     const user = await User.findOne({ _id: req.user._id })
 
 //     try {
+//         const user = await User.findById(req.user._id)
 //         if (!user) {
-//             const err = new Error('Not found user');
-//             err.statusCode = 401;
-//             throw err;
+//             const err = new Error('Not found user')
+//             err.statusCode = 401
+//             throw err
 //         }
 
 //         // roi phai tim index cua ticket de slice()
+//         // or map arr without this check (pb by _id)
 //         // de sau di
 //         await user.save()
 

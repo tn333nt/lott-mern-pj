@@ -55,18 +55,7 @@ export const updateResult = createAsyncThunk('updateResult', async (props) => {
     })
 
     const data = await res.json()
-    if (res.status === 422) {
-        console.log(data, 'data')
-        const err = new Error(data.message)
-        // it does not take => no way to distinguish 
-        // => going to convert all formfeedback -> alert 
-        // or keep fe validation to check onchange
-        // and be validation to replace isFormValid
 
-        // err.param = data.param
-        // err.validation = data.message
-        throw err
-    }
     if (res.status !== 200 && res.status !== 201) {
         throw new Error(data.message)
     }
@@ -75,43 +64,32 @@ export const updateResult = createAsyncThunk('updateResult', async (props) => {
 
 
 const pickedResult = {
-    // later : de nguyen = coming data
-    _id: '',
     date: '',
     jackpot: {
-        reward: 30000, // hardcoded here
         winningValues: [],
     },
     firstPrizes: {
-        reward: 3000,
         winningValues: [],
     },
     secondPrizes: {
-        reward: 1000,
         winningValues: [],
     },
     thirdPrizes: {
-        reward: 500,
         winningValues: [],
     },
     fourthPrizes: {
-        reward: 100,
         winningValues: [],
     },
     fifthPrizes: {
-        reward: 50,
         winningValues: [],
     },
     sixthPrizes: {
-        reward: 0,
         winningValues: [],
     },
     seventhPrizes: {
-        reward: 0,
         winningValues: [],
     },
     eighthPrizes: {
-        reward: 0,
         winningValues: [],
     }
 }
@@ -157,11 +135,7 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
         isOpen: {
             addModal: false,
             updateModal: false,
-            messageModal: false
         },
-        resultsSearch: '', // final value to search
-        message: '', // notification or sys err
-        confirm: '',
         error: '', // validation err
         validation,
     },
@@ -175,21 +149,7 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
             state.isOpen.updateModal = !state.isOpen.updateModal
             state.isUpdating = !state.isUpdating
         },
-        closeResultsMessage: (state, action) => {
-            // clear old data first
-            if (state.isOpen.messageModal) {
-                state.message = ''
-                state.confirm = ''
-            }
-            // close msg modal, clear conf & msg
-            // vi msg deu la tu he thong => only need to close
-            // va tach rieng set conf ra ==
-            state.isOpen.messageModal = !state.isOpen.messageModal
-        },
 
-        setResultsSearch: (state, action) => {
-            state.resultsSearch = action.payload
-        },
         setPickedResult: (state, action) => {
             state.pickedResult = action.payload ? action.payload : pickedResult
         },
@@ -199,9 +159,6 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
         },
         setResultError: (state, action) => {
             state.error = action.payload ? action.payload : ''
-        },
-        setResultsConfirm: (state, action) => {
-            state.confirm = action.payload ? action.payload : ''
         },
 
     },
@@ -222,9 +179,6 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
             })
             .addCase(fetchAllResults.rejected, (state, action) => {
                 state.isResultsLoading = false
-                // loi he thong
-                state.isOpen.messageModal = true
-                state.message = action.error.message
             })
 
             .addCase(addResult.pending, (state, action) => {
@@ -254,21 +208,7 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
             })
             .addCase(updateResult.rejected, (state, action) => {
                 state.isResultsLoading = false
-
-                console.log(action.error, 'action.error')
-                // console.log(action.error.param, 'action.error.param')
-                // const message = action.error.message
-                // const param = action.error.param
-                // const validation = action.error.validation
-                // if (message==='') {
-                // loi update thi chac toan 422 thoi nen ko can modal
-                // state.isOpen.messageModal = true
                 state.error = action.error.message
-                // } else {
-                // console.log(state.validation[param], 'state.validation[param]')
-                // console.log(state.validation[`${param}`], 'state.validation[`{param}`]')
-                // state.validation[param] = validation
-                // }
             })
     }
 })
@@ -277,12 +217,9 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
 export const {
     toggleModalAdd,
     toggleModalUpdate,
-    closeResultsMessage,
-    setResultsSearch,
     setPickedResult,
     setValidation,
     setResultError,
-    setResultsConfirm
 } = resultsSlice.actions
 
 

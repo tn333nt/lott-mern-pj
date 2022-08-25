@@ -2,11 +2,10 @@
 import { Button, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setPaginatedHistory, setSearchedHistory, setTicketsConfirm } from '../../flux/slices/ticketsSlice';
-import { toggleUsersMessage } from '../../flux/slices/usersSlice';
+import { setPaginatedHistory, setSearchedHistory } from '../../flux/slices/ticketsSlice';
 import Paginator from './../Paginator';
 import { Search } from './../Search';
-import { clearCurrentPage, fetchNextPage, fetchPreviousPage } from '../../flux/slices/sharedSlice';
+import { clearCurrentPage, fetchNextPage, fetchPreviousPage, setConfirm, toggleModal } from '../../flux/slices/sharedSlice';
 import { useEffect } from 'react';
 
 const HistoryCheck = () => {
@@ -27,7 +26,6 @@ const HistoryCheck = () => {
         const searchedHistory = searchText && user.historyCheck.filter(check => {
             if (searchText !== '') {
                 const value = check.value.includes(searchText.trim().toString())
-                console.log(value, 6666)
                 return value
             }
         })
@@ -37,15 +35,14 @@ const HistoryCheck = () => {
 
     const handleDeleteAll = async () => {
         const confirm = "Delete all checking history ?"
-        dispatch(toggleUsersMessage())
-        dispatch(setTicketsConfirm(confirm))
+        dispatch(toggleModal())
+        dispatch(setConfirm(confirm))
     }
 
 
     const handlePrevious = () => {
         dispatch(fetchPreviousPage())
         dispatch(setPaginatedHistory(paginatedHistory))
-
     }
 
     const handleNext = () => {
@@ -55,20 +52,12 @@ const HistoryCheck = () => {
 
     useEffect(() => {
         const test = currentPage && user.historyCheck.filter((check, index) => {
-            // skip so item trong 1 page 
-            // const skipAmount = currentPage * perPage
-            // console.log(skipAmount, 728628546287)
             const minAmount = (currentPage - 1) * perPage
             const maxAmount = currentPage * perPage
-            // const skipData = check[index]*skipAmount
-            // console.log(skipData, 728628546287)
-            // const condition = skipData <= perPage
             const condition = minAmount <= index && index < maxAmount
-            console.log(condition, 728628546287)
             return condition
         })
 
-        console.log(test, 728628546287)
         dispatch(setPaginatedHistory(test))
     }, [dispatch, currentPage, user])
 

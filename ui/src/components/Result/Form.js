@@ -14,11 +14,12 @@ export const ResultForm = props => {
     const isOpenAddModal = useSelector(state => state.results.isOpen.addModal)
     const isOpenUpdateModal = useSelector(state => state.results.isOpen.updateModal)
 
-    const { validation, isUpdating, error,
+    const {
+        validation, isUpdating, error,
         results, pickedResult
     } = useSelector(state => state.results)
 
-    const {currentPage} = useSelector(state => state.shared)
+    const { currentPage } = useSelector(state => state.shared)
 
     const date = new Date()
     const today = date.toLocaleDateString("vi-VN")
@@ -33,13 +34,12 @@ export const ResultForm = props => {
         dispatch(setResultError())
     }
 
-    
+
     const handleChange = e => {
         const { name } = e.target
         const strValue = e.target.value.trim()
 
-        // fe validation for input's color
-
+        // // fe validation for input's color
         // remove space from each item
         const values = strValue.split(',')
         const arrValues = []
@@ -80,39 +80,9 @@ export const ResultForm = props => {
     }
 
     const submitForm = async () => {
-        // later : bo het vao pickedResult => only need to pass to dispatch
-        const result = {
-            ...pickedResult,
-            _id: pickedResult._id,
-            jackpot: {
-                ...pickedResult.jackpot,
-                winningValues: pickedResult.jackpot.winningValues,
-            },
-            firstPrizes: {
-                ...pickedResult.firstPrizes,
-                winningValues: pickedResult.firstPrizes.winningValues,
-            },
-            secondPrizes: {
-                ...pickedResult.secondPrizes,
-                winningValues: pickedResult.secondPrizes.winningValues,
-            },
-            thirdPrizes: {
-                ...pickedResult.thirdPrizes,
-                winningValues: pickedResult.thirdPrizes.winningValues,
-            },
-            fourthPrizes: {
-                ...pickedResult.fourthPrizes,
-                winningValues: pickedResult.fourthPrizes.winningValues,
-            },
-            fifthPrizes: {
-                ...pickedResult.fifthPrizes,
-                winningValues: pickedResult.fifthPrizes.winningValues,
-            }
-        }
-
         if (isOpenAddModal) {
             const data = await dispatch(addResult({
-                newResult: result,
+                newResult: pickedResult,
                 currentPage,
                 token
             }))
@@ -126,7 +96,7 @@ export const ResultForm = props => {
 
         if (isOpenUpdateModal) {
             const data = await dispatch(updateResult({
-                updatedResult: result,
+                updatedResult: pickedResult,
                 currentPage,
                 token
             }))
@@ -137,8 +107,6 @@ export const ResultForm = props => {
                 dispatch(setPickedResult())
             }
         }
-
-
     }
 
     return (
@@ -158,7 +126,6 @@ export const ResultForm = props => {
                     <>
                         <ModalBody>
                             <Form className='px-2' inline>
-
                                 <FormText>
                                     <p className="mb-3">
                                         * Fill in the right amount of winning values for each prize of <strong>{pickedResult.game}</strong> game
@@ -196,14 +163,10 @@ export const ResultForm = props => {
                                         </FormFeedback>
                                     </FormGroup>
                                 ))}
-
-
-
                             </Form >
                         </ModalBody>
 
                         <ModalFooter>
-
                             <Button
                                 className="me-5 px-3 "
                                 color="primary"

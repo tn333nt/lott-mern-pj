@@ -18,28 +18,6 @@ export const fetchAllUsers = createAsyncThunk('fetchAllUsers', async (props) => 
 })
 
 
-export const addUser = createAsyncThunk('addUser', async (props) => {
-    const newUser = props.newUser
-
-    const url = `http://localhost:8080/users/user?page=${props.currentPage}`
-    const res = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(newUser),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            Authorization: props.token
-        }
-    })
-
-    const data = await res.json()
-
-    if (res.status !== 200 && res.status !== 201) {
-        throw new Error(data.message)
-    }
-    return data
-
-})
-
 export const setAdmin = createAsyncThunk('setAdmin', async (props) => {
     const _id = props.updatedUser._id
     const updatedUser = props.updatedUser
@@ -116,14 +94,8 @@ const usersSlice = createSlice({
         searchedUsers: [],
         paginatedUsers: [],
         pickedUser, // pass user data
-        isOpen: {
-            updateModal: false,
-            messageModal: false
-        },
         isOpenUpdateModal: false,
         usersSearch: '',
-        message: '',
-        confirm: '',
     },
 
     reducers: {
@@ -135,21 +107,8 @@ const usersSlice = createSlice({
             state.isOpen.messageModal = !state.isOpen.messageModal
         },
 
-        setUsersSearch: (state, action) => {
-            state.usersSearch = action.payload
-        },
         setPickedUser: (state, action) => {
             state.pickedUser = action.payload ? action.payload : pickedUser
-        },
-
-        setUsersError: (state, action) => {
-            state.error = action.payload ? action.payload : ''
-        },
-        setUsersConfirm: (state, action) => {
-            state.confirm = action.payload ? action.payload : ''
-        },
-        setUsersMessage: (state, action) => {
-            state.message = action.payload ? action.payload : ''
         },
 
     },
@@ -161,30 +120,14 @@ const usersSlice = createSlice({
             })
             .addCase(fetchAllUsers.fulfilled, (state, action) => {
                 state.isUsersLoading = false
-                state.users = action.payload.users
 
+                state.users = action.payload.users
                 state.searchedUsers = action.payload.searchedUsers
                 state.paginatedUsers = action.payload.paginatedUsers
 
             })
             .addCase(fetchAllUsers.rejected, (state, action) => {
                 state.isUsersLoading = false
-                state.isOpen.messageModal = true
-                state.message = action.error.message
-            })
-
-            .addCase(addUser.pending, (state, action) => {
-                state.isUsersLoading = true
-            })
-            .addCase(addUser.fulfilled, (state, action) => {
-                state.isUsersLoading = false
-                state.users = action.payload.users
-                state.paginatedUsers = action.payload.paginatedUsers
-            })
-            .addCase(addUser.rejected, (state, action) => {
-                state.isUsersLoading = false
-                state.isOpen.messageModal = true
-                state.message = action.error.message
             })
 
             .addCase(setAdmin.pending, (state, action) => {
@@ -192,13 +135,12 @@ const usersSlice = createSlice({
             })
             .addCase(setAdmin.fulfilled, (state, action) => {
                 state.isUsersLoading = false
+                
                 state.users = action.payload.users
                 state.paginatedUsers = action.payload.paginatedUsers
             })
             .addCase(setAdmin.rejected, (state, action) => {
                 state.isUsersLoading = false
-                state.isOpen.messageModal = true
-                state.message = action.error.message
             })
 
             .addCase(deleteUser.pending, (state, action) => {
@@ -206,34 +148,13 @@ const usersSlice = createSlice({
             })
             .addCase(deleteUser.fulfilled, (state, action) => {
                 state.isUsersLoading = false
-
                 state.users = action.payload.users
                 state.paginatedUsers = action.payload.paginatedUsers
 
             })
             .addCase(deleteUser.rejected, (state, action) => {
                 state.isUsersLoading = false
-                state.isOpen.messageModal = true
-                state.message = action.error.message
             })
-            .addCase(deleteAllUsers.pending, (state, action) => {
-                state.isUsersLoading = true
-            })
-            .addCase(deleteAllUsers.fulfilled, (state, action) => {
-                state.isUsersLoading = false
-                state.isOpen.messageModal = true
-                state.message = "deleted all"
-
-                state.users = []
-                state.paginatedUsers = []
-
-            })
-            .addCase(deleteAllUsers.rejected, (state, action) => {
-                state.isUsersLoading = false
-                state.isOpen.messageModal = true
-                state.error = action.error.message
-            })
-
 
     }
 })
@@ -242,12 +163,8 @@ const usersSlice = createSlice({
 export const {
     toggleUserUpdate,
     toggleUsersMessage,
-    setUsersSearch,
     setPickedUser,
     setValidation,
-    setUsersError,
-    setUsersConfirm,
-    setUsersMessage,
 } = usersSlice.actions
 
 
