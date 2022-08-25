@@ -10,11 +10,8 @@ import { setAuthError } from '../flux/slices/authSlice';
 const Account = () => {
     const dispatch = useDispatch()
     const { user, isAuthLoading } = useSelector(state => state.auth)
-    const { isOpenUpdateModal } = useSelector(state => state.users)
 
-    console.log(isOpenUpdateModal, 999000, user)
     const HandleSubmit = () => {
-        console.log(isOpenUpdateModal, 999000)
         dispatch(setAuthError())
         dispatch(toggleUserUpdate())
         dispatch(setPickedUser(user))
@@ -23,6 +20,7 @@ const Account = () => {
     return (
         <div className="container pt-5 mw-100">
             {isAuthLoading && <Loader color="danger" />}
+            
             <UserForm />
             <Row>
                 <Col xs="12" md="6" className="my-5 d-flex justify-content-center">

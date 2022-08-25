@@ -9,16 +9,15 @@ import Paginator from '../../components/Paginator';
 import MessageHandler from '../../components/Handler/Message'
 import ConfirmHandler from '../../components/Handler/Confirm'
 import Loader from '../../components/Loader';
-import { 
-    clearCurrentPage, clearSearchText, 
-    fetchNextPage, fetchPreviousPage, 
-    setConfirm, setMessage, 
-    setSearchText, toggleModal 
+import {
+    clearCurrentPage, clearSearchText,
+    fetchNextPage, fetchPreviousPage,
+    setConfirm, setMessage,
+    setSearchText, toggleModal
 } from '../../flux/slices/sharedSlice';
 
 
 const Users = () => {
-
     const dispatch = useDispatch()
 
     const { token, isAuthLoading } = useSelector(state => state.auth)
@@ -30,7 +29,8 @@ const Users = () => {
 
     const { searchText, currentPage, message, confirm } = useSelector(state => state.shared)
     const totalUsers = users.length
-    const lastPage = Math.ceil(totalUsers / 9)
+    const perPage = 9
+    const lastPage = Math.ceil(totalUsers / perPage)
 
     const handleSearch = () => {
         dispatch(setSearchText(searchText))
@@ -44,7 +44,6 @@ const Users = () => {
         dispatch(toggleModal())
         dispatch(setConfirm(confirm))
         dispatch(setPickedUser(deletingUser))
-
     }
 
     const handleAdmin = async (userId) => {
@@ -60,12 +59,12 @@ const Users = () => {
             currentPage,
             token
         }))
+
         if (data.error) {
             dispatch(toggleModal())
             dispatch(setMessage(data.error.message))
             return
         }
-
     }
 
     const handlePrevious = () => {
@@ -83,25 +82,12 @@ const Users = () => {
     }, [dispatch])
 
 
-    // useEffect(() => {
-    //     dispatch(setMessage(message))
-    // }, [dispatch, message])
-
-
     useEffect(() => {
-        async function fetchData() {
-            const data = await dispatch(fetchAllUsers({
-                currentPage,
-                searchText,
-                token
-            }))
-            if (data.error) {
-                dispatch(toggleModal())
-                dispatch(setMessage(data.error.message))
-                return
-            }
-        }
-        fetchData()
+        dispatch(fetchAllUsers({
+            currentPage,
+            searchText,
+            token
+        }))
     }, [currentPage, searchText, token, dispatch])
 
 
@@ -135,10 +121,10 @@ const Users = () => {
                     )}
 
                     {users.length <= 0 && !isUsersLoading ? (
-                        <p style={{ textAlign: 'center' }}> Not found user </p>
+                        <p style={{ textAlign: 'center' }}> Not fetched user </p>
                     ) : null}
 
-                    {!isUsersLoading && searchText && searchedUsers.length > 0 && (
+                    {!isUsersLoading && searchText !== '' && searchedUsers.length > 0 && (
                         <>
                             < Table striped responsive className="text-center">
                                 <thead>
@@ -181,7 +167,7 @@ const Users = () => {
                     }
 
                     {
-                        users.length > 0 && !searchText && !isUsersLoading &&
+                        users.length > 0 && searchText === '' && !isUsersLoading &&
                         <>
                             < Table striped responsive className="text-center" >
                                 <thead>
@@ -197,7 +183,7 @@ const Users = () => {
                                     {paginatedUsers.map((user, index) => (
                                         <tr key={user._id}>
                                             {/* later : admin thi xep trc */}
-                                            <th scope="row">{+index + 1}</th>
+                                            <th scope="row">{+index + perPage * (currentPage - 1) + 1}</th>
                                             <td>{user.email}</td>
                                             <td>{user.username}</td>
                                             <td>{user.mobile}</td>
@@ -231,7 +217,7 @@ const Users = () => {
                     }
 
                     {
-                        !isUsersLoading && searchText && searchedUsers.length <= 0 && (
+                        !isUsersLoading && searchText !== '' && searchedUsers.length <= 0 && (
                             <p style={{ textAlign: 'center' }}> Not found user </p>
                         )
                     }

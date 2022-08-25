@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Input, Button, Form, Alert, FormGroup, Label } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { required, isNumber, length } from '../../util/validators';
+import { isNumber, length } from '../../util/validators';
 import {
     setIndexes, postTicket, setTicket,
     setCheckingSuccess, setCheckingMessage, setCheckingFail,
@@ -16,7 +16,6 @@ const CheckTicket = () => {
 
     const dispatch = useDispatch()
 
-    // const [date, setDate] = useState('') // loi cap nhat dong thoi
     const [validated, setValidated] = useState('')
 
     const results = useSelector(state => state.results.results)
@@ -37,35 +36,22 @@ const CheckTicket = () => {
             }))
         }
 
-        // hinh nhu date bi invalid la do sau khi blur => tinh changing value la rong
-        // nen neu fill date trc roi den value thi date se bi loi
-        // sao no van tinh onchange vay nhi ?
-
         if (name === 'date' && value !== '') {
             const newDate = new Date(value)
             const updatedDate = newDate.toLocaleDateString("vi-VN")
-            console.log(updatedDate, 9687163)
             if (updatedDate === 'Invalid Date') {
                 return setValidated('test')
             }
-            
+
             dispatch(setTicket({
                 ...checkingTicket,
                 date: updatedDate,
             }))
         }
 
-        // const ticket = {
-        //     ...checkingTicket,
-        //     [name]: value,
-        //     date,
-        // }
-        // dispatch(setTicket(ticket))
-
     }
-    console.log(checkingTicket, 9687163)
 
-    // vi checking !isAuth ko luu data => only need fe validation
+    // vi checking !isAuth ko luu data => fe validation is enough
     const handleCheck = async () => {
 
         // // test be val
@@ -86,11 +72,10 @@ const CheckTicket = () => {
         }
 
 
-        // find result that have the checking date
+        // 1. find result that have the checking date
         const checkingResult = results.find(result => result.date === checkingTicket.date)
 
-        // not found  
-        // later : thu de phan nay cho be only
+        // not found 
         if (!checkingResult) {
             // still pass date to Checked
             dispatch(setPickedResult({
@@ -99,11 +84,12 @@ const CheckTicket = () => {
             }))
 
             dispatch(setCheckingMessage('Not found result'))
-            // dispatch(setCheckingError())
             dispatch(setCheckingSuccess())
             dispatch(setCheckingFail())
+            setValidated('')
         }
 
+        // 2. if having result -> compare checking val with winning val -> find index
         const indexChecking1P = checkingResult.firstPrizes.winningValues.findIndex(value => checkingTicket.value === value)
         const indexCheckingJP = checkingResult.jackpot.winningValues.findIndex(value => checkingTicket.value === value)
 
@@ -125,7 +111,7 @@ const CheckTicket = () => {
             .findIndex(value => checkingTicket.value.substring(4) === value)
 
 
-        // 1. save indexes to highlight 
+        // 2. save indexes to highlight in Checked
         dispatch(setIndexes({
             ...indexes,
             JP: indexCheckingJP,
@@ -136,75 +122,97 @@ const CheckTicket = () => {
             P5: indexChecking5P
         }))
 
-        // 2. pass found out result to render
+        // 4. pass found result to render in Checked
         dispatch(setPickedResult(checkingResult))
-        // dispatch(setPickedResult({
-        //     ...checkingResult,
-        //     date: checkingTicket.date,
-        // }))
 
-        // 3. pass msg to show if found index (return !== -1) , i.e won a prize + add check if be user
+        // 5. check if found index (return !== -1) 
         const wonPrizes = []
-        indexCheckingJP !== -1 && wonPrizes.push('Jackpot')
-        indexChecking1P !== -1 && wonPrizes.push('1st Prize')
-        indexChecking2P !== -1 && wonPrizes.push('2nd Prize')
-        indexChecking3P !== -1 && wonPrizes.push('3rd Prize')
-        indexChecking4P !== -1 && wonPrizes.push('4th Prize')
-        indexChecking5P !== -1 && wonPrizes.push('5th Prize')
+        let totalReward = 0
+
+        if (indexCheckingJP !== -1) {
+            wonPrizes.push('Jackpot')
+            totalReward += +checkingResult.jackpot.reward
+        }
+        if (indexChecking1P !== -1) {
+            wonPrizes.push('1st Prize')
+            totalReward += +checkingResult.firstPrizes.reward
+        }
+        if (indexChecking2P !== -1) {
+            wonPrizes.push('2nd Prize')
+            totalReward += +checkingResult.secondPrizes.reward
+        }
+        if (indexChecking3P !== -1) {
+            wonPrizes.push('3rd Prize')
+            totalReward += +checkingResult.thirdPrizes.reward
+        }
+        if (indexChecking4P !== -1) {
+            wonPrizes.push('4th Prize')
+            totalReward += +checkingResult.fourthPrizes.reward
+        }
+        if (indexChecking5P !== -1) {
+            wonPrizes.push('5th Prize')
+            totalReward += +checkingResult.fifthPrizes.reward
+        }
 
 
         const postData = {
             ticket: {
                 ...checkingTicket,
-                // date,
                 wonPrizes,
             },
             token: token
         }
 
-        // neu la user thi add check to his
+        // 6. check if be user -> add check (post to be)
         if (isAuth) {
             const data = await dispatch(postTicket(postData))
 
             if (data.payload) {
-                // if won
+                // if won -> msg success
                 if (wonPrizes.length > 0) {
-                    dispatch(setCheckingSuccess(`You have won the ${wonPrizes.join(' and the ')}`))
+                    dispatch(setCheckingSuccess([
+                        "You have won the ",
+                        <>{wonPrizes.join(' and the ')}</>,
+                        " and ",
+                        <strong>{totalReward}$</strong>
+                    ])) // https://stackoverflow.com/questions/33381029/react-how-to-pass-html-tags-in-props
+
                     // clear old state
                     dispatch(setCheckingFail())
                     dispatch(setCheckingError())
                     dispatch(setCheckingMessage())
                     setValidated('')
 
-                } else { // if not won
+                } else { // if not won -> msg fail
                     dispatch(setCheckingFail('Not won any prize'))
+
                     dispatch(setCheckingSuccess())
                     dispatch(setCheckingMessage())
                     dispatch(setCheckingError())
                     setValidated('')
-                    // clear inputs
-                    // dispatch(setTicket())
                 }
 
-                // update user's hisCheck
                 dispatch(setUser(data.payload.user))
+
                 return
             }
-            // clear checking result
-            // dispatch(setPickedResult())
 
-            // // if validation failed // not necessary
+            // if having validation err -> msg err
             if (data.error) {
                 dispatch(setCheckingSuccess())
                 dispatch(setCheckingFail())
                 dispatch(setCheckingMessage())
-                // dispatch(setPickedResult())
                 setValidated('')
             }
 
-        } else { // not auth => not update his
+        } else {
             if (wonPrizes.length > 0) {
-                dispatch(setCheckingSuccess(`You have won the ${wonPrizes.join(' and the ')}`))
+                dispatch(setCheckingSuccess([
+                    "You have won the ",
+                    <>{wonPrizes.join(' and the ')}</>,
+                    " and ",
+                    <strong>{totalReward}$</strong>
+                ]))
                 dispatch(setCheckingFail())
                 dispatch(setCheckingMessage())
                 dispatch(setCheckingError())
@@ -216,10 +224,8 @@ const CheckTicket = () => {
                 dispatch(setCheckingMessage())
                 dispatch(setCheckingError())
                 setValidated('')
-
             }
         }
-
     }
 
 
@@ -228,14 +234,15 @@ const CheckTicket = () => {
             <div className="text-center text-success fs-1 fw-bolder">
                 Check the ticket
             </div>
+
             {validated !== '' && <Alert color="warning">{validated}</Alert>}
             {error !== '' && <Alert color="danger">{error}</Alert>}
+
             <FormGroup floating className="mt-3">
                 <Input
                     name="value"
                     type="text"
                     bsSize="lg"
-                    // value={value}
                     value={checkingTicket.value}
                     onChange={handleChange}
                 />
@@ -246,7 +253,6 @@ const CheckTicket = () => {
                     name="date"
                     type="date"
                     bsSize="lg"
-                    // value={checkingTicket.date !== '' && checkingTicket.date}
                     onChange={handleChange}
                 />
                 <Label>Date</Label>
@@ -255,7 +261,6 @@ const CheckTicket = () => {
                 color="success"
                 size="lg"
                 className="mt-3 mb-5"
-                // disabled={validated !== '' ? true : false}
                 onClick={handleCheck}
             >
                 Check

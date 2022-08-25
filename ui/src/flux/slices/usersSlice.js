@@ -101,7 +101,6 @@ const usersSlice = createSlice({
     reducers: {
         toggleUserUpdate: (state, action) => {
             state.isOpenUpdateModal = !state.isOpenUpdateModal
-            console.log(action.payload, state.isOpenUpdateModal , 999000)
         },
         toggleUsersMessage: (state, action) => {
             state.isOpen.messageModal = !state.isOpen.messageModal

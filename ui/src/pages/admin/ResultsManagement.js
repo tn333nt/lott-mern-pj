@@ -7,7 +7,7 @@ import { setPickedResult, toggleModalAdd, toggleModalUpdate } from '../../flux/s
 import { 
     clearCurrentPage, clearSearchText, 
     fetchNextPage, fetchPreviousPage, 
-    setMessage, setSearchText 
+    setSearchText 
 } from '../../flux/slices/sharedSlice';
 import MessageHandler from './../../components/Handler/Message';
 import ConfirmHandler from './../../components/Handler/Confirm';
@@ -57,10 +57,6 @@ const ResultsManagement = () => {
         dispatch(clearSearchText())
         dispatch(clearCurrentPage())
     }, [dispatch])
-
-    useEffect(() => {
-        dispatch(setMessage(message))
-    }, [dispatch, message])
 
 
     return (

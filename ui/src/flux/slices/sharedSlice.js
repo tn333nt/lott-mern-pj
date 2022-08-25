@@ -3,11 +3,12 @@ import { createSlice } from '@reduxjs/toolkit'
 const sharedSlice = createSlice({
     name: 'shared',
     initialState: {
-        isOpenModal: false, // luu chung modal to show up
-        currentPage: 1, // luu chung page ban dau
-        searchText: '', // luu chung changing search text
-        message: '', // thong bao 
-        confirm: '', // text xac nhan req
+        // luu chung :
+        isOpenModal: false, // modal -> show up
+        currentPage: 1, // initial page
+        searchText: '', // changing search text
+        message: '', // thong bao cho res
+        confirm: '', // text xac nhan (delete) req
     },
     reducers: {
         toggleModal: (state, action) => {
@@ -17,7 +18,6 @@ const sharedSlice = createSlice({
             state.message = action.payload ? action.payload : '' 
         },
         setConfirm: (state, action) => {
-            // nay bi do la do ko dong nhat kieu clear => conf undefined nen clash vs '' mb
             state.confirm = action.payload ? action.payload : '' 
         },
 

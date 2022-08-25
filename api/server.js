@@ -14,7 +14,7 @@ const TicketRoutes = require('./routes/ticket')
 app.use(express.json())
 
 app.use((req, res, next) => {
-    res.setHeader('access-control-allow-origin', '*')
+    res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('access-control-allow-methods', '*')
     res.setHeader('access-control-allow-headers', '*')
     next()

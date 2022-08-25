@@ -1,9 +1,7 @@
 
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Form, FormGroup, Input, Label, Alert, ModalBody, ModalFooter, ModalHeader, Modal } from 'reactstrap';
-import { useState, useEffect } from 'react';
-import { setAuthError, setUpdateError, setUser, updateUser } from '../../flux/slices/authSlice';
-import Loader from '../Loader';
+import { setAuthError, updateUser } from '../../flux/slices/authSlice';
 import { setPickedUser, toggleUserUpdate } from '../../flux/slices/usersSlice';
 
 
@@ -11,10 +9,8 @@ const UserForm = () => {
 
     const dispatch = useDispatch()
 
-    const { user, token, updateError, isAuthLoading, error } = useSelector(state => state.auth)
+    const { token, updateError } = useSelector(state => state.auth)
     const { pickedUser, isOpenUpdateModal } = useSelector(state => state.users)
-
-    // const [test, setTest] = useState(user)
 
     const toggleModal = () => {
         dispatch(toggleUserUpdate())
@@ -23,23 +19,19 @@ const UserForm = () => {
 
     const handleChange = e => {
         const { name, value } = e.target
-        // sao moi lan no chi cap nhat moi field cuoi onchange ?
         dispatch(setPickedUser({
-            ...user,
+            ...pickedUser,
             [name]: value
         }))
     }
 
-    // trc do no lien tuc refresh hinh nhu do vua vao lay user null 
-    // disabled vai chuc nang before chay dc vao ham thuc hien cn 
-
     const HandleSubmit = async () => {
-        console.log(pickedUser, 89898)
         const data = await dispatch(updateUser({ user: pickedUser, token }))
         if (data.payload) {
             dispatch(toggleUserUpdate())
         }
     }
+
 
     return (
         <>

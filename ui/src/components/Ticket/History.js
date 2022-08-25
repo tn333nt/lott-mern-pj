@@ -25,7 +25,7 @@ const HistoryCheck = () => {
         // tim trong user.historyCheck
         const searchedHistory = searchText && user.historyCheck.filter(check => {
             if (searchText !== '') {
-                const value = check.value.includes(searchText.trim().toString())
+                const value = check.date.includes(searchText.trim().toString())
                 return value
             }
         })
@@ -51,14 +51,17 @@ const HistoryCheck = () => {
     }
 
     useEffect(() => {
-        const test = currentPage && user.historyCheck.filter((check, index) => {
+        const ItemsOnePage = currentPage && user.historyCheck.filter((check, index) => {
+            // items in prev page(s)
             const minAmount = (currentPage - 1) * perPage
+            // items in prev page(s) + current page
             const maxAmount = currentPage * perPage
+            
             const condition = minAmount <= index && index < maxAmount
             return condition
         })
 
-        dispatch(setPaginatedHistory(test))
+        dispatch(setPaginatedHistory(ItemsOnePage))
     }, [dispatch, currentPage, user])
 
 
@@ -67,8 +70,8 @@ const HistoryCheck = () => {
         dispatch(setSearchedHistory())
     }, [dispatch])
 
-    // later : sorted reversely
-    // sort func
+
+    // later : sort func
     return (
         <>
             <div className="row m-md-5">
@@ -92,7 +95,7 @@ const HistoryCheck = () => {
                             Delete history
                         </Button>
                     )}
-                    <Search placeholder='Type value ...' color="dark" handleSearch={handleSearch} />
+                    <Search placeholder='Type date ...' color="dark" handleSearch={handleSearch} />
                 </div>
 
                 {/* have searched but no result (data) found */}

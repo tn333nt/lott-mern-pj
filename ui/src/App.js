@@ -1,5 +1,5 @@
 
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,12 +15,10 @@ import Home from './pages/user/Home.js'
 import Account from './pages/Account.js'
 import { handleLogout, setIsAuth, setAuthLoading, setToken, setUser } from './flux/slices/authSlice.js';
 import ResultsManagement from './pages/admin/ResultsManagement.js';
-import { setMessage, toggleModal } from './flux/slices/sharedSlice.js';
 
 
 const App = () => {
     const dispatch = useDispatch()
-    const navigate = useNavigate()
 
     const { isAuth, isSwitched,
         token, user
@@ -33,17 +31,24 @@ const App = () => {
         dispatch(fetchAllResults({ searchText, currentPage, token }))
     }, [dispatch, token, searchText, currentPage])
 
-    useEffect(() => {
-        async function fetchData() {
-            const data = await dispatch(fetchAllResults({ searchText, currentPage, token }))
-            if (data.error) {
-                dispatch(toggleModal())
-                dispatch(setMessage(data.error.message))
-                return
-            }
-        }
-        fetchData()
-    }, [currentPage, searchText, token, dispatch])
+    
+    // useEffect(() => {
+    //     async function fetchData() {
+    //         const data = await dispatch(fetchAllResults({ searchText, currentPage, token }))
+    //         if (data.error) {
+    //             dispatch(toggleModal())
+    //             dispatch(setMessage(data.error.message))
+    //             // return
+    //         }
+    //         if (data.payload) {
+    //             dispatch(toggleModal())
+    //             dispatch(setMessage())
+    //             return
+    //         }
+    //     }
+    //     fetchData()
+    // }, [currentPage, searchText, token, dispatch])
+
 
 
     // later : refresh -> stay on current page

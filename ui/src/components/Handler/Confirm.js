@@ -38,6 +38,7 @@ const ConfirmHandler = props => {
     const handleAccept = async () => {
         if (confirm === "Delete all checking history ?") {
             const data = await dispatch(deleteAllTickets(token))
+            console.log(data, 999)
             const closedModalConfirm = await dispatch(toggleModal())
 
             if (data.error) {
@@ -66,8 +67,8 @@ const ConfirmHandler = props => {
             }
 
             // close confirm modal first
-            const test = await dispatch(toggleModal())
-            if (!test.error) {
+            const closedModalConfirm = await dispatch(toggleModal())
+            if (!closedModalConfirm.error) {
                 // open new modal with a msg
                 dispatch(setMessage(`Deleted ${pickedUser.email}`))
                 toggle()

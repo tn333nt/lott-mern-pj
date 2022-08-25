@@ -3,7 +3,11 @@ import { useEffect } from 'react';
 import { UncontrolledAccordion, AccordionItem, AccordionHeader, AccordionBody } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { clearCurrentPage, clearSearchText, fetchNextPage, fetchPreviousPage, setMessage, setSearchText } from '../../flux/slices/sharedSlice';
+import { 
+    clearCurrentPage, clearSearchText, 
+    fetchNextPage, fetchPreviousPage, 
+    setSearchText 
+} from '../../flux/slices/sharedSlice';
 import { Search } from '../../components/Search';
 import { ResultForm } from '../../components/Result/Form';
 import { ResultDetail } from '../../components/Result/Detail';
@@ -14,7 +18,6 @@ import Loader from '../../components/Loader';
 
 
 const Results = () => {
-
     const dispatch = useDispatch()
 
     const { 
@@ -44,9 +47,6 @@ const Results = () => {
         dispatch(clearCurrentPage())
     }, [dispatch])
 
-    useEffect(() => {
-        dispatch(setMessage(message))
-    }, [dispatch, message])
 
     return (
         <div className="container pt-5 mw-100">
