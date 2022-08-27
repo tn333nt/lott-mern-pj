@@ -39,7 +39,7 @@ router.put('/user', [
                 if (!value || value.trim().length >= 6 && value.trim().length <= 99) {
                     return true
                 }
-                throw new Error('Your name must have at least 9 characters')
+                throw new Error('Your name must have at least 6 characters')
             }
             throw new Error('Fullname must be a string')
         })

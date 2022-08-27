@@ -42,7 +42,7 @@ const ResetPassword = () => {
                         <Label>Email</Label>
                         <Input
                             type="email"
-                            placeholder="email"
+                            placeholder="Email"
                             bsSize="lg"
                             name="email"
                             onChange={handleChange}
@@ -50,7 +50,7 @@ const ResetPassword = () => {
                     </FormGroup>
                     <Button block color="dark" size="lg" onClick={HandleSubmit} className="mt-4">Reset</Button>
                     <div className="text-center mt-3">
-                        <Link to="/login">Back to ogin</Link>
+                        <Link to="/login">Back to login</Link>
                     </div>
                 </Form>
             </Col>

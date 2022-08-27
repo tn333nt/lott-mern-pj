@@ -173,7 +173,7 @@ const HistoryCheck = () => {
                             </tbody>
                         </Table>
 
-                        <p>Total {user ? user?.historyCheck?.length : '0'} found</p>
+                        <p>Total <mark style={{ background: '#eeb69b' }}>{user ? user?.historyCheck?.length : '0'}</mark> checking found</p>
                         <p>Page : {currentPage} </p>
                         <Paginator
                             handlePrevious={handlePrevious}

@@ -139,6 +139,7 @@ export const ResultForm = props => {
                                     </Alert>
                                 )}
 
+                                {/* loop through each field name*/}
                                 {prizesArr.map((item, index) => (
                                     <FormGroup
                                         floating
@@ -149,10 +150,17 @@ export const ResultForm = props => {
                                             type="text"
                                             id={item}
                                             placeholder={titles[index]}
-                                            value={pickedResult[item]?.winningValues?.length > 0 ? pickedResult[item].winningValues : ''}
+                                            // access correspond field -> get values (to update)
+                                            value={
+                                                pickedResult[item]?.winningValues?.length > 0 ? 
+                                                pickedResult[item].winningValues : 
+                                                ''
+                                            }
                                             onChange={handleChange}
                                             valid={validation[item]?.isValid}
                                             invalid={validation[item]?.isValid === false}
+                                            // bc prizes r arranged from highest val to lowest 
+                                            // => prizesAmount always eq to the lowest index in taking prizes
                                             disabled={index >= pickedResult.prizesAmount}
                                         />
                                         <Label for={item}>

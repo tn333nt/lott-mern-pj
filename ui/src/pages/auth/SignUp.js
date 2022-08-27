@@ -56,7 +56,7 @@ const SignUp = () => {
     }
 
     return (
-        <div className="container pt-5 mw-100 d-flex justify-content-center">
+        <div className="container py-5 mw-100 d-flex justify-content-center mb-5">
             <Col xs="12" sm="11" md="9" lg="4">
                 <Form >
                     <h1>Sign Up</h1>
