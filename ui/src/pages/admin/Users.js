@@ -93,8 +93,8 @@ const Users = () => {
 
     return (
         <div className="container pt-5 mw-100">
-            {message !== '' && <MessageHandler message={message} />}
-            {confirm !== '' && <ConfirmHandler confirm={confirm} />}
+            {message !== '' && <MessageHandler message={message} currentPage={currentPage}/>}
+            {confirm !== '' && <ConfirmHandler confirm={confirm} currentPage={currentPage}/>}
 
             {isAuthLoading ? (
                 <Loader color="danger" />

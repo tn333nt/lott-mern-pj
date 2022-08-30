@@ -28,8 +28,8 @@ const Home = () => {
         <div className="container pt-5 mw-100">
             {isLoading && <Loader color="success"/>}
 
-            {message !== '' && <MessageHandler message={message} />}
-            {confirm !== '' && <ConfirmHandler confirm={confirm} />}
+            {message !== '' && <MessageHandler message={message} currentPage={currentPage}/>}
+            {confirm !== '' && <ConfirmHandler confirm={confirm} currentPage={currentPage}/>}
 
             <section>
                 <Row>

@@ -28,10 +28,12 @@ export const ResultDetail = props => {
             <tbody>
                 {/* chuyen compare obj sang compare arr.length vi req auto tao wV : [] */}
 
+                {/* check if the game has this prize */}
                 {result.jackpot.winningValues.length > 0 && (
                     <tr>
                         <th scope="row"> Jackpot</th>
                         <td >
+                            {/* check passing index (exists if won prize) matches index of winning value when looping througn */}
                             {result.jackpot.winningValues.map((value, index) => (
                                 <span key={index}
                                     className={+indexJP === +index ? 'text-success fw-bold' : ''}

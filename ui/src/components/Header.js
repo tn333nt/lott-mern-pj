@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
 import {
@@ -19,15 +19,6 @@ import {
 import { SiRiotgames } from 'react-icons/si';
 
 import { handleLogout, toggleIsAdmin, toggleSwitching } from '../flux/slices/authSlice';
-import { 
-    setCheckingError, 
-    setCheckingFail, 
-    setCheckingMessage, 
-    setCheckingSuccess, 
-    setIndexes, 
-    setTicket 
-} from '../flux/slices/ticketsSlice';
-import { setPickedResult } from '../flux/slices/resultsSlice';
 
 export const Header = props => {
     const dispatch = useDispatch()
@@ -43,15 +34,6 @@ export const Header = props => {
 
     const handleLogOut = () => {
         dispatch(handleLogout())
-
-        // clear checking data
-        dispatch(setCheckingError())
-        dispatch(setCheckingMessage())
-        dispatch(setCheckingSuccess())
-        dispatch(setCheckingFail())
-        dispatch(setPickedResult())
-        dispatch(setTicket())
-        dispatch(setIndexes())
 
         dispatch(toggleIsAdmin(false))
         dispatch(toggleSwitching(false))

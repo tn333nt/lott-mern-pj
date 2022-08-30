@@ -14,6 +14,7 @@ exports.postTicket = async (req, res, next) => {
         return next(err)
     }
 
+    // check if date input is empty
     if (date === '' || date === 'Invalid Date' || !date) {
         const err = new Error('Checking date is required')
         err.statusCode = 422
@@ -21,9 +22,8 @@ exports.postTicket = async (req, res, next) => {
     }
 
     try {
-
+        // check if checking date is existed in Results
         const checkingResult = await Result.find({ date: date })
-        // findAll return arr 
         if (checkingResult.length <= 0) {
             const err = new Error('Not found result of that date')
             err.statusCode = 404
@@ -31,7 +31,6 @@ exports.postTicket = async (req, res, next) => {
         }
 
         const user = await User.findById(req.user._id)
-        // findOne return 1 obj (doc) or null
         if (!user) {
             const err = new Error('Not authenticated you')
             err.statusCode = 401
@@ -39,6 +38,8 @@ exports.postTicket = async (req, res, next) => {
         }
 
         const check = { date, value, wonPrizes }
+
+        // push new check to history
         user.historyCheck.push(check)
         await user.save()
 
@@ -60,20 +61,22 @@ exports.deleteAllTickets = async (req, res, next) => {
             err.statusCode = 401
             throw err
         }
+        // check if exist any check in history
         if (user.historyCheck.length <= 0) {
             const err = new Error('Not found history to delete')
             err.statusCode = 404
             throw err
         }
 
+        // empty history
         user.historyCheck = []
         await user.save()
 
-        // later : send msg from here
+        // // later : send msg from here
         res.status(200).json({ user: user })
 
     } catch (err) {
-        // why does not pass msg to fe ???
+        // // (err) why does not pass msg to fe ???
         console.log(err.message, 9090909090)
         next(err)
     }

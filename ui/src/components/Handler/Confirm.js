@@ -16,12 +16,12 @@ const ConfirmHandler = props => {
 
     const token = useSelector(state => state.auth.token)
     const { isOpenModal } = useSelector(state => state.shared)
-    const { pickedUser, currentUsersPage } = useSelector(state => state.users)
+    const { pickedUser } = useSelector(state => state.users)
 
     const confirm = props.confirm
 
     const passingValues = {
-        currentPage: currentUsersPage,
+        currentPage: props.confirm,
         deletingUser: pickedUser,
         token
     }
@@ -36,9 +36,10 @@ const ConfirmHandler = props => {
     }
 
     const handleAccept = async () => {
+        // check for each case of confirm msg
+
         if (confirm === "Delete all checking history ?") {
             const data = await dispatch(deleteAllTickets(token))
-            console.log(data, 999)
             const closedModalConfirm = await dispatch(toggleModal())
 
             if (data.error) {

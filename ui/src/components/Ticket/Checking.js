@@ -175,7 +175,7 @@ const CheckTicket = () => {
                         <>{wonPrizes.join(' and the ')}</>,
                         " and ",
                         <strong>{totalReward}$</strong>
-                    ])) // https://stackoverflow.com/questions/33381029/react-how-to-pass-html-tags-in-props
+                    ])) 
 
                     // clear old state
                     dispatch(setCheckingFail())

@@ -9,15 +9,17 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'thaonpfx15559@funix.edu.vn',
-        pass: 'xffzpzwbufgadjnj',
+        pass: 'itszdiiepzchgnbe',
     }
 });
 
 
 exports.signup = async (req, res, next) => {
 
+    // take validation errors from req
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
+        // take the first error then pass its msg to err handler
         const error = errors.array()[0]
         const err = new Error(error.msg)
         err.statusCode = 422
@@ -27,12 +29,12 @@ exports.signup = async (req, res, next) => {
     const { email, password, username } = req.body
 
     try {
-
+        
         if (errors.isEmpty()) {
             const validEmail = await User.findOne({ email })
             if (validEmail) {
                 const err = new Error('Email already exists')
-                err.statusCode = 409 // conflict with the current state
+                err.statusCode = 409 
                 throw err
             }
             
@@ -43,6 +45,7 @@ exports.signup = async (req, res, next) => {
                 throw err
             }
 
+            // hash pass then save it into db (salt = 12)
             const hashedPassword = await bcrypt.hash(password, 12)
             const user = new User({
                 email,
@@ -74,13 +77,15 @@ exports.login = async (req, res, next) => {
     const { email, password } = req.body
 
     try {
+        // check if user exists
         const user = await User.findOne({ email: email })
         if (!user) {
             const err = new Error('Not found user with this email')
-            err.statusCode = 401 // not authenticated
+            err.statusCode = 401 
             throw err
         }
 
+        // check if old pass is matched with the pass in db
         const isMatched = await bcrypt.compare(password, user.password) || password === 'unhasedPassForTempData'
         if (!isMatched) {
             const err = new Error('Wrong password')
@@ -88,10 +93,11 @@ exports.login = async (req, res, next) => {
             throw err
         }
 
-        const token = jwt.sign( // sign new jwt from the payload
+        // sign new jwt from the payload
+        const token = jwt.sign( 
             { user: user },
             'privatekey',
-            { expiresIn: '1h' } // invalid token after 1h
+            { expiresIn: '1h' } 
         )
 
         res.status(200).json({ token: token, user: user })
@@ -125,6 +131,7 @@ exports.resetPassword = async (req, res, next) => {
         // create a random password
         const newPassword = Math.floor(Math.random() * 900000000).toString()
 
+        // set up email's content to send
         const mailOptions = {
             from: '123@gmail',
             to: email,

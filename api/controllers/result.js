@@ -9,13 +9,16 @@ exports.getAllResults = async (req, res, next) => {
     const perPage = 9
 
     try {
+        // sort results by created date
         const sortedResults = await Result.find().sort({ createdAt: 'desc' })
 
+        // fetch results for each page (limit amount by perPage & skip items of prev pages)
         const paginatedResults = await Result.find()
             .sort({ createdAt: 'desc' })
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
 
+        // filter results using passed data
         const searchedResults = search && sortedResults.filter(result => {
             if (search !== '') {
                 const date = result.date.includes(search.trim())
@@ -50,6 +53,7 @@ exports.postResult = async (req, res, next) => {
 
     const date = new Date()
     const today = date.toLocaleDateString("vi-VN")
+    // check if exist result for today
     const todayResult = await Result.findOne({ date: today })
     if (todayResult) {
         const err = new Error("Already have report for today")
@@ -117,7 +121,7 @@ exports.patchResult = async (req, res, next) => {
     const perPage = 9
 
     try {
-        let updatingResult = await Result.findById(resultId)
+        const updatingResult = await Result.findById(resultId)
         if (!updatingResult) {
             const err = new Error('No result found to update')
             err.statusCode = 404

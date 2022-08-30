@@ -1,9 +1,9 @@
-### CHECKINGTICKET SITE
+# CHECKINGTICKET SITE
 
-# Detailed Descriptions : [doc.docx](https://github.com/tn333nt/lott-mern-pj/files/9437797/doc.docx)
+### Detailed Descriptions : [doc.docx](https://github.com/tn333nt/lott-mern-pj/files/9453555/doc.docx)
 
 
-# Summary : 
+### Summary : 
 - Framework : React, Express
 - Platform : Node
 - Database : MongoDB

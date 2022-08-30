@@ -130,7 +130,7 @@ const resultsSlice = createSlice({ // auto gen action creators & action types th
         results: [], // save all results
         searchedResults: [],
         paginatedResults: [], // results r rendered in each page
-        pickedResult,
+        pickedResult, // temporary data to work with (add/update/passing...)
         isUpdating: false,
         isOpen: {
             addModal: false,
